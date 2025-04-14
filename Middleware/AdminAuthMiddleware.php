@@ -4,14 +4,24 @@ namespace BugQuest\Framework\Middleware;
 
 class AdminAuthMiddleware
 {
-    public function handle(callable $next): mixed
+    public function handle(callable $next)
     {
-        // Exemple simple : vérifie si l'utilisateur est admin dans la session
         session_start();
-        if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
-            http_response_code(403);
-            return "🚫 Accès interdit – Vous devez être administrateur.";
+
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: /login');
+            exit;
         }
+
+        $user = User::find($_SESSION['user_id']);
+
+        if (!$user || !$user->isAdmin()) {
+            http_response_code(403);
+            exit('🚫 Accès interdit – Vous devez être administrateur.');
+        }
+
+        // On injecte l'utilisateur dans une helper statique ou singleton si tu veux y accéder ailleurs
+        auth()->setUser($user);
 
         return $next();
     }
