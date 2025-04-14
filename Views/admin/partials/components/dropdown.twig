@@ -1,0 +1,12 @@
+<div class="dropdown __dropdown">
+    <div class="__dropdown_toggle dropdownToggle">
+        {{ toggle|default('⋮') }}
+    </div>
+    <div class="dropdownContent">
+        {% for item in items %}
+            <a href="{{ item.href }}" class="dropdownItem">
+                {{ item.label }}
+            </a>
+        {% endfor %}
+    </div>
+</div>

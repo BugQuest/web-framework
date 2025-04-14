@@ -1,0 +1,95 @@
+@use 'variables' as *;
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.95rem;
+  color: #e0f2fe;
+  background-color: #0f172a;
+  border-top: 1px solid #1e293b;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+  position: relative;
+
+  th,
+  td {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid $color-bg-2;
+    text-align: left;
+
+    > code {
+      background-color: $color-bg-2;
+      color: $color-primary;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+    }
+
+    &.small {
+      width: 1%;
+      white-space: nowrap;
+    }
+
+    &.medium {
+      width: 10%;
+    }
+
+    &.large {
+      width: 20%;
+    }
+
+    &.center {
+      text-align: center;
+    }
+  }
+
+  th {
+    background-color: $color-bg-2;
+    color: $color-primary;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  tr:nth-child(even) {
+    background-color: #17233a;
+  }
+
+  tr:hover {
+    background-color: #1f2a40;
+  }
+
+  .table-actions {
+    display: flex;
+    gap: 0.5rem;
+
+    button,
+    a {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+      border: none;
+      border-radius: 4px;
+      background: #0ff3;
+      color: $color-primary;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #0ff6;
+        box-shadow: $glow;
+      }
+    }
+  }
+}
+
+.table-wrapper {
+  max-width: 1600px;
+  margin: 0 auto;
+  max-height: calc(100vh - $admin-header-height - $admin-footer-height);
+  overflow: auto;
+  width: 100%;
+  border-top: 1px solid $color-primary;
+}

@@ -1,0 +1,53 @@
+<div class="footer-admin-menu">
+    <ul>
+        {% for menu in menus %}
+            {% if menu.route %}
+                <li class="{{ bq_is_route(menu.route) ? 'active' }}">
+                    <a href="{{ bq_route_url(menu.route) }}">
+                        {% if menu.icon %}
+                            {{ menu.icon | raw }}
+                        {% endif %}
+                        {{ menu.name }}
+                    </a>
+                    {% if menu.children %}
+                        <ul class="submenu">
+                            {% for child in menu.children %}
+                                <li class="{{ bq_is_route(child.route) ? 'active' }}">
+                                    <a href="{{ bq_route_url(child.route) }}">
+                                        {% if child.icon %}
+                                            {{ child.icon | raw }}
+                                        {% endif %}
+                                        {{ child.name }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% else %}
+                <li>
+                    <div>
+                        {% if menu.icon %}
+                            {{ menu.icon | raw }}
+                        {% endif %}
+                        {{ menu.name }}
+                    </div>
+                    {% if menu.children %}
+                        <ul class="submenu">
+                            {% for child in menu.children %}
+                                <li class="{{ bq_is_route(child.route) ? 'active' }}">
+                                    <a href="{{ bq_route_url(child.route) }}">
+                                        {% if child.icon %}
+                                            {{ child.icon | raw }}
+                                        {% endif %}
+                                        {{ child.name }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>

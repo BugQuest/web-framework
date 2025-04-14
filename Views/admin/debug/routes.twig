@@ -1,0 +1,53 @@
+{% extends '@framework/admin/layout.twig' %}
+
+{% block title %}Dashboard - Admin{% endblock %}
+
+{% block content %}
+    <div class="table-wrapper">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Methodes</th>
+                <th>Nom</th>
+                <th>Slug</th>
+                <th class="large">Pattern</th>
+                <th>Params</th>
+                <th class="small">
+                    callback
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for route in routes %}
+                <tr>
+                    <td>{{ route.methods }}</td>
+                    <td>{{ route.name }}</td>
+                    <td>{{ route.slug }}</td>
+                    <td>
+                        <code>
+                            {{ route.regex }}
+                        </code>
+                    </td>
+                    <td>
+                        {{ route.params | raw }}
+                    </td>
+                    <td class="small">
+                        <ul>
+                            <li><b>Type: </b>{{ route.callback.type }}</li>
+                            {% if route.callback.class %}
+                                <li><b>Class: </b>{{ route.callback.class }}</li>
+                            {% endif %}
+                            {% if route.callback.method %}
+                                <li><b>Method: </b>{{ route.callback.method }}</li>
+                            {% endif %}
+                            {% if route.callback.default %}
+                                <li><b>Default: </b>{{ route.callback.default }}</li>
+                            {% endif %}
+                        </ul>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

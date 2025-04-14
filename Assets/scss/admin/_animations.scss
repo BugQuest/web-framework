@@ -1,0 +1,9 @@
+@keyframes glow-pulse {
+  0% { box-shadow: none; }
+  50% { box-shadow: 0 0 10px #0ff; }
+  100% { box-shadow: none; }
+}
+
+.glow {
+  animation: glow-pulse 2s infinite;
+}

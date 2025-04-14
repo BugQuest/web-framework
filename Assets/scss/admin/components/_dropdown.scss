@@ -1,0 +1,57 @@
+@use '../variables' as *;
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+
+  &Toggle {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  &Content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    min-width: 160px;
+    padding: 0.5rem;
+    background: #0d0d0d;
+    border-top: 1px solid $color-primary;
+    z-index: 99;
+    box-shadow: $glow;
+
+    a {
+      display: block;
+      padding: 0.4rem 0.8rem;
+      color: $color-primary;
+      text-decoration: none;
+      transition: background 0.2s;
+
+      &:hover {
+        background: rgba(0, 255, 247, 0.1);
+      }
+    }
+  }
+
+  &Item {
+    padding: 0.4rem 0.8rem;
+    color: #00fff7;
+    text-decoration: none;
+    transition: background 0.2s;
+    cursor: pointer;
+    display: flex;
+    font-size: 0.9rem;
+
+    &:hover {
+      background: rgba(0, 255, 247, 0.1);
+    }
+  }
+
+  &.active {
+    .dropdownContent {
+      display: block;
+      animation: fadeIn 0.2s ease-out;
+    }
+  }
+}

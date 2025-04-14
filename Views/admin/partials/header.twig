@@ -1,0 +1,19 @@
+<header class="header">
+    <div class="header-left">
+        <div class="header-logo">🛠 BugQuest</div>
+        <div class="header-title">Panneau d’administration</div>
+    </div>
+
+    <div class="header-right">
+        <div class="dropdown __dropdown">
+            <div type="button" class="__dropdown_toggle dropdownToggle">
+                <div class="avatar"></div>
+                <div class="name">Steven</div>
+            </div>
+            <div class="dropdownContent">
+                <a href="{{ bq_route_url('admin.user.settings') }}" class="dropdownItem">⚙️ Mon profil</a>
+                <a href="/logout" class="dropdownItem">🚪 Déconnexion</a>
+            </div>
+        </div>
+    </div>
+</header>

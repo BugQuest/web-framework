@@ -1,0 +1,42 @@
+.__Accordeon {
+  border: 1px solid #00fff7;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  background: #0a0a0a;
+
+  .__AccordeonTitle {
+    padding: 1rem;
+    background: #101010;
+    color: #00fff7;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+
+    &::after {
+      content: '⯈';
+      position: absolute;
+      right: 1rem;
+      transform: rotate(0deg);
+      transition: transform 0.2s ease;
+    }
+  }
+
+  .__AccordeonContent {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    padding: 0 1rem;
+  }
+
+  &.active {
+    .__AccordeonTitle::after {
+      transform: rotate(90deg);
+    }
+
+    .__AccordeonContent {
+      padding: 1rem;
+      max-height: 500px; // Ajuste si besoin
+    }
+  }
+}

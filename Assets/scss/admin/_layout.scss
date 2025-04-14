@@ -1,0 +1,29 @@
+@use 'mixins';
+@use 'variables';
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.container-fluid {
+  max-width: 100%;
+}
+
+.container-xl {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+
+  &.two-col {
+    grid-template-columns: 1fr;
+
+    @include mixins.respond(md) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+}
