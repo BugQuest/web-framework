@@ -48,7 +48,6 @@ class Database
         try {
             return Meta::where('key', 'installed')->where('value', 'true')->exists();
         } catch (\Throwable $e) {
-            dd($e);
             return false;
         }
     }
