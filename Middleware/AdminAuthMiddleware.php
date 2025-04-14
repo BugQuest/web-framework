@@ -2,16 +2,18 @@
 
 namespace BugQuest\Framework\Middleware;
 
+use BugQuest\Framework\Models\Database\User;
+use BugQuest\Framework\Router;
+use BugQuest\Framework\Services\Auth;
+
 class AdminAuthMiddleware
 {
     public function handle(callable $next)
     {
         session_start();
 
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: /login');
-            exit;
-        }
+        if (!isset($_SESSION['user_id']))
+            Router::redirect('auth.login');
 
         $user = User::find($_SESSION['user_id']);
 
@@ -21,7 +23,7 @@ class AdminAuthMiddleware
         }
 
         // On injecte l'utilisateur dans une helper statique ou singleton si tu veux y accéder ailleurs
-        auth()->setUser($user);
+        Auth::setUser($user);
 
         return $next();
     }

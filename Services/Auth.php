@@ -2,28 +2,28 @@
 
 namespace BugQuest\Framework\Services;
 
-use BugQuest\Framework\Models\User;
+use BugQuest\Framework\Models\Database\User;
 
 class Auth
 {
     private static ?User $user = null;
 
-    public function setUser(User $user): void
+    public static function setUser(User $user): void
     {
         self::$user = $user;
     }
 
-    public function user(): ?User
+    public static function user(): ?User
     {
         return self::$user;
     }
 
-    public function check(): bool
+    public static function check(): bool
     {
         return self::$user !== null;
     }
 
-    public function isAdmin(): bool
+    public static function isAdmin(): bool
     {
         return self::$user?->isAdmin() ?? false;
     }

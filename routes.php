@@ -2,7 +2,9 @@
 
 
 use BugQuest\Framework\Controllers\Admin\DashboardController;
+use BugQuest\Framework\Controllers\AuthController;
 use BugQuest\Framework\Controllers\InstallController;
+use BugQuest\Framework\Middleware\AdminAuthMiddleware;
 use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Models\RouteGroup;
 use BugQuest\Framework\Services\Admin;
@@ -19,7 +21,7 @@ new RouteGroup(
         )
     ],
     _middlewares: [
-//                    AdminAuthMiddleware::class
+        AdminAuthMiddleware::class
     ]
 )->register();
 
@@ -30,14 +32,14 @@ new RouteGroup(
         new Route(
             name: 'login',
             _slug: '/login',
-            _methods: ['GET', 'POST'],
-            _callback: AuthController::class . '::login'
+            _callback: AuthController::class . '::login',
+            _methods: ['GET', 'POST']
         ),
         new Route(
             name: 'logout',
             _slug: '/logout',
-            _methods: ['GET'],
-            _callback: AuthController::class . '::logout'
+            _callback: AuthController::class . '::logout',
+            _methods: ['GET']
         )
     ]
 )->register();

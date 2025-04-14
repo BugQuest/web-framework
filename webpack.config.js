@@ -3,11 +3,12 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     entry: {
-        'css/admin': './Assets/scss/admin.scss',
-        'js/admin': './Assets/js/admin.js',
+        'dist/css/global': './Assets/scss/global.scss',
+        'admin/dist/css/admin': './Assets/scss/admin.scss',
+        'admin/dist/js/admin': './Assets/js/admin.js',
     },
     output: {
-        path: path.resolve(__dirname, '../htdocs/cms/admin/dist'),
+        path: path.resolve(__dirname, '../../../htdocs/cms/'),
         filename: '[name].js', // génère js/admin.js
         clean: true,
     },
