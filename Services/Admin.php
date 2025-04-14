@@ -103,5 +103,12 @@ abstract class Admin
             icon: '🗺️',
             route: self::addPage('Debug - Routes', \BugQuest\Framework\Controllers\Admin\DebugController::class . '::routes')
         );
+
+        self::addSubmenu(
+            parent: 'config',
+            name: 'Images',
+            icon: '🖼️',
+            route: self::addPage('Config - Images', \BugQuest\Framework\Controllers\Admin\ImagesController::class . '::index')
+        );
     }
 }
