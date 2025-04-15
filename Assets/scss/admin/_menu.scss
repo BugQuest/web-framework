@@ -1,19 +1,17 @@
-@use 'variables' as *;
-
 .footer-admin-menu {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
   background: #111;
-  color: $color-primary;
+  color: var(--color-primary);
   display: flex;
   justify-content: space-between;
   padding: 0.5rem 1rem;
   z-index: 1000;
   font-family: monospace;
-  height: $admin-footer-height;
-  max-height: $admin-footer-height;
+  height: var(--footer-height);
+  max-height: var(--footer-height);
 
   ul {
     list-style: none;
@@ -27,7 +25,7 @@
 
       > div {
         cursor: pointer;
-        color: $color-primary;
+        color: var(--color-primary);
         display: flex;
         align-items: center;
         gap: 0.4rem;
@@ -40,7 +38,7 @@
       }
 
       > a {
-        color: $color-primary;
+        color: var(--color-primary);
         text-decoration: none;
         display: flex;
         align-items: center;
@@ -54,8 +52,8 @@
       }
 
       &.active > a {
-        background: $color-bg-2;
-        color: $color-primary;
+        background: var(--bg-secondary);
+        color: var(--color-primary);
       }
 
       .submenu {
@@ -64,7 +62,7 @@
         bottom: 100%;
         background: #111;
         padding: 0.5rem 0;
-        border-top: 2px solid $color-primary;
+        border-top: 2px solid var(--color-primary);
         animation: fadeIn 0.2s ease-in-out;
         white-space: nowrap;
 
@@ -72,7 +70,7 @@
           padding: 0.3rem 1rem;
 
           a {
-            color: $color-primary;
+            color: var(--color-primary);
 
             &:hover {
               color: #fff;

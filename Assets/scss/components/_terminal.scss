@@ -1,0 +1,16 @@
+.terminal {
+  background: var(--bg-primary);
+  padding: 1rem;
+  border-top: 4px solid var(--color-secondary);
+  color: #00ffe0;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+  text-align: left;
+  backdrop-filter: blur(5px);
+  cursor: not-allowed;
+
+  &.prompt {
+    color: #22d3ee;
+  }
+}
