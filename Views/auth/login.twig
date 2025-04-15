@@ -20,7 +20,7 @@
 
     <form method="post" action="{{ bq_route_url('auth.login') }}" class="form">
         <label for="email">{{ __('Adresse email', 'auth', 'fr') }}</label>
-        <input type="email"
+        <input type="text"
                name="email"
                id="email"
                value="{{ email }}"
@@ -31,7 +31,7 @@
                id="password"
                class="{{ error ? 'error' }}" required>
 
-        <button class="button-submit" type="submit">{{ __('Se connecter', 'auth', 'fr') }}</button>
+        <input class="button-submit" type="submit" value="{{ __('Se connecter', 'auth', 'fr') }}"/>
     </form>
 </div>
 

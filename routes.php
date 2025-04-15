@@ -3,11 +3,9 @@
 
 use BugQuest\Framework\Controllers\Admin\DashboardController;
 use BugQuest\Framework\Controllers\AuthController;
-use BugQuest\Framework\Controllers\InstallController;
 use BugQuest\Framework\Middleware\AdminAuthMiddleware;
 use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Models\RouteGroup;
-use BugQuest\Framework\Services\Admin;
 
 new RouteGroup(
     name: 'admin',
