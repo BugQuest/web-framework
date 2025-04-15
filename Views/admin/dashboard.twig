@@ -1,12 +1,12 @@
 {% extends '@framework/admin/layout.twig' %}
 
-{% block title %}Dashboard - Admin{% endblock %}
+{% block title %}BugQuest - Dashboard{% endblock %}
 
 {% block content %}
     <div class="container">
         <div class="card-grid two-cols">
             {% include '@framework/admin/partials/components/card.twig' with {
-                title: '📈 Système',
+                title: '📈 ' ~ __('Système', 'admin', 'fr'),
                 content: 'RAM : '~ memory_usage ~' Mo',
                 footer: 'PHP : '~ php_version,
                 class: ''

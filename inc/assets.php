@@ -26,6 +26,11 @@ Assets::addJs(
 );
 
 Assets::addFonts(
+    group: 'admin',
+    url: 'https://fonts.googleapis.com/css?family=Orbitron'
+);
+
+Assets::addFonts(
     group: 'global',
     url: 'https://fonts.googleapis.com/css?family=Orbitron'
 );

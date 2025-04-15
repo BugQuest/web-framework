@@ -1,0 +1,31 @@
+{% extends '@framework/admin/layout.twig' %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>📁 Gestion des médias</h1>
+    </div>
+
+    <div id="media-upload-overlay" class="hidden">
+        <div class="upload-message">
+            <p id="upload-text">Fente quantique disponible. Insérer fichiers maintenant.</p>
+        </div>
+    </div>
+
+    {% include '@framework/admin/partials/mediaGrid.twig' with {
+        medias: media_paginated.items,
+        tags: tags
+    } %}
+
+    {% if media_paginated.last_page > 1 %}
+        <nav class="pagination">
+            {% for i in 1..media_paginated.last_page %}
+                <a href="?page={{ i }}{% if tag %}&tag={{ tag }}{% endif %}"
+                   class="{{ i == media_paginated.current_page ? 'active' : '' }}">
+                    {{ i }}
+                </a>
+            {% endfor %}
+        </nav>
+    {% endif %}
+
+
+{% endblock %}

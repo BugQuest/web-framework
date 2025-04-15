@@ -1,0 +1,68 @@
+#media-upload-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 255, 255, 0.05);
+  border: 2px dashed #0ff;
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+
+  &.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .upload-message {
+    background: #0ff1;
+    padding: 2rem;
+    border: 1px solid #0ff;
+    border-radius: 10px;
+    color: #0ff;
+    font-family: monospace;
+    text-shadow: 0 0 5px #0ff;
+    font-size: 1.1rem;
+  }
+}
+
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+
+  .media-card {
+    background: #111827;
+    border: 1px solid #0ff5;
+    border-radius: 5px;
+    padding: 0.5rem;
+    text-align: center;
+    color: #0ff;
+    font-size: 0.8rem;
+    position: relative;
+
+    img, .media-icon {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: #0ff;
+      width: 0;
+      transition: width 0.2s linear;
+    }
+  }
+}

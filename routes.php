@@ -2,6 +2,7 @@
 
 
 use BugQuest\Framework\Controllers\Admin\DashboardController;
+use BugQuest\Framework\Controllers\Admin\MediasController;
 use BugQuest\Framework\Controllers\AuthController;
 use BugQuest\Framework\Middleware\AdminAuthMiddleware;
 use BugQuest\Framework\Models\Route;
@@ -16,7 +17,13 @@ new RouteGroup(
             _slug: '/',
             _callback: DashboardController::class . '::index',
             _methods: ['GET'],
-        )
+        ),
+        new Route(
+            name: 'medias.upload',
+            _slug: '/medias/upload',
+            _callback: MediasController::class . '::upload',
+            _methods: ['POST']
+        ),
     ],
     _middlewares: [
         AdminAuthMiddleware::class

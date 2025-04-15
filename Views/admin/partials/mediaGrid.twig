@@ -1,0 +1,29 @@
+<div class="media-filters">
+    <label for="tagFilter">📌 Filtrer par tag :</label>
+    <select id="tagFilter" class="media-tag-filter">
+        <option value="">— Tous les tags —</option>
+        {% for tag in tags %}
+            <option value="{{ tag.id }}">{{ tag.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="media-grid __mediaGrid">
+    {% for media in medias %}
+        <div class="media-card __mediaCard" data-tags="{{ media.tags|map(t => t.id)|join(',') }}">
+            <div class="media-preview">
+                {% if media.mime_type starts with 'image/' %}
+                    <img src="/{{ media.path }}" alt="{{ media.original_name }}">
+                {% else %}
+                    <div class="media-icon">
+                        {{ media.extension|upper }}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="media-info">
+                <strong>{{ media.original_name }}</strong>
+                <small>{{ media.mime_type }} – {{ (media.size / 1024)|round }} KB</small>
+            </div>
+        </div>
+    {% endfor %}
+</div>

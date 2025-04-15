@@ -106,6 +106,13 @@ abstract class Admin
 
         self::addSubmenu(
             parent: 'config',
+            name: 'Medias',
+            icon: '🖼️',
+            route: self::addPage('Config - Medias', \BugQuest\Framework\Controllers\Admin\MediasController::class . '::index')
+        );
+
+        self::addSubmenu(
+            parent: 'config',
             name: 'Images',
             icon: '🖼️',
             route: self::addPage('Config - Images', \BugQuest\Framework\Controllers\Admin\ImagesController::class . '::index')
