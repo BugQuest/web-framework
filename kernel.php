@@ -1,10 +1,8 @@
 <?php
 
 use BugQuest\Framework\Debug;
-use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Router;
 use BugQuest\Framework\Services\Admin;
-use BugQuest\Framework\Services\Assets;
 use BugQuest\Framework\Services\Hooks;
 use BugQuest\Framework\Services\View;
 use BugQuest\Framework\Services\Database;
@@ -26,41 +24,22 @@ if (php_sapi_name() !== 'cli')
 
 hooks::runAction('kernel.start');
 
-Assets::registerDist(BQ_PUBLIC_DIR . '/cms/dist');
-Assets::registerDist(BQ_PUBLIC_DIR . '/cms/admin/dist');
-
-
 if (file_exists(BQ_ROOT . '/routes.php'))
     require_once BQ_ROOT . '/routes.php';
-
-//====================== Admin ==========================
 
 if (file_exists(BQ_FRAMEWORK_PATH . '/routes.php'))
     require_once BQ_FRAMEWORK_PATH . '/routes.php';
 
-Database::init();
-
-hooks::addAction(
-    hook: 'route.before',
-    callback: function (Route $route, array $args) {
-        if ($route->group?->name === 'admin') {
-            Assets::addCss(
-                group: 'admin',
-                url: '/css/admin.css'
-            );
-
-            Assets::addJs(
-                group: 'admin',
-                url: '/js/admin.js',
-            );
-        }
-    },
-    accepted_args: 2
-);
-
 Admin::registerPages();
 
-//====================== Admin ==========================
+BugQuest\Framework\Services\Locale::init();
+
+//load inc folder
+if (is_dir(BQ_FRAMEWORK_PATH . '/inc'))
+    foreach (glob(BQ_FRAMEWORK_PATH . '/inc/*.php') as $file)
+        require_once $file;
+
+Database::init();
 
 echo Router::dispatch();
 

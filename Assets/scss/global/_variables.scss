@@ -25,26 +25,40 @@ $breakpoints: (
         xl: 1280px
 );
 
-$admin-header-height : 60px;
-$admin-footer-height : 50px;
+$admin-header-height: 60px;
+$admin-footer-height: 50px;
 
 :root {
-    --color-bg: $color-bg;
-    --color-bg-2: $color-bg-2;
-    --color-primary: $color-primary;
-    --color-secondary: $color-secondary;
-    --color-accent: $color-accent;
-    --color-danger: $color-danger;
-    --color-success: $color-success;
-    --color-warning: $color-warning;
-    --color-info: $color-info;
-    --color-border: $color-border;
-    --color-text: $color-text;
-    --color-muted: $color-muted;
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --color-primary: #00ffc3;
+  --color-light: #0ff;
+  --color-secondary: #00ffb2;
+  --color-accent: #f0f;
+  --color-border: #334155;
+  --color-text: #eee;
+  --color-muted: #888;
+  --font-main: 'Orbitron', sans-serif;
+  --radius: 6px;
+  --glow: 0 0 8px rgba(0, 255, 255, 0.6);
+  --glow-hover: 0 0 12px rgba(0, 255, 0, 0.8);
 
-    --font-main: $font-main;
+  --color-danger: #ff6363;
+  --color-success: #0f0;
+  --color-warning: #ff0;
+  --color-info: #51efff;
 
-    --radius: $radius;
-    --glow: $glow;
-    --glow-hover: $glow-hover;
+  --bg-danger: rgba(255, 0, 0, 0.2);
+  --bg-success: rgba(0, 255, 0, 0.2);
+  --bg-warning: rgba(255, 255, 0, 0.2);
+  --bg-info: rgba(0, 187, 255, 0.2);
+
+  --border-danger: rgba(255, 0, 0, 0.5);
+  --border-success: rgba(0, 255, 0, 0.5);
+  --border-warning: rgba(255, 255, 0, 0.5);
+  --border-info: rgba(0, 255, 255, 0.5);
+
+  --gradient-primary: linear-gradient(to right, #00f7ff, #00ffc8);
+  --gradient-secondary: radial-gradient(ellipse at center, #112927 0%, #020617 100%)
+
 }

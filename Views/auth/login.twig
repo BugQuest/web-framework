@@ -2,141 +2,43 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Connexion – BugQuest Admin</title>
+    <title>{{ __('Connexion', 'auth', 'fr') }} – BugQuest</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        :root {
-            --bg: #0f172a;
-            --panel: #1e293b;
-            --primary: #00ffc3;
-            --primary-light: #0ff;
-            --text: #e0f2fe;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Courier New', monospace;
-            background: var(--bg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            color: var(--text);
-        }
-
-        .login-container {
-            background: var(--panel);
-            padding: 2rem 2.5rem;
-            border-top: 1px solid var(--primary-light);
-            width: 100%;
-            max-width: 420px;
-        }
-
-        .login-title {
-            text-align: center;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--primary);
-            text-shadow: 0 0 5px var(--primary-light);
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            margin: 0.5rem 0 0.25rem;
-            font-size: 0.9rem;
-        }
-
-        input {
-            padding: 0.6rem 1rem;
-            background: #0f172a;
-            color: var(--text);
-            border: 1px solid var(--primary-light);
-            border-radius: 5px;
-            font-size: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 8px var(--primary-light);
-        }
-
-        .login-button {
-            padding: 0.7rem;
-            background: linear-gradient(to right, #0ff, var(--primary));
-            border: none;
-            border-radius: 5px;
-            color: #000;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1rem;
-            box-shadow: 0 0 4px var(--primary-light);
-            transition: all 0.2s ease;
-        }
-
-        .login-button:hover {
-            transform: scale(1.03);
-            box-shadow: 0 0 20px var(--primary-light);
-        }
-
-        .login-meta {
-            text-align: center;
-            font-size: 0.85rem;
-            margin-top: 1rem;
-            color: #94a3b8;
-        }
-
-        .glow-bar {
-            height: 1px;
-            width: 100%;
-            background: linear-gradient(to right, #0ff, #00ffc3);
-            box-shadow: 0 0 8px #0ff;
-            margin-bottom: 1.5rem;
-        }
-
-        .error {
-            color: #ff0000;
-            font-size: 0.85rem;
-            margin-top: 1rem;
-            text-align: center;
-            border: 1px solid #ff0000;
-            background: rgba(255, 0, 0, 0.1);
-            padding: 0.5rem;
-            border-radius: 5px;
-            animation: shake 0.5s ease-in-out;
-        }
-    </style>
+    {{ bq_assets_header('global') }}
 </head>
-<body>
+<body class="fullvh">
 
-<div class="login-container">
-    <div class="login-title">🔐 Connexion</div>
+<div class="container-centered">
+    <h1>🔐 {{ __('Connexion', 'auth', 'fr') }}</h1>
     <div class="glow-bar"></div>
-
+    {% include '@framework/partials/language-switcher.twig' %}
     {% if error %}
-        <div class="error">{{ error }}</div>
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
     {% endif %}
 
-    <form method="post" action="{{ bq_route_url('auth.login') }}">
-        <label for="email">Adresse email</label>
-        <input type="email" name="email" id="email" value="{{ email }}" required>
-        <label for="password">Mot de passe</label>
-        <input type="password" name="password" id="password" required>
+    <form method="post" action="{{ bq_route_url('auth.login') }}" class="form">
+        <label for="email">{{ __('Adresse email', 'auth', 'fr') }}</label>
+        <input type="email"
+               name="email"
+               id="email"
+               value="{{ email }}"
+               class="{{ error ? 'error' }}" required>
+        <label for="password">{{ __('Mot de passe', 'auth', 'fr') }}</label>
+        <input type="password"
+               name="password"
+               id="password"
+               class="{{ error ? 'error' }}" required>
 
-        <button class="login-button" type="submit">Se connecter</button>
+        <button class="button-submit" type="submit">{{ __('Se connecter', 'auth', 'fr') }}</button>
     </form>
-
-    <div class="login-meta">
-        BugQuest Framework • v1.0 <br>
-        <a href="/" style="color: var(--primary); text-decoration: none;">⬅ Retour au site</a>
-    </div>
 </div>
 
+<div class="footer-note">
+    BugQuest Web Framework • v1.0 <br>
+    <a href="/">⬅ {{ __('Retour au site', 'auth', 'fr') }}</a>
+</div>
+{{ bq_assets_footer('global') }}
 </body>
 </html>

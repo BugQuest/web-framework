@@ -1,0 +1,25 @@
+.language-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: .4rem 0;
+  gap: 0.5rem;
+
+  select {
+    background: #111827;
+    color: #0ff;
+    border: 1px solid #0ff6;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 255, 255, 0.2);
+
+    &:focus {
+      outline: none;
+      border-color: cyan;
+      box-shadow: 0 0 8px cyan;
+    }
+  }
+}

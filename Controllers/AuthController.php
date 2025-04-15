@@ -10,6 +10,7 @@ class AuthController
 {
     public static function login(): string
     {
+        $error = "";
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_SPECIAL_CHARS);
             $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -25,10 +26,13 @@ class AuthController
                 Router::redirect('admin.dashboard');
             }
 
-            return 'Identifiants invalides';
+            $error = __('Identifiants invalides.', 'auth', 'fr');
+
         }
 
-        return View::render('@framework/auth/login.twig');
+        return View::render('@framework/auth/login.twig', [
+            'error' => $error,
+        ]);
     }
 
     public static function logout(): void

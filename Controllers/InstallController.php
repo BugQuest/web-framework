@@ -6,6 +6,7 @@ use BugQuest\Framework\Models\Database\Meta;
 use BugQuest\Framework\Models\Database\User;
 use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Services\Database;
+use BugQuest\Framework\Services\MetaService;
 use BugQuest\Framework\Services\View;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -36,23 +37,23 @@ class InstallController
             $passwordConfirm = trim($passwordConfirm);
 
             if (empty($username) || empty($password) || empty($passwordConfirm) || empty($email))
-                $error = 'Tous les champs sont obligatoires.';
+                $error = __('Tous les champs sont obligatoires.', 'install', 'fr');
 
-            if (strlen($username) < 3 || strlen($username) > 20)
-                $error = 'Le nom d\'utilisateur doit contenir entre 3 et 20 caractères.';
-
-            if (strlen($password) < 6 || strlen($password) > 20)
-                $error = 'Le mot de passe doit contenir entre 6 et 20 caractères.';
+//            if (strlen($username) < 3 || strlen($username) > 20)
+//                $error = 'Le nom d\'utilisateur doit contenir entre 3 et 20 caractères.';
+//
+//            if (strlen($password) < 6 || strlen($password) > 20)
+//                $error = 'Le mot de passe doit contenir entre 6 et 20 caractères.';
 
             if ($password !== $passwordConfirm)
-                $error = 'Les mots de passe ne correspondent pas.';
+                $error = __('Les mots de passe ne correspondent pas.', 'install', 'fr');
 
             if (!preg_match('/^[a-zA-Z0-9_]+$/', $username))
-                $error = 'Le nom d\'utilisateur ne doit contenir que des lettres, des chiffres et des underscores.';
+                $error = __("Le nom d'utilisateur ne doit contenir que des lettres, des chiffres et des underscores.", 'install', 'fr');
 
-            //password with at least one uppercase letter, one lowercase letter, one number and one special character
-            if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,20}$/', $password))
-                $error = 'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.';
+//            //password with at least one uppercase letter, one lowercase letter, one number and one special character
+//            if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,20}$/', $password))
+//                $error = 'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.';
 
             if (!$error) {
                 // Création des tables
@@ -68,7 +69,18 @@ class InstallController
                 Manager::schema()->create('meta', function (Blueprint $table) {
                     $table->string('key')->primary();
                     $table->text('value')->nullable();
+                    $table->string('type', 16);
                     $table->timestamps();
+                });
+
+                Manager::schema()->create('i18n_missing', function (Blueprint $table) {
+                    $table->id();
+                    $table->string('domain', 64);
+                    $table->string('locale', 8);
+                    $table->string('keyname', 255);
+                    $table->timestamps();
+
+                    $table->unique(['domain', 'locale', 'keyname'], 'i18n_missing_unique');
                 });
 
                 // Hash + insertion dans la table users
@@ -79,11 +91,9 @@ class InstallController
                 $user->role = 'admin';
                 $user->save();
 
-                // Insertion dans la table meta
-                $meta = new Meta();
-                $meta->key = 'installed';
-                $meta->value = 'true';
-                $meta->save();
+
+                MetaService::update('installed', true);
+                MetaService::update('locale', get_locale());
 
                 Router::redirect('auth.login');
             }

@@ -1,0 +1,11 @@
+{
+  "Installation": "Installation",
+  "Créons votre compte administrateur pour débuter l’aventure.": "Créons votre compte administrateur pour débuter l’aventure.",
+  "Nom d'utilisateur": "Nom d'utilisateur",
+  "Mot de passe": "Mot de passe",
+  "Confirmation du mot de passe": "Confirmation du mot de passe",
+  "Lancer l'installation": "Lancer l'installation",
+  "Tous les champs sont obligatoires.": "Tous les champs sont obligatoires.",
+  "Les mots de passe ne correspondent pas.": "Les mots de passe ne correspondent pas.",
+  "Le nom d'utilisateur ne doit contenir que des lettres, des chiffres et des underscores.": "Le nom d'utilisateur ne doit contenir que des lettres, des chiffres et des underscores."
+}

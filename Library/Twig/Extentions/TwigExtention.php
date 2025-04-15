@@ -6,6 +6,7 @@ use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Router;
 use BugQuest\Framework\Services\Admin;
 use BugQuest\Framework\Services\Assets;
+use BugQuest\Framework\Services\Locale;
 use Twig\TwigFunction;
 
 class TwigExtention extends \Twig\Extension\AbstractExtension implements \Twig\Extension\GlobalsInterface
@@ -40,6 +41,16 @@ class TwigExtention extends \Twig\Extension\AbstractExtension implements \Twig\E
             }),
             new TwigFunction('bq_admin_menu', function () {
                 return Admin::renderMenu();
+            }, [
+                'is_safe' => ['html'],
+            ]),
+            new TwigFunction('__', function (string $original, string $domain = 'BugQuest', ?string $locale = null, array $replacements = []) {
+                return Locale::translate($original, $domain, $locale, $replacements);
+            }, [
+                'is_safe' => ['html'],
+            ]),
+            new TwigFunction('bq_locale', function () {
+                return Locale::getLocale();
             }, [
                 'is_safe' => ['html'],
             ]),
