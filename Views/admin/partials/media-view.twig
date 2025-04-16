@@ -1,0 +1,24 @@
+<div class="__mediaModal__Preview">
+    {% if media.mime_type starts with 'image/' %}
+        <img src="/{{ media.path }}" alt="{{ media.original_name }}">
+    {% else %}
+        <div class="media-icon">{{ media.extension|upper }}</div>
+    {% endif %}
+</div>
+
+<dl class="__mediaModal__Meta">
+    <dt>ID</dt>
+    <dd>{{ media.id }}</dd>
+    <dt>Nom original</dt>
+    <dd>{{ media.original_name }}</dd>
+    <dt>MIME</dt>
+    <dd>{{ media.mime_type }}</dd>
+    <dt>Taille</dt>
+    <dd>{{ (media.size / 1024)|round(1) }} ko</dd>
+    <dt>Extension</dt>
+    <dd>{{ media.extension|upper }}</dd>
+    {% if media.exif %}
+        <dt>EXIF</dt>
+        <dd><code>{{ media.exif|json_encode(constant('JSON_PRETTY_PRINT')) }}</code></dd>
+    {% endif %}
+</dl>
