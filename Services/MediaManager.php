@@ -99,9 +99,8 @@ class MediaManager
     {
         $query = Media::query()->with('tags');
 
-        if ($tagSlug) {
+        if ($tagSlug)
             $query->whereHas('tags', fn($q) => $q->where('slug', $tagSlug));
-        }
 
         $total = $query->count();
         $media = $query->orderByDesc('created_at')
