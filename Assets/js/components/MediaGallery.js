@@ -4,10 +4,11 @@ export default class MediaGallery {
     constructor(element) {
         this.element = element;
 
-        this.canUpload = false
-        this.canModal = false
+        this.canUpload = false;
+        this.canModal = false;
         this.perPage = 12;
-        this.tags = []
+        this.selectTags = [];
+        this.tags = [];
         //check if element has data-per-page attribute
         const perPage = this.element.dataset.perPage;
         if (perPage && !isNaN(perPage))
@@ -49,7 +50,7 @@ export default class MediaGallery {
         let tags_form = BuildHelper.div('media-gallery-tags-form');
         accordeon_content.appendChild(tags_form);
 
-        this.tag_input = BuildHelper.input_text('Ajouter un tag');
+        this.tag_input = BuildHelper.input_text('Ajouter un tag', '', 'small full');
 
         tags_form.appendChild(this.tag_input)
         this.tag_submit = BuildHelper.button_submit('Ajouter', 'button button-primary');
@@ -138,7 +139,7 @@ export default class MediaGallery {
             const params = new URLSearchParams();
             params.set('per_page', this.perPage);
 
-            this.tags.forEach(tagId => {
+            this.selectTags.forEach(tagId => {
                 params.append('tags[]', tagId);
             });
 
@@ -164,7 +165,8 @@ export default class MediaGallery {
 
             const result = await response.json();
 
-            this.renderTags(result);
+            this.tags = result;
+            this.renderTags();
         } catch (err) {
             console.error('[MediaGalleryLoader] Erreur de chargement des tags :', err);
         }
@@ -210,9 +212,9 @@ export default class MediaGallery {
         }
     }
 
-    renderTags(tags) {
+    renderTags() {
         this.tags_content.innerHTML = '';
-        tags.forEach(tag => {
+        this.tags.forEach(tag => {
             const span = document.createElement('span');
             span.dataset.tag = tag.id;
             span.textContent = tag.name;
@@ -228,10 +230,10 @@ export default class MediaGallery {
 
             if (!id) return;
 
-            if (this.tags.includes(id))
-                this.tags.splice(this.tags.indexOf(id), 1);
+            if (this.selectTags.includes(id))
+                this.selectTags.splice(this.selectTags.indexOf(id), 1);
             else
-                this.tags.push(id)
+                this.selectTags.push(id)
 
             this.updateTags();
             this.loadPage(1);
@@ -250,7 +252,7 @@ export default class MediaGallery {
 
             if (!id) return;
 
-            if (this.tags.includes(id))
+            if (this.selectTags.includes(id))
                 tag.classList.add('active');
             else
                 tag.classList.remove('active');
@@ -342,45 +344,131 @@ export default class MediaGallery {
 
     async openModal(media) {
         this.modal_content.innerHTML = '';
-
         let media_container = BuildHelper.div('media-modal');
-        let preview = BuildHelper.div('media-modal--preview');
+
+        // 🧰 Actions
+        let actions = BuildHelper.div('flex-actions');
+        media_container.appendChild(actions);
+
+        // 📥 Télécharger
+        let download_button = BuildHelper.div('icon');
+        download_button.innerHTML = '📥';
+        download_button.title = 'Télécharger le fichier';
+        download_button.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const image = await fetch('/' + media.path);
+            const blob = await image.blob();
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = media.original_name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+        actions.appendChild(download_button);
+
+        // 🔗 Ouvrir dans un nouvel onglet
+        let open_button = BuildHelper.div('icon');
+        open_button.innerHTML = '🔗';
+        open_button.title = 'Ouvrir dans un nouvel onglet';
+        open_button.addEventListener('click', () => {
+            window.open('/' + media.path, '_BugQuest');
+        });
+        actions.appendChild(open_button);
+
+        // 🗑️ Supprimer
+        let delete_button = BuildHelper.div('icon danger');
+        delete_button.innerHTML = '🗑️';
+        delete_button.title = 'Supprimer le fichier';
+        delete_button.addEventListener('click', async () => {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce fichier ?')) {
+                try {
+                    const res = await fetch(`${this.apiUrl}/delete/${media.id}`, { method: 'DELETE' });
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    await this.loadPage(1);
+                    this.modal.classList.remove('active');
+                } catch (err) {
+                    console.error('[MediaGalleryLoader] Erreur suppression média :', err);
+                }
+            }
+        });
+        actions.appendChild(delete_button);
+
+        // 🖼️ Prévisualisation
+        const preview = BuildHelper.div('media-modal--preview');
         media_container.appendChild(preview);
 
-        // 📷 Prévisualisation
         if (media.mime_type.startsWith('image/')) {
             preview.appendChild(BuildHelper.img('/' + media.path, media.original_name));
         } else {
-            let icon = BuildHelper.div('media-card--icon');
+            const icon = BuildHelper.div('media-card--icon');
             icon.innerHTML = this.getIconForMime(media.mime_type);
             preview.appendChild(icon);
         }
 
-        // ℹ️ Infos principales
-        let info = BuildHelper.div('media-modal--info');
+        // ℹ️ Infos
+        const info = BuildHelper.div('media-modal--info');
         media_container.appendChild(info);
 
-        let title = BuildHelper.h2(media.original_name);
-        info.appendChild(title);
+        const info_container = BuildHelper.div('media-modal--info-container');
+        info.appendChild(info_container);
 
-        let list = BuildHelper.list([
+        const title = BuildHelper.h2(media.original_name);
+        const info_subcontainer = BuildHelper.div();
+        info_subcontainer.appendChild(title);
+
+        const list = BuildHelper.list([
             `<strong>Type :</strong> ${media.mime_type}`,
             `<strong>Taille :</strong> ${(media.size / 1024).toFixed(1)} ko`,
             `<strong>Extension :</strong> ${media.extension}`,
             `<strong>Ajouté le :</strong> ${new Date(media.created_at).toLocaleDateString('fr-FR')}`,
         ]);
+        info_subcontainer.appendChild(list);
+        info_container.appendChild(info_subcontainer);
 
-        info.appendChild(list);
+        // 🏷️ Tags
+        const tags = BuildHelper.div('media-modal--tags');
+        info_container.appendChild(tags);
 
-        // 🧠 Affichage des EXIFs s’ils existent
-        if (media.exif && typeof media.exif === 'object' && Object.keys(media.exif).length > 0) {
 
-            let {accordeon, accordeon_content} = BuildHelper.accordion('EXIF', 'small');
-            info.appendChild(accordeon)
+        const tags_list = BuildHelper.div('media-modal--tags-list');
+        tags.appendChild(tags_list);
 
-            const exifItems = Object.entries(media.exif).map(([key, value]) => {
-                return `<strong>${key}:</strong> ${typeof value === 'object' ? JSON.stringify(value) : value}`;
+        // Affichage des tags existants
+        if (Array.isArray(media.tags)) {
+            media.tags.forEach(tag => {
+                const tagEl = BuildHelper.div('tag');
+                tagEl.textContent = tag.name;
+                tags_list.appendChild(tagEl);
             });
+        }
+
+        const tag_input = document.createElement('input');
+        tag_input.type = 'text';
+        tag_input.placeholder = 'Ajouter un tag...';
+        tag_input.className = 'media-tag-input hidden';
+        tags.appendChild(tag_input);
+
+        const tags_button = BuildHelper.div('icon');
+        tags_button.innerHTML = '🏷️';
+        tags_button.title = 'Tags associés';
+        tags.appendChild(tags_button);
+
+        tags_button.addEventListener('click', () => {
+            tag_input.classList.toggle('hidden');
+            tag_input.focus();
+        });
+
+        // 📷 EXIF
+        if (media.exif && typeof media.exif === 'object' && Object.keys(media.exif).length > 0) {
+            let { accordeon, accordeon_content } = BuildHelper.accordion('EXIF', 'small');
+            info.appendChild(accordeon);
+
+            const exifItems = Object.entries(media.exif).map(([key, value]) =>
+                `<strong>${key}:</strong> ${typeof value === 'object' ? JSON.stringify(value) : value}`
+            );
 
             const exifList = BuildHelper.list(exifItems);
             exifList.classList.add('media-modal--exif');
@@ -390,4 +478,5 @@ export default class MediaGallery {
         this.modal_content.appendChild(media_container);
         this.modal.classList.add('active');
     }
+
 }

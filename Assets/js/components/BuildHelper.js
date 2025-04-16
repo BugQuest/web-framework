@@ -2,17 +2,17 @@ export default class BuildHelper {
 
     static accordion(title, subclass) {
         let accordeon = document.createElement('div');
-        accordeon.className = '__Accordeon';
+        accordeon.className = '__accordeon accordeon';
         if (subclass)
             accordeon.classList.add(subclass);
 
         let accordeon_title = document.createElement('div');
-        accordeon_title.className = '__AccordeonTitle small';
+        accordeon_title.className = '__accordeon_title accordeon-title';
         accordeon_title.textContent = title;
         accordeon.appendChild(accordeon_title);
 
         let accordeon_content = document.createElement('div');
-        accordeon_content.className = '__AccordeonContent';
+        accordeon_content.className = 'accordeon-content';
         accordeon.appendChild(accordeon_content);
 
         return {accordeon, accordeon_content};
@@ -24,11 +24,12 @@ export default class BuildHelper {
         return glow_stick;
     }
 
-    static input_text(placeholder = '', value = '') {
+    static input_text(placeholder = '', value = '', className = '') {
         let input = document.createElement('input');
         input.type = 'text';
         input.placeholder = placeholder;
         input.value = value;
+        input.className = className;
         return input;
     }
 
@@ -109,6 +110,33 @@ export default class BuildHelper {
         });
 
         return ul;
+    }
+
+    static search(placeholder = 'Rechercher un média...', onSearch = null, onClickItem = null) {
+        let searchContainer = this.div('search-container');
+        let input = this.input_text('Rechercher un média...');
+        input.type = 'search';
+        let results = this.div('search-results open-bottom');
+        searchContainer.appendChild(input);
+        searchContainer.appendChild(results);
+        if (onSearch)
+            input.addEventListener('input', () => {
+                let value = input.value;
+                if (value.length > 2)
+                    onSearch(value, results);
+                else
+                    results.innerHTML = '';
+
+            });
+
+        if (onClickItem)
+            results.addEventListener('click', (e) => {
+                let item = e.target.closest('.search-item');
+                if (item)
+                    onClickItem(item);
+            });
+
+        return {input, results};
     }
 
 }

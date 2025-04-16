@@ -17,6 +17,15 @@ input {
   font-size: 1rem;
   transition: border-color 0.2s;
 
+  &.small{
+    font-size: 0.85rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  &.full{
+    width: 100%;
+  }
+
   &.error {
     border-color: var(--color-danger);
   }

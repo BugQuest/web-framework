@@ -1,21 +1,18 @@
-.__Accordeon {
+.accordeon {
   border: 1px solid #00fff7;
   border-radius: 4px;
   margin-bottom: 1rem;
   overflow: hidden;
   background: #0a0a0a;
 
-  .__AccordeonTitle {
+  &-title {
     padding: 1rem;
     background: #101010;
     color: #00fff7;
     font-weight: bold;
     cursor: pointer;
     position: relative;
-
-    &.small{
-        font-size: 0.8rem;
-    }
+    font-size: 0.8rem;
 
     &::after {
       content: '⯈';
@@ -26,20 +23,20 @@
     }
   }
 
-  .__AccordeonContent {
+  &-content {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease, padding 0.3s ease;
-    padding: 0 2rem;
+    padding: 0;
   }
 
+
   &.active {
-    .__AccordeonTitle::after {
+    .accordeon-title::after {
       transform: rotate(90deg);
     }
 
-    .__AccordeonContent {
-      padding: 1rem;
+    .accordeon-content {
       max-height: 600px; // Ajuste si besoin
     }
   }

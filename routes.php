@@ -37,7 +37,7 @@ new RouteGroup(
             name: 'medias.delete',
             _slug: '/medias/delete/{id:int?}',
             _callback: MediasController::class . '::delete',
-            _methods: ['POST']
+            _methods: ['DELETE']
         ),
         new Route(
             name: 'medias.update-meta',
@@ -70,7 +70,7 @@ new RouteGroup(
             name: 'medias.tags.delete',
             _slug: '/medias/tags/delete/{id:int}',
             _callback: MediasController::class . '::deleteTag',
-            _methods: ['POST']
+            _methods: ['DELETE']
         ),
         new Route(
             name: 'medias.tags.set',
