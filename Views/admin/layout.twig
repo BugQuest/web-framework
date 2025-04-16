@@ -8,13 +8,9 @@
 </head>
 <body>
 {% include '@framework/admin/partials/header.twig' %}
-
-<div class="admin-wrapper">
-    <main class="admin-content">
-        {% block content %}{% endblock %}
-    </main>
-</div>
-
+<main class="container-admin">
+    {% block content %}{% endblock %}
+</main>
 {{ bq_admin_menu() }}
 {{ bq_assets_footer('admin') }}
 </body>

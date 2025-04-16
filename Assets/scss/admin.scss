@@ -3,6 +3,7 @@
 @use 'admin/base';
 @use 'admin/typography';
 @use 'admin/layout';
+@use 'admin/input';
 @use 'admin/buttons';
 @use 'admin/table';
 @use 'components/cards';
@@ -11,7 +12,7 @@
 @use 'admin/form';
 @use 'admin/animations';
 @use 'admin/medias';
-@use 'admin/media-modal';
+@use 'admin/modal';
 @use 'admin/pagination';
 
 @use 'components/dropdown';

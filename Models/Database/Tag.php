@@ -9,7 +9,7 @@ class Tag extends Model
 {
     protected $table = 'media_tags';
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'slug'];
 
     /**
      * Relation avec les médias
