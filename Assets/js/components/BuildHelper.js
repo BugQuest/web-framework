@@ -133,7 +133,7 @@ export default class BuildHelper {
         if (onSearch)
             input.addEventListener('input', () => {
                 let value = input.value;
-                if (value.length > searchMinLength)
+                if (value.length >= searchMinLength)
                     onSearch(value, results);
                 else
                     results.innerHTML = '';

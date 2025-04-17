@@ -231,7 +231,7 @@
 
     /* .media-modal--tags */
     &--tags {
-      border-top: 1px solid #0ff3;
+      border-top: 1px solid var(--color-primary);
       position: relative;
 
       /* .media-modal--tags-actions */
@@ -239,23 +239,27 @@
         position: absolute;
         right: 0;
         top: 0;
+        bottom: 0;
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
-        padding: .2rem;
+        align-items: center;
+        gap: 1rem;
+        padding-top: 0.4rem;
+        max-width: 40px;
+        width: 40px;
 
         .icon {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 2rem;
-          height: 2rem;
+          width: 1.7rem;
+          height: 1.7rem;
           background: #0ff3;
           color: #0ff;
           border: 1px solid #0ff3;
           border-radius: 50%;
           cursor: pointer;
-          font-size: 1rem;
+          font-size: .8rem;
           transition: all 0.3s;
 
           &:hover {
@@ -298,7 +302,10 @@
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
-        padding: 0.5rem;
+        padding-right: 40px;
+        padding-left: 0.5rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
         background: #0f0f0f;
         max-height: 150px;
         min-height: 150px;

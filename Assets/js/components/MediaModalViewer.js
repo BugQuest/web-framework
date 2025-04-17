@@ -1,5 +1,6 @@
 import BuildHelper from "./BuildHelper";
 import ConfirmDialog from "./ConfirmDialog";
+import {Toast} from "./Toast";
 
 export default class MediaModalViewer {
     constructor(gallery) {
@@ -19,7 +20,9 @@ export default class MediaModalViewer {
     }
 
     async open(media) {
-        this.waitingTags = [];
+        if (!media) return;
+
+        this.waitingTags = media.tags ? JSON.parse(JSON.stringify(media.tags)) : [];
         this.deletionMode = false;
         this.modal_content.innerHTML = '';
 
@@ -72,22 +75,7 @@ export default class MediaModalViewer {
 
         button.onclick = async () => {
 
-            if (this.waitingTags.length === 0) return;
-
-            let tagIds = [];
-            media.tags?.forEach(tag => {
-                if (!tagIds.includes(tag.id)) {
-                    tagIds.push(tag.id);
-                }
-            });
-
-            this.waitingTags.forEach(tag => {
-                if (!tagIds.includes(tag.id)) {
-                    tagIds.push(tag.id);
-                }
-            });
-
-            if (tagIds.length === 0) return;
+            let tagIds = this.waitingTags.map(tag => tag.id);
 
             const encoded = tagIds.map(id => `tags[]=${encodeURIComponent(id)}`).join('&');
 
@@ -102,9 +90,28 @@ export default class MediaModalViewer {
 
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-                // Success
-                this.close();
+                this.waitingTags.forEach(tag => {
+                    if ("new" in tag && tag.new)
+                        delete tag.new;
+                });
+                this.updateTagList()
+
+                Toast.show('Tags mis à jour', {
+                    type: 'success',
+                    icon: '✅',
+                    duration: 2000,
+                    position: 'bottom-right',
+                    closable: true
+                })
+
             } catch (err) {
+                Toast.show('Erreur lors de la mise à jour des tags', {
+                    type: 'danger',
+                    icon: '⚠️',
+                    duration: 5000,
+                    position: 'bottom-right',
+                    closable: true
+                })
                 console.error('[MediaModalViewer] Erreur mise à jour des tags :', err);
             }
         };
@@ -112,8 +119,7 @@ export default class MediaModalViewer {
         return button;
     }
 
-
-    buildTagDeleteToggle() {
+    buildTagDeleteToggle(media) {
         const button = BuildHelper.div('icon danger');
         button.innerHTML = '❌';
         button.dataset.tooltip = 'Mode suppression';
@@ -121,6 +127,16 @@ export default class MediaModalViewer {
 
         button.onclick = () => {
             this.deletionMode = !this.deletionMode;
+
+            //if close delete mode, reset tags to original and keep new tags at end
+            if (!this.deletionMode) {
+                const newTags = this.waitingTags.filter(tag => ("new" in tag && tag.new));
+                this.waitingTags = media.tags ? JSON.parse(JSON.stringify(media.tags)) : [];
+                this.waitingTags.push(...newTags);
+                this.updateTagList();
+                this.updateTagButtonVisibility()
+            }
+
             button.classList.toggle('active', this.deletionMode);
         };
 
@@ -133,38 +149,47 @@ export default class MediaModalViewer {
         const tagActions = BuildHelper.div('media-modal--tags-actions');
 
         this.tagUpdateBtn = this.buildTagUpdateButton(media);
-        this.tagDeleteToggleBtn = this.buildTagDeleteToggle();
+        this.tagDeleteToggleBtn = this.buildTagDeleteToggle(media);
         tagActions.append(this.tagUpdateBtn, this.tagDeleteToggleBtn)
 
-        const updateTagButtonVisibility = () => {
-            if (this.waitingTags.length > 0)
+        this.updateTagButtonVisibility = () => {
+            //check if waintingTags is different from media.tags, ignore order, check only ids
+            const waitingTagIds = this.waitingTags.map(tag => tag.id);
+            const mediaTagIds = media.tags.map(tag => tag.id);
+            const isDifferent = waitingTagIds.length !== mediaTagIds.length ||
+                waitingTagIds.some(id => !mediaTagIds.includes(id));
+
+            if (isDifferent)
                 this.tagUpdateBtn.classList.remove('hidden');
             else
                 this.tagUpdateBtn.classList.add('hidden');
         };
+        this.updateTagList = () => {
+            tagList.innerHTML = '';
+            this.waitingTags.forEach(tag => {
+                const tagEl = BuildHelper.div('tag');
+                tagEl.textContent = tag.name;
+                tagEl.dataset.tag = tag.id;
 
-        media.tags?.forEach(tag => {
-            const tagEl = BuildHelper.div('tag');
-            tagEl.textContent = tag.name;
-            tagEl.dataset.tag = tag.id;
+                if (tag.new) {
+                    tagEl.classList.add('new');
+                    tagEl.dataset.tooltip = 'Cliquez pour supprimer';
+                    tagEl.dataset.tooltipType = 'info';
+                }
 
-            tagEl.onclick = () => {
-                if (!this.deletionMode) return;
+                tagEl.onclick = () => {
+                    if (!this.deletionMode) return;
 
-                ConfirmDialog.show(
-                    `Supprimer le tag "${tag.name}" de ce média ?`,
-                    () => {
-                        tagEl.remove();
-                        media.tags = media.tags.filter(t => parseInt(t.id) !== parseInt(tag.id));
-                        updateTagButtonVisibility(); // facultatif ici
-                    },
-                    () => {
-                    }
-                );
-            };
+                    this.waitingTags = this.waitingTags.filter(t => t.id !== tag.id);
+                    tagEl.remove();
+                    this.updateTagButtonVisibility();
+                };
 
-            tagList.appendChild(tagEl);
-        });
+                tagList.appendChild(tagEl);
+            });
+        };
+
+        this.updateTagList();
 
         const {searchContainer, result} = BuildHelper.search(
             'Ajouter un tag...',
@@ -191,20 +216,12 @@ export default class MediaModalViewer {
                 const tag = this.gallery.tags.find(t => t.id === tagId);
                 if (!tag) return;
 
+                tag.new = true;
                 this.waitingTags.push(tag);
 
-                const tagEl = BuildHelper.div('tag new');
-                tagEl.textContent = tag.name;
-                tagEl.dataset.tag = tag.id;
-                tagEl.onclick = () => {
-                    this.waitingTags = this.waitingTags.filter(t => t.id !== tagId);
-                    tagEl.remove();
-                    updateTagButtonVisibility();
-                };
-
-                tagList.appendChild(tagEl);
                 searchContainer.dispatchEvent(new Event('close'));
-                updateTagButtonVisibility();
+                this.updateTagList();
+                this.updateTagButtonVisibility();
             },
             2
         );
@@ -245,10 +262,28 @@ export default class MediaModalViewer {
 
             ConfirmDialog.show(
                 async () => {
-                    const res = await fetch(`${this.gallery.apiUrl}/delete/${media.id}`, {method: 'DELETE'});
-                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                    this.gallery.loadPage();
-                    this.close();
+                    try {
+                        const res = await fetch(`${this.gallery.apiUrl}/delete/${media.id}`, {method: 'DELETE'});
+                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                        this.gallery.loadPage();
+                        Toast.show('Média supprimé', {
+                            type: 'success',
+                            icon: '✅',
+                            duration: 2000,
+                            position: 'bottom-right',
+                            closable: true
+                        });
+                        this.close();
+                    } catch (e) {
+                        Toast.show('Erreur lors de la suppression du média', {
+                            type: 'danger',
+                            icon: '⚠️',
+                            duration: 5000,
+                            position: 'bottom-right',
+                            closable: true
+                        });
+                        console.error('[MediaModalViewer] Erreur suppression média :', e);
+                    }
                 },
                 () => {
                 },
@@ -271,18 +306,21 @@ export default class MediaModalViewer {
         const preview = BuildHelper.div('media-modal--preview');
         if (media.mime_type.startsWith('image/')) {
             preview.appendChild(BuildHelper.img('/' + media.path, media.original_name));
+        }//svg
+        else if (media.mime_type.startsWith('image/svg')) {
+            const svg = BuildHelper.img('/' + media.path, media.original_name);
+            svg.onload = () => {
+                const svgElement = svg.contentDocument.documentElement;
+                svgElement.setAttribute('width', '100%');
+                svgElement.setAttribute('height', '100%');
+            };
+            preview.appendChild(svg);
         } else {
             const icon = BuildHelper.div('media-card--icon');
-            icon.innerHTML = this.getIconForMime(media.mime_type);
+            icon.innerHTML = this.gallery.getIconForMime(media.mime_type);
             preview.appendChild(icon);
         }
         return preview;
-    }
-
-    getIconForMime(mime) {
-        if (mime === 'application/pdf') return '📄';
-        if (mime === 'text/plain') return '📃';
-        return '📁';
     }
 
     close() {
