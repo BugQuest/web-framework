@@ -9,8 +9,13 @@ use BugQuest\Framework\Models\Database\Tag;
 class MediaManager
 {
     private static array $allowedMimeTypes = [
-        'image/jpeg', 'image/png', 'image/gif', 'image/webp',
-        'application/pdf', 'text/plain',
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'application/pdf',
+        'text/plain',
+        'image/svg+xml',
+        'video/mp4',
     ];
 
     public static function upload(array $file, array $meta = []): ?Media
@@ -88,12 +93,16 @@ class MediaManager
         $media->save();
     }
 
-    public static function getPaginated(int $perPage = 24, int $page = 1, array $tagIds = []): array
+    public static function getPaginated(int $perPage = 24, int $page = 1, array $tags = [], array $mimes = []): array
     {
         $query = Media::query()->with('tags');
 
-        if (!empty($tagIds)) {
-            $query->whereHas('tags', fn($q) => $q->whereIn('id', $tagIds));
+        if (!empty($tags)) {
+            $query->whereHas('tags', fn($q) => $q->whereIn('id', $tags));
+        }
+
+        if (!empty($mimes)) {
+            $query->whereIn('mime_type', $mimes);
         }
 
         $total = $query->count();

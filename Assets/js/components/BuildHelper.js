@@ -41,6 +41,15 @@ export default class BuildHelper {
         return button;
     }
 
+    static button(text = 'Button', className = 'button', onClick = null) {
+        let button = document.createElement('div');
+        button.className = className;
+        button.textContent = text;
+        if (onClick)
+            button.addEventListener('click', onClick);
+        return button;
+    }
+
     static div(className = '') {
         let div = document.createElement('div');
         div.className = className;
@@ -69,9 +78,11 @@ export default class BuildHelper {
         });
 
         modal.addEventListener('click', (e) => {
-            if (e.target === modal)
+            // Close the modal if the user clicks outside of the content area, check children
+            if (e.target === modal) {
                 modal.classList.remove('active');
-            if (onClose) onClose();
+                if (onClose) onClose();
+            }
         });
 
         return {modal, content, close};
@@ -112,17 +123,17 @@ export default class BuildHelper {
         return ul;
     }
 
-    static search(placeholder = 'Rechercher un média...', onSearch = null, onClickItem = null) {
+    static search(placeholder = 'Rechercher...', onSearch = null, onClickItem = null, searchMinLength = 2, openBottom = false) {
         let searchContainer = this.div('search-container');
-        let input = this.input_text('Rechercher un média...');
+        let input = this.input_text(placeholder);
         input.type = 'search';
-        let results = this.div('search-results open-bottom');
+        let results = this.div('search-results ' + (openBottom ? ' open-bottom' : 'open-top'));
         searchContainer.appendChild(input);
         searchContainer.appendChild(results);
         if (onSearch)
             input.addEventListener('input', () => {
                 let value = input.value;
-                if (value.length > 2)
+                if (value.length > searchMinLength)
                     onSearch(value, results);
                 else
                     results.innerHTML = '';
@@ -131,12 +142,18 @@ export default class BuildHelper {
 
         if (onClickItem)
             results.addEventListener('click', (e) => {
-                let item = e.target.closest('.search-item');
+                let item = e.target.closest('.result-item');
                 if (item)
                     onClickItem(item);
             });
 
-        return {input, results};
+        //add custom event to close the search results
+        searchContainer.addEventListener('close', () => {
+            results.innerHTML = '';
+            input.value = '';
+        });
+
+        return {searchContainer, results};
     }
 
 }

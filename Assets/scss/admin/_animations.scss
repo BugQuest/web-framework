@@ -95,3 +95,14 @@
   color: lime;
   animation: glitchBottom 4s infinite;
 }
+
+@keyframes pop-in {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
