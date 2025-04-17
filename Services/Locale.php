@@ -71,6 +71,14 @@ class Locale
         return $translated;
     }
 
+    public static function getDomain(string $domain): array
+    {
+        if (!isset(self::$loaded[$domain]))
+            self::loadDomain($domain);
+
+        return self::$translations[$domain] ?? [];
+    }
+
     private static function loadDomain(string $domain): void
     {
         $translations = [];

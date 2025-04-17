@@ -105,7 +105,7 @@ export default class MediaModalViewer {
                 })
 
             } catch (err) {
-                Toast.show('Erreur lors de la mise à jour des tags', {
+                Toast.show(err.message, {
                     type: 'danger',
                     icon: '⚠️',
                     duration: 5000,
@@ -275,7 +275,7 @@ export default class MediaModalViewer {
                         });
                         this.close();
                     } catch (e) {
-                        Toast.show('Erreur lors de la suppression du média', {
+                        Toast.show(e.message, {
                             type: 'danger',
                             icon: '⚠️',
                             duration: 5000,
