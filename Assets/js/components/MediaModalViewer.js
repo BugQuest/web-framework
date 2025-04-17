@@ -1,6 +1,7 @@
 import BuildHelper from "./BuildHelper";
 import ConfirmDialog from "./ConfirmDialog";
 import {Toast} from "./Toast";
+import {__} from './Translator.js';
 
 export default class MediaModalViewer {
     constructor(gallery) {
@@ -36,12 +37,7 @@ export default class MediaModalViewer {
 
         const title = BuildHelper.h2(media.original_name);
         const infoSub = BuildHelper.div();
-        const list = BuildHelper.list([
-            `<strong>Type :</strong> ${media.mime_type}`,
-            `<strong>Taille :</strong> ${(media.size / 1024).toFixed(1)} ko`,
-            `<strong>Extension :</strong> ${media.extension}`,
-            `<strong>Ajouté le :</strong> ${new Date(media.created_at).toLocaleDateString('fr-FR')}`,
-        ]);
+        const list = BuildHelper.list([`<strong>Type :</strong> ${media.mime_type}`, `<strong>Taille :</strong> ${(media.size / 1024).toFixed(1)} ko`, `<strong>Extension :</strong> ${media.extension}`, `<strong>Ajouté le :</strong> ${new Date(media.created_at).toLocaleDateString('fr-FR')}`,]);
 
         infoSub.appendChild(title);
         infoSub.appendChild(list);
@@ -52,11 +48,7 @@ export default class MediaModalViewer {
 
         if (media.exif && typeof media.exif === 'object' && Object.keys(media.exif).length > 0) {
             const {accordeon, accordeon_content} = BuildHelper.accordion('EXIF', 'small');
-            const exifList = BuildHelper.list(
-                Object.entries(media.exif).map(([key, value]) =>
-                    `<strong>${key}:</strong> ${typeof value === 'object' ? JSON.stringify(value) : value}`
-                )
-            );
+            const exifList = BuildHelper.list(Object.entries(media.exif).map(([key, value]) => `<strong>${key}:</strong> ${typeof value === 'object' ? JSON.stringify(value) : value}`));
             exifList.classList.add('media-modal--exif');
             accordeon_content.appendChild(exifList);
             info.appendChild(accordeon);
@@ -70,7 +62,7 @@ export default class MediaModalViewer {
     buildTagUpdateButton(media) {
         const button = BuildHelper.div('icon info hidden');
         button.innerHTML = '💾';
-        button.dataset.tooltip = 'Mettre à jour les tags';
+        button.dataset.tooltip = __('Mettre à jour les tags', 'admin');
         button.dataset.tooltipType = 'info';
 
         button.onclick = async () => {
@@ -81,38 +73,27 @@ export default class MediaModalViewer {
 
             try {
                 const res = await fetch(`${this.gallery.apiUrl}/tags/set/${media.id}`, {
-                    method: 'POST',
-                    headers: {
+                    method: 'POST', headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: encoded
+                    }, body: encoded
                 });
 
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
                 this.waitingTags.forEach(tag => {
-                    if ("new" in tag && tag.new)
-                        delete tag.new;
+                    if ("new" in tag && tag.new) delete tag.new;
                 });
                 this.updateTagList()
 
-                Toast.show('Tags mis à jour', {
-                    type: 'success',
-                    icon: '✅',
-                    duration: 2000,
-                    position: 'bottom-right',
-                    closable: true
+                Toast.show(__('Tags mis à jour', 'admin'), {
+                    type: 'success', icon: '✅', duration: 2000, position: 'bottom-right', closable: true
                 })
 
             } catch (err) {
-                Toast.show(err.message, {
-                    type: 'danger',
-                    icon: '⚠️',
-                    duration: 5000,
-                    position: 'bottom-right',
-                    closable: true
+                Toast.show('[MediaModalViewer] ' + __('Erreur mise à jour des tags :', 'admin') + ' ' + err.message, {
+                    type: 'danger', icon: '⚠️', duration: 5000, position: 'bottom-right', closable: true
                 })
-                console.error('[MediaModalViewer] Erreur mise à jour des tags :', err);
+                console.error('[MediaModalViewer] ' + __('Erreur mise à jour des tags :', 'admin'), err);
             }
         };
 
@@ -122,7 +103,7 @@ export default class MediaModalViewer {
     buildTagDeleteToggle(media) {
         const button = BuildHelper.div('icon danger');
         button.innerHTML = '❌';
-        button.dataset.tooltip = 'Mode suppression';
+        button.dataset.tooltip = __('Mode suppression', 'admin');
         button.dataset.tooltipType = 'danger';
 
         button.onclick = () => {
@@ -156,13 +137,9 @@ export default class MediaModalViewer {
             //check if waintingTags is different from media.tags, ignore order, check only ids
             const waitingTagIds = this.waitingTags.map(tag => tag.id);
             const mediaTagIds = media.tags.map(tag => tag.id);
-            const isDifferent = waitingTagIds.length !== mediaTagIds.length ||
-                waitingTagIds.some(id => !mediaTagIds.includes(id));
+            const isDifferent = waitingTagIds.length !== mediaTagIds.length || waitingTagIds.some(id => !mediaTagIds.includes(id));
 
-            if (isDifferent)
-                this.tagUpdateBtn.classList.remove('hidden');
-            else
-                this.tagUpdateBtn.classList.add('hidden');
+            if (isDifferent) this.tagUpdateBtn.classList.remove('hidden'); else this.tagUpdateBtn.classList.add('hidden');
         };
         this.updateTagList = () => {
             tagList.innerHTML = '';
@@ -173,7 +150,7 @@ export default class MediaModalViewer {
 
                 if (tag.new) {
                     tagEl.classList.add('new');
-                    tagEl.dataset.tooltip = 'Cliquez pour supprimer';
+                    tagEl.dataset.tooltip = __('Cliquez pour supprimer', 'admin');
                     tagEl.dataset.tooltipType = 'info';
                 }
 
@@ -191,40 +168,33 @@ export default class MediaModalViewer {
 
         this.updateTagList();
 
-        const {searchContainer, result} = BuildHelper.search(
-            'Ajouter un tag...',
-            (value, results_el) => {
-                results_el.innerHTML = '';
-                const filtered = this.gallery.tags.filter(tag =>
-                    tag.name.toLowerCase().includes(value.toLowerCase()) &&
-                    !media.tags.some(t => t.id === tag.id) &&
-                    !this.waitingTags.some(t => t.id === tag.id)
-                );
+        const {
+            searchContainer,
+            result
+        } = BuildHelper.search(__('Ajouter un tag', 'admin') + '...', (value, results_el) => {
+            results_el.innerHTML = '';
+            const filtered = this.gallery.tags.filter(tag => tag.name.toLowerCase().includes(value.toLowerCase()) && !media.tags.some(t => t.id === tag.id) && !this.waitingTags.some(t => t.id === tag.id));
 
-                if (filtered.length) results_el.classList.add('active');
-                else results_el.classList.remove('active');
+            if (filtered.length) results_el.classList.add('active'); else results_el.classList.remove('active');
 
-                filtered.forEach(tag => {
-                    const tagEl = BuildHelper.div('result-item');
-                    tagEl.textContent = tag.name;
-                    tagEl.dataset.tag = tag.id;
-                    results_el.appendChild(tagEl);
-                });
-            },
-            (item) => {
-                const tagId = parseInt(item.dataset.tag);
-                const tag = this.gallery.tags.find(t => t.id === tagId);
-                if (!tag) return;
+            filtered.forEach(tag => {
+                const tagEl = BuildHelper.div('result-item');
+                tagEl.textContent = tag.name;
+                tagEl.dataset.tag = tag.id;
+                results_el.appendChild(tagEl);
+            });
+        }, (item) => {
+            const tagId = parseInt(item.dataset.tag);
+            const tag = this.gallery.tags.find(t => t.id === tagId);
+            if (!tag) return;
 
-                tag.new = true;
-                this.waitingTags.push(tag);
+            tag.new = true;
+            this.waitingTags.push(tag);
 
-                searchContainer.dispatchEvent(new Event('close'));
-                this.updateTagList();
-                this.updateTagButtonVisibility();
-            },
-            2
-        );
+            searchContainer.dispatchEvent(new Event('close'));
+            this.updateTagList();
+            this.updateTagButtonVisibility();
+        }, 2);
 
         tagsContainer.append(tagActions, tagList, searchContainer);
         return tagsContainer;
@@ -235,7 +205,7 @@ export default class MediaModalViewer {
 
         const dl = BuildHelper.div('icon');
         dl.innerHTML = '📥';
-        dl.dataset.tooltip = 'Télécharger';
+        dl.dataset.tooltip = __('Télécharger', 'admin');
         dl.dataset.tooltipType = 'info';
         dl.onclick = async () => {
             const blob = await (await fetch('/' + media.path)).blob();
@@ -250,52 +220,40 @@ export default class MediaModalViewer {
 
         const open = BuildHelper.div('icon');
         open.innerHTML = '🔗';
-        open.dataset.tooltip = 'Ouvrir';
+        open.dataset.tooltip = __('Ouvrir', 'admin');
         open.dataset.tooltipType = 'info';
         open.onclick = () => window.open('/' + media.path, '_blank');
 
         const del = BuildHelper.div('icon danger');
         del.innerHTML = '🗑️';
-        del.dataset.tooltip = 'Supprimer';
+        del.dataset.tooltip = __('Supprimer', 'admin');
         del.dataset.tooltipType = 'danger';
         del.onclick = async () => {
 
-            ConfirmDialog.show(
-                async () => {
-                    try {
-                        const res = await fetch(`${this.gallery.apiUrl}/delete/${media.id}`, {method: 'DELETE'});
-                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                        this.gallery.loadPage();
-                        Toast.show('Média supprimé', {
-                            type: 'success',
-                            icon: '✅',
-                            duration: 2000,
-                            position: 'bottom-right',
-                            closable: true
-                        });
-                        this.close();
-                    } catch (e) {
-                        Toast.show(e.message, {
-                            type: 'danger',
-                            icon: '⚠️',
-                            duration: 5000,
-                            position: 'bottom-right',
-                            closable: true
-                        });
-                        console.error('[MediaModalViewer] Erreur suppression média :', e);
-                    }
-                },
-                () => {
-                },
-                {
-                    title: 'Supprimer ce média ?',
-                    message: 'Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?',
-                    confirmText: 'Supprimer',
-                    cancelText: 'Annuler',
-                    confirmClass: 'button danger',
-                    cancelClass: 'button info',
+            ConfirmDialog.show(async () => {
+                try {
+                    const res = await fetch(`${this.gallery.apiUrl}/delete/${media.id}`, {method: 'DELETE'});
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    this.gallery.loadPage();
+                    Toast.show(__('Média supprimé', 'admin'), {
+                        type: 'success', icon: '✅', duration: 2000, position: 'bottom-right', closable: true
+                    });
+                    this.close();
+                } catch (e) {
+                    Toast.show('[MediaModalViewer] ' + __('Erreur suppression média :', 'admin') + ' ' + e.message, {
+                        type: 'danger', icon: '⚠️', duration: 5000, position: 'bottom-right', closable: true
+                    });
+                    console.error('[MediaModalViewer] ' + __('Erreur suppression média :', 'admin'), e);
                 }
-            );
+            }, () => {
+            }, {
+                title: __('Supprimer ce média ?', 'admin'),
+                message: __('Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?', 'admin'),
+                confirmText: __('Supprimer', 'admin'),
+                cancelText: __('Annuler', 'admin'),
+                confirmClass: 'button danger',
+                cancelClass: 'button info',
+            });
         };
 
         actions.append(dl, open, del);

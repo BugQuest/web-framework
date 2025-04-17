@@ -1,5 +1,7 @@
 import BuildHelper from './BuildHelper.js';
 import MediaModalViewer from './MediaModalViewer.js';
+import {Toast} from "./Toast";
+import {__} from './Translator.js';
 
 export default class MediaGallery {
     constructor(element) {
@@ -45,17 +47,20 @@ export default class MediaGallery {
         this.element.appendChild(tags);
 
         //====== TAGS FORM / ACCORDION ======
-        const {accordeon, accordeon_content} = BuildHelper.accordion('Ajouter des tags', 'small');
+        const {
+            accordeon,
+            accordeon_content
+        } = BuildHelper.accordion(__('Ajouter des tags', 'admin'), 'small');
         tags.appendChild(accordeon);
         tags.appendChild(BuildHelper.glow_stick());
 
         const tags_form = BuildHelper.div('media-gallery-tags-form');
         accordeon_content.appendChild(tags_form);
 
-        this.tag_input = BuildHelper.input_text('Ajouter un tag', '', 'small full');
+        this.tag_input = BuildHelper.input_text(__('Ajouter un tag', 'admin'), '', 'small full');
 
         tags_form.appendChild(this.tag_input)
-        this.tag_submit = BuildHelper.button_submit('Ajouter', 'button button-primary');
+        this.tag_submit = BuildHelper.button_submit(__('Ajouter', 'admin'), 'button button-primary');
         this.tag_submit.addEventListener('click', (e) => {
             e.preventDefault();
             const tag = this.tag_input.value.trim();
@@ -124,7 +129,14 @@ export default class MediaGallery {
                         const media = JSON.parse(card.dataset.media)
                         this.modal.open(media)
                     } catch (e) {
-                        console.error('Erreur de parsing du média :', e);
+                        Toast.show(__('Erreur de parsing du média :', 'admin') + ' ' + err.message, {
+                            type: 'danger',
+                            icon: '⚠️',
+                            duration: 5000,
+                            position: 'bottom-right',
+                            closable: true
+                        })
+                        console.error(__('Erreur de parsing du média :', 'admin'), e);
                         return;
                     }
                 }
@@ -151,7 +163,14 @@ export default class MediaGallery {
             this.renderMedia(result.items);
             this.renderPagination(result.current_page, result.last_page);
         } catch (err) {
-            console.error('[MediaGalleryLoader] Erreur de chargement des médias :', err);
+            Toast.show('[MediaGalleryLoader] ' + __('Erreur de chargement des médias :', 'admin') + ' ' + err.message, {
+                type: 'danger',
+                icon: '⚠️',
+                duration: 5000,
+                position: 'bottom-right',
+                closable: true
+            })
+            console.error('[MediaGalleryLoader] ' + __('Erreur de chargement des médias :', 'admin'), err);
         }
     }
 
@@ -166,7 +185,14 @@ export default class MediaGallery {
             this.tags = result;
             this.renderTags();
         } catch (err) {
-            console.error('[MediaGalleryLoader] Erreur de chargement des tags :', err);
+            Toast.show('[MediaGalleryLoader] ' + __('Erreur de chargement des tags :', 'admin') + ' ' + err.message, {
+                type: 'danger',
+                icon: '⚠️',
+                duration: 5000,
+                position: 'bottom-right',
+                closable: true
+            })
+            console.error('[MediaGalleryLoader] ' + __('Erreur de chargement des tags :', 'admin'), err);
         }
     }
 
@@ -186,7 +212,14 @@ export default class MediaGallery {
 
             this.loadTags();
         } catch (err) {
-            console.error('[MediaGalleryLoader] Erreur d\'ajout de tag :', err);
+            Toast.show('[MediaGalleryLoader] ' + __("Erreur d'ajout de tag :", 'admin') + ' ' + err.message, {
+                type: 'danger',
+                icon: '⚠️',
+                duration: 5000,
+                position: 'bottom-right',
+                closable: true
+            });
+            console.error('[MediaGalleryLoader] ' + __("Erreur d'ajout de tag :", 'admin'), err);
         }
     }
 
@@ -296,14 +329,15 @@ export default class MediaGallery {
         const formData = new FormData();
         formData.append('file', file);
 
-        const tempCard = BuildHelper.div('media-card uploading');
-        tempCard.innerHTML = `
-            <div class="media-card--preview">${this.getPreviewHTML(file)}</div>
-            <div class="progress-bar"></div>
-        `;
-        this.grid.prepend(tempCard);
+        const tempCard_el = BuildHelper.div('media-card uploading');
+        const preview_el = BuildHelper.div('media-card--preview');
+        const progressBar_el = BuildHelper.div('progress-bar');
+        preview_el.appendChild(this.getPreviewHTML(file));
+        tempCard_el.appendChild(preview_el);
+        tempCard_el.appendChild(progressBar_el);
+        this.grid.prepend(tempCard_el);
 
-        const progressBar = tempCard.querySelector('.progress-bar');
+        const progressBar = tempCard_el.querySelector('.progress-bar');
 
         const xhr = new XMLHttpRequest();
         xhr.open('POST', `${this.apiUrl}/upload`);
@@ -317,27 +351,38 @@ export default class MediaGallery {
             if (xhr.status === 200) {
                 try {
                     const response = JSON.parse(xhr.responseText);
-                    this.replaceCardWithMedia(tempCard, response);
+                    this.replaceCardWithMedia(tempCard_el, response);
                 } catch (err) {
-                    tempCard.innerHTML = `<div class="error">❌ Réponse invalide</div>`;
+
+                    tempCard_el.innerHTML = `<div class="error">❌ ${__('Réponse invalide', 'admin')}</div>`;
                 }
             } else {
-                tempCard.innerHTML = `<div class="error">❌ Upload échoué</div>`;
+                tempCard_el.innerHTML = `<div class="error">❌ ${__('Upload échoué', 'admin')}</div>`;
             }
         };
 
         xhr.onerror = () => {
-            tempCard.innerHTML = `<div class="error">❌ Erreur réseau</div>`;
+            tempCard_el.innerHTML = `<div class="error">❌ ${__('Erreur réseau', 'admin')}</div>`;
         };
 
         xhr.send(formData);
     }
 
     getPreviewHTML(file) {
-        if (file.type.startsWith('image/')) {
-            const url = URL.createObjectURL(file);
-            return `<img src="${url}" alt="preview">`;
-        }
-        return `<div class="media-card--icon">📄</div>`;
+        if (file.type.startsWith('image/svg')) {
+            const svg = BuildHelper.img(URL.createObjectURL(file), 'preview');
+            svg.onload = () => {
+                const svgElement = svg.contentDocument.documentElement;
+                svgElement.setAttribute('width', '100%');
+                svgElement.setAttribute('height', '100%');
+            };
+            return svg;
+        } else if (file.type.startsWith('image/'))
+            return BuildHelper.img(URL.createObjectURL(file), 'preview');
+
+        const div = BuildHelper.div('media-card--icon');
+        div.innerHTML = this.getIconForMime(file.type);
+
+        return div;
     }
 }
