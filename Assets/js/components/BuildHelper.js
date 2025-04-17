@@ -156,4 +156,17 @@ export default class BuildHelper {
         return {searchContainer, results};
     }
 
+    static input_search(placeholder = '', className = '', onSearch = null, onEmpty = null, searchMinLength = 2) {
+        let input = this.input_text(placeholder, '', className);
+        input.type = 'search';
+        input.addEventListener('input', () => {
+            let value = input.value;
+            if (value.length >= searchMinLength)
+                onSearch(value);
+            else
+                onEmpty();
+        });
+
+        return input;
+    }
 }

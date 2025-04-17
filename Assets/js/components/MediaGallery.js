@@ -2,6 +2,7 @@ import BuildHelper from './BuildHelper.js';
 import MediaModalViewer from './MediaModalViewer.js';
 import {Toast} from "./Toast";
 import {__} from './Translator.js';
+import ConfirmDialog from "./ConfirmDialog";
 
 export default class MediaGallery {
     constructor(element) {
@@ -9,10 +10,11 @@ export default class MediaGallery {
 
         this.canUpload = false;
         this.canModal = false;
+        this.deletionMode = false;
         this.perPage = 12;
         this.selectTags = [];
         this.tags = [];
-        this.waitingTags = [];
+        this.search = '';
         //check if element has data-per-page attribute
         const perPage = this.element.dataset.perPage;
         if (perPage && !isNaN(perPage))
@@ -28,13 +30,13 @@ export default class MediaGallery {
 
         this.apiUrl = '/admin/medias';
 
-        this.initElements();
+        this.buildElements();
         this.initEvents();
         this.loadTags();
         this.loadPage();
     }
 
-    initElements() {
+    buildElements() {
 
         //====== DROPZONE ======
         if (this.canUpload) {
@@ -63,6 +65,10 @@ export default class MediaGallery {
         this.tag_submit = BuildHelper.button_submit(__('Ajouter', 'admin'), 'button button-primary');
         this.tag_submit.addEventListener('click', (e) => {
             e.preventDefault();
+            this.deletionMode = false;
+            tagDeleteBtn.classList.remove('active');
+            this.search = '';
+            this.updateTags();
             const tag = this.tag_input.value.trim();
             if (tag) {
                 this.addTag(tag);
@@ -70,6 +76,27 @@ export default class MediaGallery {
             }
         })
         tags_form.appendChild(this.tag_submit);
+
+        //====== TAGS ACTIONS/SEARCH ======
+        const tags_actions = BuildHelper.div('media-gallery-tags-actions');
+        tags.appendChild(tags_actions);
+
+        const tagDeleteBtn = this.buildTagDeleteToggle();
+        const search = BuildHelper.input_search(
+            __('Rechercher ...', 'admin'),
+            'small',
+            (value) => {
+                this.search = value
+                this.updateTags()
+            },
+            () => {
+                this.search = '';
+                this.updateTags()
+            });
+
+        tags_actions.appendChild(search);
+        tags_actions.appendChild(tagDeleteBtn);
+
 
         //====== TAGS CONTENT ======
         this.tags_content = BuildHelper.div('media-gallery-tags-content');
@@ -87,6 +114,27 @@ export default class MediaGallery {
 
         if (this.canModal)
             this.modal = new MediaModalViewer(this)
+    }
+
+    buildTagDeleteToggle(media) {
+        const button = BuildHelper.div('icon danger');
+        button.innerHTML = '❌';
+        button.dataset.tooltip = __('Mode suppression', 'admin');
+        button.dataset.tooltipType = 'danger';
+
+        button.onclick = () => {
+            this.deletionMode = !this.deletionMode;
+
+            if (this.deletionMode) {
+                this.selectTags = [];
+                this.updateTags();
+                this.loadPage()
+            }
+
+            button.classList.toggle('active', this.deletionMode);
+        };
+
+        return button;
     }
 
     initEvents() {
@@ -108,6 +156,41 @@ export default class MediaGallery {
             const id = tag.dataset.tag;
 
             if (!id) return;
+
+            if (this.deletionMode) {
+                ConfirmDialog.show(async () => {
+                        const response = await fetch(`${this.apiUrl}/tags/delete/${id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded",
+                            },
+                        });
+
+                        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                        const result = await response.json();
+                        tag.remove();
+                        this.loadPage()
+                        Toast.show(__('Tag supprimé avec succès', 'admin'), {
+                            type: 'success',
+                            icon: '✅',
+                            duration: 5000,
+                            position: 'bottom-right',
+                            closable: true
+                        })
+                    },
+                    () => null,
+                    {
+                        title: __('Supprimer ce tag ?', 'admin'),
+                        message: __('Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?', 'admin'),
+                        confirmText: __('Supprimer', 'admin'),
+                        cancelText: __('Annuler', 'admin'),
+                        confirmClass: 'button danger',
+                        cancelClass: 'button info',
+                    });
+
+                return;
+            }
 
             if (this.selectTags.includes(id))
                 this.selectTags.splice(this.selectTags.indexOf(id), 1);
@@ -270,8 +353,6 @@ export default class MediaGallery {
             span.textContent = tag.name;
             this.tags_content.appendChild(span);
         });
-
-
     }
 
     /*
@@ -284,6 +365,9 @@ export default class MediaGallery {
             const id = tag.dataset.tag;
 
             if (!id) return;
+
+            if (this.search)
+                tag.classList.toggle('hidden', !tag.textContent.toLowerCase().includes(this.search.toLowerCase()));
 
             if (this.selectTags.includes(id))
                 tag.classList.add('active');
@@ -373,11 +457,6 @@ export default class MediaGallery {
     getPreviewHTML(file) {
         if (file.type.startsWith('image/svg')) {
             const svg = BuildHelper.img(URL.createObjectURL(file), 'preview');
-            svg.onload = () => {
-                const svgElement = svg.contentDocument.documentElement;
-                svgElement.setAttribute('width', '100%');
-                svgElement.setAttribute('height', '100%');
-            };
             return svg;
         } else if (file.type.startsWith('image/'))
             return BuildHelper.img(URL.createObjectURL(file), 'preview');

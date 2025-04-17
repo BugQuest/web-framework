@@ -318,8 +318,7 @@ export default class MediaModalViewer {
                     });
                     console.error('[MediaModalViewer] ' + __('Erreur suppression média :', 'admin'), e);
                 }
-            }, () => {
-            }, {
+            }, () => null, {
                 title: __('Supprimer ce média ?', 'admin'),
                 message: __('Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?', 'admin'),
                 confirmText: __('Supprimer', 'admin'),
@@ -340,11 +339,6 @@ export default class MediaModalViewer {
         }//svg
         else if (media.mime_type.startsWith('image/svg')) {
             const svg = BuildHelper.img('/' + media.path, media.original_name);
-            svg.onload = () => {
-                const svgElement = svg.contentDocument.documentElement;
-                svgElement.setAttribute('width', '100%');
-                svgElement.setAttribute('height', '100%');
-            };
             preview.appendChild(svg);
         } else {
             const icon = BuildHelper.div('media-card--icon');
