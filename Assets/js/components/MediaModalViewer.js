@@ -67,7 +67,8 @@ export default class MediaModalViewer {
     buildTagUpdateButton(media) {
         const button = BuildHelper.div('icon info hidden');
         button.innerHTML = '💾';
-        button.title = 'Mettre à jour les tags';
+        button.dataset.tooltip = 'Mettre à jour les tags';
+        button.dataset.tooltipType = 'info';
 
         button.onclick = async () => {
 
@@ -115,7 +116,8 @@ export default class MediaModalViewer {
     buildTagDeleteToggle() {
         const button = BuildHelper.div('icon danger');
         button.innerHTML = '❌';
-        button.title = 'Activer le mode suppression de tags';
+        button.dataset.tooltip = 'Mode suppression';
+        button.dataset.tooltipType = 'danger';
 
         button.onclick = () => {
             this.deletionMode = !this.deletionMode;
@@ -216,7 +218,8 @@ export default class MediaModalViewer {
 
         const dl = BuildHelper.div('icon');
         dl.innerHTML = '📥';
-        dl.title = 'Télécharger';
+        dl.dataset.tooltip = 'Télécharger';
+        dl.dataset.tooltipType = 'info';
         dl.onclick = async () => {
             const blob = await (await fetch('/' + media.path)).blob();
             const url = URL.createObjectURL(blob);
@@ -230,12 +233,14 @@ export default class MediaModalViewer {
 
         const open = BuildHelper.div('icon');
         open.innerHTML = '🔗';
-        open.title = 'Ouvrir';
+        open.dataset.tooltip = 'Ouvrir';
+        open.dataset.tooltipType = 'info';
         open.onclick = () => window.open('/' + media.path, '_blank');
 
         const del = BuildHelper.div('icon danger');
         del.innerHTML = '🗑️';
-        del.title = 'Supprimer';
+        del.dataset.tooltip = 'Supprimer';
+        del.dataset.tooltipType = 'danger';
         del.onclick = async () => {
 
             ConfirmDialog.show(
