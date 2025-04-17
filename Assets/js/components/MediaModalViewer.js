@@ -8,8 +8,10 @@ export default class MediaModalViewer {
         this.gallery = gallery;
         this.waitingTags = [];
         this.deletionMode = false;
+        this.new_tag = '';
 
         const {modal, content, close} = BuildHelper.modal(null, () => {
+            this.gallery.loadPage();
             this.waitingTags = [];
             this.deletionMode = false;
             content.innerHTML = '';
@@ -71,6 +73,9 @@ export default class MediaModalViewer {
 
             const encoded = tagIds.map(id => `tags[]=${encodeURIComponent(id)}`).join('&');
 
+            this.deletionMode = false;
+            this.tagDeleteBtn.classList.remove('active');
+
             try {
                 const res = await fetch(`${this.gallery.apiUrl}/tags/set/${media.id}`, {
                     method: 'POST', headers: {
@@ -83,8 +88,9 @@ export default class MediaModalViewer {
                 this.waitingTags.forEach(tag => {
                     if ("new" in tag && tag.new) delete tag.new;
                 });
+                media.tags = JSON.parse(JSON.stringify(this.waitingTags));
                 this.updateTagList()
-
+                this.updateTagButtonVisibility()
                 Toast.show(__('Tags mis à jour', 'admin'), {
                     type: 'success', icon: '✅', duration: 2000, position: 'bottom-right', closable: true
                 })
@@ -124,14 +130,65 @@ export default class MediaModalViewer {
         return button;
     }
 
+    buildAddCategoryButton(media) {
+        const button = BuildHelper.div('icon hidden');
+        button.innerHTML = '➕';
+        button.dataset.tooltip = __('Ajouter une nouvelle catégorie', 'admin');
+        button.dataset.tooltipType = 'info';
+
+        button.onclick = async () => {
+
+            if (!this.new_tag || this.new_tag.length < 3) return;
+
+            //check if tag already exists
+            const tagExists = this.gallery.tags.find(tag => tag.name.toLowerCase() === this.new_tag.toLowerCase());
+            if (tagExists) return;
+
+            try {
+                const response = await fetch(`${this.gallery.apiUrl}/tags/add`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: 'name=' + encodeURIComponent(this.new_tag),
+                });
+
+                this.search.dispatchEvent(new Event('close'));
+                this.new_tag = '';
+                this.tagAddBtn.classList.add('hidden')
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const tag = await response.json();
+                this.gallery.tags.push(tag);
+                tag.new = true;
+                this.waitingTags.push(tag);
+                this.updateTagList();
+                this.updateTagButtonVisibility();
+            } catch (err) {
+                Toast.show('[MediaModalViewer] ' + __("Erreur d'ajout de tag :", 'admin') + ' ' + err.message, {
+                    type: 'danger',
+                    icon: '⚠️',
+                    duration: 5000,
+                    position: 'bottom-right',
+                    closable: true
+                })
+                console.error('[MediaModalViewer] ' + __("Erreur d'ajout de tag :", 'admin'), err);
+            }
+        };
+
+        return button;
+    }
+
     buildTagEditor(media) {
         const tagsContainer = BuildHelper.div('media-modal--tags');
         const tagList = BuildHelper.div('media-modal--tags-list');
         const tagActions = BuildHelper.div('media-modal--tags-actions');
 
         this.tagUpdateBtn = this.buildTagUpdateButton(media);
-        this.tagDeleteToggleBtn = this.buildTagDeleteToggle(media);
-        tagActions.append(this.tagUpdateBtn, this.tagDeleteToggleBtn)
+        this.tagAddBtn = this.buildAddCategoryButton(media);
+        this.tagDeleteBtn = this.buildTagDeleteToggle(media);
+        tagActions.append(this.tagUpdateBtn, this.tagDeleteBtn, this.tagAddBtn);
 
         this.updateTagButtonVisibility = () => {
             //check if waintingTags is different from media.tags, ignore order, check only ids
@@ -139,8 +196,12 @@ export default class MediaModalViewer {
             const mediaTagIds = media.tags.map(tag => tag.id);
             const isDifferent = waitingTagIds.length !== mediaTagIds.length || waitingTagIds.some(id => !mediaTagIds.includes(id));
 
-            if (isDifferent) this.tagUpdateBtn.classList.remove('hidden'); else this.tagUpdateBtn.classList.add('hidden');
+            if (isDifferent)
+                this.tagUpdateBtn.classList.remove('hidden');
+            else
+                this.tagUpdateBtn.classList.add('hidden');
         };
+
         this.updateTagList = () => {
             tagList.innerHTML = '';
             this.waitingTags.forEach(tag => {
@@ -168,33 +229,44 @@ export default class MediaModalViewer {
 
         this.updateTagList();
 
-        const {
-            searchContainer,
-            result
-        } = BuildHelper.search(__('Ajouter un tag', 'admin') + '...', (value, results_el) => {
-            results_el.innerHTML = '';
-            const filtered = this.gallery.tags.filter(tag => tag.name.toLowerCase().includes(value.toLowerCase()) && !media.tags.some(t => t.id === tag.id) && !this.waitingTags.some(t => t.id === tag.id));
+        const {searchContainer, result} = BuildHelper.search(
+            __('Ajouter un tag', 'admin') + '...',
+            (value, results_el) => {
+                this.new_tag = value;
+                results_el.innerHTML = '';
+                const filtered =
+                    this.gallery.tags.filter(tag => tag.name.toLowerCase().includes(value.toLowerCase())
+                        && !media.tags.some(t => t.id === tag.id)
+                        && !this.waitingTags.some(t => t.id === tag.id));
 
-            if (filtered.length) results_el.classList.add('active'); else results_el.classList.remove('active');
+                if (filtered.length) {
+                    this.tagAddBtn.classList.add('hidden');
+                    results_el.classList.add('active');
+                } else {
+                    this.tagAddBtn.classList.remove('hidden');
+                    results_el.classList.remove('active');
+                }
 
-            filtered.forEach(tag => {
-                const tagEl = BuildHelper.div('result-item');
-                tagEl.textContent = tag.name;
-                tagEl.dataset.tag = tag.id;
-                results_el.appendChild(tagEl);
-            });
-        }, (item) => {
-            const tagId = parseInt(item.dataset.tag);
-            const tag = this.gallery.tags.find(t => t.id === tagId);
-            if (!tag) return;
+                filtered.forEach(tag => {
+                    const tagEl = BuildHelper.div('result-item');
+                    tagEl.textContent = tag.name;
+                    tagEl.dataset.tag = tag.id;
+                    results_el.appendChild(tagEl);
+                });
+            },
+            (item) => {
+                const tagId = parseInt(item.dataset.tag);
+                const tag = this.gallery.tags.find(t => t.id === tagId);
+                if (!tag) return;
 
-            tag.new = true;
-            this.waitingTags.push(tag);
+                tag.new = true;
+                this.waitingTags.push(tag);
 
-            searchContainer.dispatchEvent(new Event('close'));
-            this.updateTagList();
-            this.updateTagButtonVisibility();
-        }, 2);
+                searchContainer.dispatchEvent(new Event('close'));
+                this.updateTagList();
+                this.updateTagButtonVisibility();
+            }, 2);
+        this.search = searchContainer;
 
         tagsContainer.append(tagActions, tagList, searchContainer);
         return tagsContainer;
