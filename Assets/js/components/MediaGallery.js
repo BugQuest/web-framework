@@ -10,6 +10,8 @@ export default class MediaGallery {
 
         this.canUpload = false;
         this.canModal = false;
+        this.onClickItem = null;
+        this.canEditTags = false;
         this.deletionMode = false;
         this.perPage = 12;
         this.selectTags = [];
@@ -27,6 +29,10 @@ export default class MediaGallery {
         const canModal = this.element.dataset.canModal;
         if (canModal && canModal === 'true')
             this.canModal = true;
+
+        const canEditTags = this.element.dataset.canEditTags;
+        if (canEditTags && canEditTags === 'true')
+            this.canEditTags = true;
 
         this.apiUrl = '/admin/medias';
 
@@ -48,40 +54,42 @@ export default class MediaGallery {
         const tags = BuildHelper.div('media-gallery-tags');
         this.element.appendChild(tags);
 
-        //====== TAGS FORM / ACCORDION ======
-        const {
-            accordeon,
-            accordeon_content
-        } = BuildHelper.accordion(__('Ajouter des tags', 'admin'), 'small');
-        tags.appendChild(accordeon);
-        tags.appendChild(BuildHelper.glow_stick());
+        if (this.canEditTags) {
+            //====== TAGS FORM / ACCORDION ======
+            const {
+                accordeon,
+                accordeon_content
+            } = BuildHelper.accordion(__('Ajouter des tags', 'admin'), 'small');
+            tags.appendChild(accordeon);
+            tags.appendChild(BuildHelper.glow_stick());
 
-        const tags_form = BuildHelper.div('media-gallery-tags-form');
-        accordeon_content.appendChild(tags_form);
+            const tags_form = BuildHelper.div('media-gallery-tags-form');
+            accordeon_content.appendChild(tags_form);
 
-        this.tag_input = BuildHelper.input_text(__('Ajouter un tag', 'admin'), '', 'small full');
+            this.tag_input = BuildHelper.input_text(__('Ajouter un tag', 'admin'), '', 'small full');
 
-        tags_form.appendChild(this.tag_input)
-        this.tag_submit = BuildHelper.button_submit(__('Ajouter', 'admin'), 'button button-primary');
-        this.tag_submit.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.deletionMode = false;
-            tagDeleteBtn.classList.remove('active');
-            this.search = '';
-            this.updateTags();
-            const tag = this.tag_input.value.trim();
-            if (tag) {
-                this.addTag(tag);
-                this.tag_input.value = '';
-            }
-        })
-        tags_form.appendChild(this.tag_submit);
+            tags_form.appendChild(this.tag_input)
+            this.tag_submit = BuildHelper.button_submit(__('Ajouter', 'admin'), 'button button-primary');
+            this.tag_submit.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.deletionMode = false;
+                tagDeleteBtn.classList.remove('active');
+                this.search = '';
+                this.updateTags();
+                const tag = this.tag_input.value.trim();
+                if (tag) {
+                    this.addTag(tag);
+                    this.tag_input.value = '';
+                }
+            })
+            tags_form.appendChild(this.tag_submit);
+        }
 
         //====== TAGS ACTIONS/SEARCH ======
         const tags_actions = BuildHelper.div('media-gallery-tags-actions');
         tags.appendChild(tags_actions);
 
-        const tagDeleteBtn = this.buildTagDeleteToggle();
+
         const search = BuildHelper.input_search(
             __('Rechercher', 'admin') + '...',
             'small',
@@ -94,9 +102,13 @@ export default class MediaGallery {
                 this.updateTags()
             });
 
-        tags_actions.appendChild(search);
-        tags_actions.appendChild(tagDeleteBtn);
 
+        tags_actions.appendChild(search);
+
+        if (this.canEditTags) {
+            const tagDeleteBtn = this.buildTagDeleteToggle();
+            tags_actions.appendChild(tagDeleteBtn);
+        }
 
         //====== TAGS CONTENT ======
         this.tags_content = BuildHelper.div('media-gallery-tags-content');
@@ -223,27 +235,32 @@ export default class MediaGallery {
             });
         }
 
-        if (this.canModal) {
-            this.element.addEventListener('click', (e) => {
-                const card = e.target.closest('.__media_card');
-                if (card) {
-                    try {
-                        const media = JSON.parse(card.dataset.media)
+
+        this.element.addEventListener('click', (e) => {
+            const card = e.target.closest('.__media_card');
+            if (card) {
+                try {
+                    const media = JSON.parse(card.dataset.media)
+
+                    if (typeof this.onClickItem === 'function')
+                        this.onClickItem(media);
+
+                    if (this.canModal)
                         this.modal.open(media)
-                    } catch (e) {
-                        Toast.show(__('Erreur de parsing du média :', 'admin') + ' ' + err.message, {
-                            type: 'danger',
-                            icon: '⚠️',
-                            duration: 5000,
-                            position: 'bottom-right',
-                            closable: true
-                        })
-                        console.error(__('Erreur de parsing du média :', 'admin'), e);
-                        return;
-                    }
+                } catch (err) {
+                    Toast.show(__('Erreur de parsing du média :', 'admin') + ' ' + err.message, {
+                        type: 'danger',
+                        icon: '⚠️',
+                        duration: 5000,
+                        position: 'bottom-right',
+                        closable: true
+                    })
+                    console.error(__('Erreur de parsing du média :', 'admin'), err);
+                    return;
                 }
-            });
-        }
+            }
+        });
+
     }
 
     async loadPage(page = 1) {

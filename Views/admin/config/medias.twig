@@ -2,17 +2,11 @@
 
 {% block content %}
     <h1>📁 {{ __('Gestion des médias', 'admin', 'fr') }}</h1>
-
-    {#    <div id="media-upload-overlay" class="__mediaUploadOverlay"> #}
-    {#        <div class="upload-message"> #}
-    {#            <p id="upload-text">{{ __('Glissez-déposez vos fichiers ici pour les téléverser', 'media', 'fr') }}</p> #}
-    {#        </div> #}
-    {#    </div> #}
-    {#    #}
     <div class="__media_gallery media-gallery"
          data-per-page="10"
          data-can-upload="true"
-         data-can-modal="true">
+         data-can-modal="true"
+         data-can-edit-tags="true">
 
     </div>
 {% endblock %}
