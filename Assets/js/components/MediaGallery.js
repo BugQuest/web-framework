@@ -100,6 +100,25 @@ export default class MediaGallery {
             }
         });
 
+        this.tags_content.addEventListener('click', (e) => {
+            e.preventDefault();
+            const tag = e.target.closest('span[data-tag]');
+            if (!tag) return;
+
+            const id = tag.dataset.tag;
+
+            if (!id) return;
+
+            if (this.selectTags.includes(id))
+                this.selectTags.splice(this.selectTags.indexOf(id), 1);
+            else
+                this.selectTags.push(id)
+
+            this.updateTags();
+            this.loadPage(1);
+
+        });
+
         if (this.canUpload) {
             this.element.addEventListener('dragover', (e) => {
                 e.preventDefault();
@@ -252,24 +271,7 @@ export default class MediaGallery {
             this.tags_content.appendChild(span);
         });
 
-        this.tags_content.addEventListener('click', (e) => {
-            e.preventDefault();
-            const tag = e.target.closest('span[data-tag]');
-            if (!tag) return;
 
-            const id = tag.dataset.tag;
-
-            if (!id) return;
-
-            if (this.selectTags.includes(id))
-                this.selectTags.splice(this.selectTags.indexOf(id), 1);
-            else
-                this.selectTags.push(id)
-
-            this.updateTags();
-            this.loadPage(1);
-
-        });
     }
 
     /*
