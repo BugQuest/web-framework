@@ -2,6 +2,9 @@
 
 namespace BugQuest\Framework\Services;
 
+use BugQuest\Framework\Controllers\Admin\DebugController;
+use BugQuest\Framework\Controllers\Admin\ImagesController;
+use BugQuest\Framework\Controllers\Admin\TestController;
 use BugQuest\Framework\Helpers\StringHelper;
 use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Router;
@@ -107,14 +110,21 @@ abstract class Admin
             parent: 'debug',
             name: 'Routes',
             icon: '🗺️',
-            route: self::addPage('Debug - Routes', \BugQuest\Framework\Controllers\Admin\DebugController::class . '::routes')
+            route: self::addPage('Debug - Routes', DebugController::class . '::routes')
         );
 
         self::addSubmenu(
             parent: 'config',
             name: 'Images',
             icon: '🖼️',
-            route: self::addPage('Config - Images', \BugQuest\Framework\Controllers\Admin\ImagesController::class . '::index')
+            route: self::addPage('Config - Images', ImagesController::class . '::index')
+        );
+
+        self::addSubmenu(
+            parent: 'config',
+            name: 'Test',
+            icon: '🧪',
+            route: self::addPage('Config - Test', TestController::class . '::index')
         );
     }
 }

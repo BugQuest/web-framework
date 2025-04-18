@@ -1,4 +1,4 @@
-import {OptionBlock} from './OptionBlock.js';
+import { OptionBlock } from './OptionBlock.js';
 
 export class BoolBlock extends OptionBlock {
     constructor(key, label, value = false, options = {}, onChange = null, group = 'default') {
@@ -14,26 +14,19 @@ export class BoolBlock extends OptionBlock {
         label.textContent = this.label;
         wrapper.appendChild(label);
 
-        const toggle = document.createElement('div');
-        toggle.className = 'switch-container';
+        const switcher = document.createElement('div');
+        switcher.className = 'bool-switch';
+        switcher.dataset.state = this.value ? 'on' : 'off';
+        switcher.title = this.value ? 'Activé' : 'Désactivé';
 
-        const input = document.createElement('input');
-        input.type = 'checkbox';
-        input.checked = !!this.value;
-        input.id = `toggle_${this.key}`;
-        input.addEventListener('change', (e) => {
-            this.setValue(e.target.checked);
+        switcher.addEventListener('click', () => {
+            this.value = !this.value;
+            switcher.dataset.state = this.value ? 'on' : 'off';
+            switcher.title = this.value ? 'Activé' : 'Désactivé';
             this.notifyChange();
         });
 
-        const slider = document.createElement('label');
-        slider.className = 'switch-slider';
-        slider.setAttribute('for', input.id);
-
-        toggle.appendChild(input);
-        toggle.appendChild(slider);
-        wrapper.appendChild(toggle);
-
+        wrapper.appendChild(switcher);
         container.appendChild(wrapper);
     }
 }

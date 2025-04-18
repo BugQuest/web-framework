@@ -41,8 +41,11 @@ abstract class MediasController
         $tags = filter_input(INPUT_GET, 'tags', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
         $tags = array_filter($tags, fn($t) => is_numeric($t)); // nettoyage simple
 
+        $mime_types = filter_input(INPUT_GET, 'mime_types', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $mime_types = array_filter($mime_types, fn($t) => is_string($t)); // nettoyage simple
+
         try {
-            $paginated = \BugQuest\Framework\Services\MediaManager::getPaginated($perPage, $page, $tags);
+            $paginated = \BugQuest\Framework\Services\MediaManager::getPaginated($perPage, $page, $tags, $mime_types);
 
             return json_encode($paginated);
         } catch (\Exception $e) {

@@ -30,8 +30,7 @@ export class IntBlock extends OptionBlock {
         wrapper.appendChild(progress);
 
         input.addEventListener('input', (e) => {
-            this.setValue(parseInt(e.target.value));
-
+            this.value = parseInt(e.target.value)
             // Réinitialiser progress
             progress.style.transition = 'none';
             progress.style.width = '0';

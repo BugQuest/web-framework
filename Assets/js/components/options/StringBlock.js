@@ -31,7 +31,7 @@ export class StringBlock extends OptionBlock {
         wrapper.appendChild(progress);
 
         input.addEventListener('input', (e) => {
-            this.setValue(e.target.value);
+            this.value = e.target.value;
 
             // Reset animation de la barre
             progress.style.transition = 'none';
