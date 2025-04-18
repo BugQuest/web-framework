@@ -3,9 +3,20 @@
 {% block title %}Dashboard - Images{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <h1 class="title">Images - Options</h1>
-        <div id="options-container"></div>
+    <div class="page-options">
+        <h1 class="title">🖼️ {{ __('Options des images', 'admin', 'fr') }}</h1>
+
+        <div class="__accordeon accordeon">
+            <div class="__accordeon_title accordeon-title">💡 {{ __('Aide', 'admin', 'fr') }}</div>
+            <div class="accordeon-content">
+                {% include help_path %}
+            </div>
+        </div>
+
+        <div id="options-container"
+             data-compression-methods="{{ compression_methods }}">
+        </div>
     </div>
+
     {{ bq_assets_footer('admin-options-images') }}
 {% endblock %}

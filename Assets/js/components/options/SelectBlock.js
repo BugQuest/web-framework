@@ -1,14 +1,14 @@
 import {OptionBlock} from './OptionBlock.js';
 
 export class SelectBlock extends OptionBlock {
-    constructor(key, label, value = null, options = [], onChange = null) {
-        super(key, label, value, onChange);
-        this.options = options; // tableau d'objets { value: string, label: string }
+    constructor(key, label, value = null, options = {}, onChange = null, group = 'default') {
+        super(key, label, value, options, onChange, group);
+        this.type = 'string';
     }
 
     render(container) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'option-block select';
+        const wrapper = super.render()
+        wrapper.classList.add('select')
 
         const labelEl = document.createElement('label');
         labelEl.textContent = this.label;
@@ -18,18 +18,16 @@ export class SelectBlock extends OptionBlock {
         select.id = this.key;
         select.name = this.key;
 
-        this.options.forEach(opt => {
+        this.options?.options.forEach(opt => {
             const option = document.createElement('option');
             option.value = opt.value;
             option.textContent = opt.label;
-            if (opt.value === this.value) {
-                option.selected = true;
-            }
+            option.selected = opt.value === this.value;
             select.appendChild(option);
         });
 
         select.addEventListener('change', () => {
-            this.setValue(select.value);
+            this.value = select.value;
             this.notifyChange();
         });
 

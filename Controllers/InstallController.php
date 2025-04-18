@@ -116,14 +116,14 @@ class InstallController
                     $table->foreign('tag_id')->references('id')->on('media_tags')->onDelete('cascade');
 
                     $table->primary(['media_id', 'tag_id']);
-                });
-                ;
+                });;
 
                 Manager::schema()->create('options', function (Blueprint $table) {
                     $table->id();
                     $table->string('group', 64);
                     $table->string('key', 128);
                     $table->text('value')->nullable();
+                    $table->string('type', 16);
                     $table->timestamps();
 
                     $table->unique(['group', 'key']);

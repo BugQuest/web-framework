@@ -3,6 +3,7 @@ import {FloatBlock} from './FloatBlock.js';
 import {StringBlock} from './StringBlock.js';
 import {MediaBlock} from './MediaBlock.js';
 import {SelectBlock} from './SelectBlock.js';
+import {BoolBlock} from './BoolBlock.js';
 
 export class BlockFactory {
     static types = {
@@ -11,6 +12,7 @@ export class BlockFactory {
         string: StringBlock,
         media: MediaBlock,
         select: SelectBlock,
+        bool: BoolBlock,
     };
 
     static register(type, clazz) {

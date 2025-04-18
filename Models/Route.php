@@ -325,6 +325,7 @@ class Route
             'octal' => '[0-7]+',
             'base64' => '[A-Za-z0-9+/=]+',
             'json' => '\{(?:[^{}]|(?R))*\}',
+            'slug' => '[a-zA-Z0-9-_]+',
         ], self::$customPatterns);
     }
 

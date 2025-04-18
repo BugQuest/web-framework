@@ -10,38 +10,60 @@ class OptionService
 
     public static function get(string $group, ?string $key = null, $default = null)
     {
-        if (!isset(self::$_cache[$group])) {
-            self::loadGroup($group);
+        if ($key === null) {
+            if (!isset(self::$_cache[$group]))
+                self::loadGroup($group);
+
+            return self::$_cache[$group];
         }
 
-        if ($key === null) return self::$_cache[$group];
+        if (!isset(self::$_cache[$group]) || !isset(self::$_cache[$group][$key]))
+            self::loadValue($group, $key);
 
         return self::$_cache[$group][$key] ?? $default;
     }
 
-    public static function set(string $group, string $key, $value): void
+    public static function set(string $group, string $key, string $type, $value): void
     {
-        $encoded = json_encode($value);
+        //check if the entry already exists
+        $option = Option::where('group', $group)->where('key', $key)->first();
 
-        Option::updateOrCreate(
-            ['group' => $group, 'key' => $key],
-            ['value' => $encoded]
-        );
+        if ($option) {
+            $option->type = $type;
+            $option->value = $value;
+        } else {
+            $option = new Option();
+            $option->group = $group;
+            $option->key = $key;
+            $option->type = $type;
+            $option->value = $value;
+        }
 
-        self::$_cache[$group][$key] = $value;
+        $option->prepareValue();
+        $option->save();
+        $option->parseValue();
+
+        self::$_cache[$group][$key] = $option->value;
     }
 
-    public static function setGroup(string $group, array $values): void
+    public static function setGroup(string $group, array $data): void
     {
-        foreach ($values as $key => $value)
-            self::set($group, $key, $value);
+        foreach ($data as $item) {
+            $key = $item['key'] ?? null;
+            $value = $item['value'] ?? null;
+            $type = $item['type'] ?? null;
+
+            if (!$key || !$value || !$type) continue;
+
+            self::set($group, $key, $type, $value);
+        }
     }
 
     public static function all(string $group): array
     {
-        if (!isset(self::$_cache[$group])) {
+        if (!isset(self::$_cache[$group]))
             self::loadGroup($group);
-        }
+
 
         return self::$_cache[$group];
     }
@@ -62,9 +84,25 @@ class OptionService
         $options = Option::where('group', $group)->get();
         self::$_cache[$group] = [];
 
-        foreach ($options as $opt) {
-            $decoded = json_decode($opt->value, true);
-            self::$_cache[$group][$opt->key] = is_null($decoded) ? $opt->value : $decoded;
+        /** @var Option $option */
+        foreach ($options as $option) {
+            $option->parseValue();
+            self::$_cache[$group][$option->key] = $option->value;
         }
+    }
+
+    private static function loadValue(string $group, string $key): void
+    {
+        if (!isset(self::$_cache[$group]))
+            self::$_cache[$group] = [];
+
+        $option = Option::where('group', $group)->where('key', $key)->first();
+        if ($option) {
+            $option->parseValue();
+            self::$_cache[$group][$option->key] = $option->value;
+            return;
+        }
+
+        self::$_cache[$group][$key] = null;
     }
 }
