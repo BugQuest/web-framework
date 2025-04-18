@@ -2,328 +2,282 @@
 
 namespace BugQuest\Framework\Services;
 
-//@todo: clean this class and adapt to new framework
-abstract class Image
+use BugQuest\Framework\Models\Database\Media;
+
+class Image
 {
     private static array $_sizes = [];
-    private static array $_options = [];
 
-    public static function getImageWithFallback(null|string $url, string $size_name = "original", bool &$is_placeholder = false, bool $absolute_path = false)
+    /**
+     * @throws \Exception
+     */
+    public static function getImageUrl(Media|string|int|null $media, string $size = 'original', bool $absolute = false): ?string
     {
-        $placeholder = self::_getOptions()['placeholder'] ?? null;
+        if (!extension_loaded('imagick'))
+            throw new \Exception('⚠️ L’extension Imagick est requise pour le traitement des images.');
 
-        self::_setSizes();
+        $options = OptionService::get('images');
+        $placeholder = $options['placeholder'] ?? null;
 
-        $cache_directory = self::_cacheDirectory();
+        if (!$placeholder)
+            throw new \Exception('⚠️ Aucune image de remplacement définie dans les options.');
 
-        if (!$url) {
-            $is_placeholder = true;
-            $url = $placeholder;
-        }
+        $compression = $options['compression_method'] ?? null;
+        self::loadSizes();
 
-        //if wordpress dont give us the original full size image
-        //check with regex if end of url is *-scaled* .extention, if it, remove it
-        if (preg_match('/-scaled\.(jpe?g|jpe|gif|png)\b/i', $url, $matches))
-            $url = preg_replace('/-scaled\.(jpe?g|jpe|gif|png)\b/i', ".$1", $url);
-
-        //si la taille n'existe pas on ne retourne pas d'image
-        if (!array_key_exists($size_name, self::$_sizes))
-            throw new \Exception("Altimax Image: " . $size_name . ' size not found');
+        if (!isset(self::$_sizes[$size]))
+            throw new \Exception("Taille d'image inconnue : $size");
 
 
-        $url = trim($url);
-        $path_info = pathinfo($url);
-        $image_uid = $is_placeholder ? 'placeholder' : md5($path_info['filename']);
-        $image_extention = $path_info['extension'];
-        $image_file = $image_uid . DS . $size_name . ".{$image_extention}";
-        $image_path = $cache_directory . $image_file;
-
-        if ($comp = self::getCompressed($image_path, $absolute_path))
-            return $comp;
-
-        $image_url = '/cache/images/' . $image_file;
-
-        $image_size = self::$_sizes[$size_name];
-
-        //check if is svg, return if is
-        if ($image_extention == 'svg')
-            return $absolute_path ? $url : str_replace(BQ_PUBLIC_DIR, '', $url);
+        try {
+            $media = self::resolveMedia($media, $placeholder);
+            $originalPath = BQ_ROOT . DS . 'htdocs' . DS . $media->path;
+            if (!file_exists($originalPath))
+                throw new \Exception("Fichier non trouvé : $originalPath");
 
 
-        if (!file_exists($image_path)) {
-            $image_file_original = $image_uid . DS . "original.{$image_extention}";
-            $image_path_original = $cache_directory . $image_file_original;
+            $cachePath = self::generateImage($media, $size, $originalPath);
+            $final = self::applyCompression($cachePath, $compression);
 
-            if (!file_exists($image_path_original)) {
-                preg_match('/[^\?]+\.(jpe?g|jpe|gif|png)\b/i', $url, $matches);
+            return $absolute
+                ? $final
+                : str_replace(BQ_ROOT . DS . 'htdocs', '', $final);
 
-                if (!$matches)
-                    //le format de l'image n'est pas reconnu, (jpg, jpeg, gif, png)
-                    throw new \Exception('Altimax Image: Image format not recognized, only jpg, jpeg, gif, png');
+        } catch (\Exception $e) {
+            if ($placeholder instanceof Media && $placeholder->path !== $media->path)
+                return self::getImageUrl($placeholder, $size, $absolute);
 
-
-                $directory = pathinfo($image_path_original, PATHINFO_DIRNAME);
-                if (!is_dir($directory))
-                    mkdir($directory, 0755, true);
-
-                $site_url = get_site_url();
-                $site_url = str_replace('https://', '', $site_url);
-                $site_url = str_replace('http://', '', $site_url);
-                $site_url = str_replace('www.', '', $site_url);
-                $site_url = str_replace('/cms', '', $site_url);
-
-                //check if image is on same server, if not download it
-
-
-                if (str_contains($url, $site_url)) {
-                    $original_path = $url;
-                    $original_path = str_replace('https://', '', $original_path);
-                    $original_path = str_replace('http://', '', $original_path);
-                    $original_path = str_replace($site_url, '', $original_path);
-                    $original_path = BQ_ROOT . DS . 'htdocs' . $original_path;
-                    copy($original_path, $image_path_original);
-
-                } else {
-                    $file_array = [
-                        'name' => basename($image_uid),
-                        'tmp_name' => download_url($url)
-                    ];;
-
-                    // If error storing temporarily, log the error and continue loop
-                    if (is_wp_error($file_array['tmp_name'])) {
-                        rmdir($directory);
-                        return false;
-                    }
-
-                    copy($file_array['tmp_name'], $image_path_original);
-                    //remove downloaded temp file
-                    unlink($file_array['tmp_name']);
-                }
-            }
-
-            if (!extension_loaded('imagick')) {
-                rmdir($directory);
-                throw new \Exception('Imagick not installed');
-            }
-
-
-            try {
-                $image = new \imagick($image_path_original);
-                $rotation = $image->getImageOrientation();
-                self::_autorotate($image, $rotation);
-
-                $w = $image->getImageWidth();
-                $h = $image->getImageHeight();
-                $new_h = $image_size[1];
-                $new_w = $image_size[0];
-                $crop = $image_size[2] ?? false;
-
-                //if width superior to height
-                if ($w > $h) {
-                    $resize_w = $w * $new_h / $h;
-                    $resize_h = $new_h;
-                } else {
-                    $resize_w = $new_w;
-                    $resize_h = $h * $new_w / $w;
-                }
-
-
-                // Si on doit recadrer
-                if ($crop) {
-                    // Vérifie si l'image redimensionnée est assez grande pour le crop demandé
-                    if ($resize_w < $new_w || $resize_h < $new_h) {
-                        // Adapter les dimensions pour s'assurer que le crop est possible
-                        // ici on donne la priorité au plus contraignant
-                        $scale = max($new_w / $w, $new_h / $h);
-                        $resize_w = ceil($w * $scale);
-                        $resize_h = ceil($h * $scale);
-                    }
-                }
-
-                // Redimensionnement de l'image (proportionnel)
-                $image->resizeImage($resize_w, $resize_h, \Imagick::FILTER_LANCZOS, 0.9, true);
-
-                // Recadrage centré si demandé
-                if ($crop) {
-                    $x = (int)(($resize_w - $new_w) / 2);
-                    $y = (int)(($resize_h - $new_h) / 2);
-                    $image->cropImage($new_w, $new_h, $x, $y);
-                    $image->setImagePage(0, 0, 0, 0); // Réinitialise la page pour éviter des décalages
-                }
-
-                $image->writeImage($image_path);
-                $image->clear();
-                $image->destroy();
-            } catch (\Exception $e) {
-                if (isset($directory))
-                    rmdir($directory);
-
-                return self::getImageWithFallback($placeholder, $size_name, $is_placeholder, $absolute_path);
-            }
-        }
-
-        return self::getCompressed($image_path, $absolute_path);
-    }
-
-    public static function getCompressed(string $path, bool $absolute_path = false)
-    {
-        switch (self::_getOptions()['method']) {
-            case 'webp':
-                return self::getWebp($path, $absolute_path);
-            case 'avif':
-                return self::getAvif($path, $absolute_path);
-            default:
-                return false;
+            return null;
         }
     }
 
-    public static function getWebp(string $path, bool $absolute_path = false)
+    public static function getImageHtml(Media|string|int|null $media, string $size = 'original', ?string $alt = '', array $attributes = []): ?string
     {
-        if (!\function_exists("imagewebp"))
-            return false;
-
-        $path_dir = \pathinfo($path);
-        $path_webp = $path_dir['dirname'] . DS . $path_dir['filename'] . '.webp';
-        $extension = \pathinfo($path, PATHINFO_EXTENSION);
-
-        if ($extension == 'webp')
-            return $path;
-
-        if (\file_exists($path_webp))
-            return $absolute_path ? $path_webp : str_replace(BQ_ROOT . DS . 'htdocs', '', $path_webp);
-
-        if (!\file_exists($path))
-            return false;
-
-        if (!\file_exists($path_webp)) {
-            $image = \imagecreatefromstring(file_get_contents($path));
-
-            //if is png use imagesavealpha
-            if ($extension == 'png') {
-                \imagepalettetotruecolor($image);
-                \imagealphablending($image, true);
-                \imagesavealpha($image, true);
+        try {
+            $url = self::getImageUrl($media, $size);
+            $attrString = '';
+            foreach ($attributes as $k => $v) {
+                $attrString .= " $k=\"" . htmlspecialchars($v, ENT_QUOTES) . "\"";
             }
-            \imagewebp($image, $path_webp, 80);
-            \imagedestroy($image);
 
-            //if path name do not contain original remove it
-            if (strpos($path, 'original') === false)
-                unlink($path); //remove original image
+            return sprintf('<img src="%s" alt="%s"%s>', htmlspecialchars($url, ENT_QUOTES), htmlspecialchars($alt ?? '', ENT_QUOTES), $attrString);
+        } catch (\Exception $e) {
+            return null;
         }
-
-        return $absolute_path ? $path_webp : str_replace(BQ_ROOT . DS . 'htdocs', '', $path_webp);
     }
 
-    public static function getAvif(string $path, bool $absolute_path = false)
+    public static function getSizes(): array
     {
-        if (!\function_exists("imageavif"))
-            return false;
-
-        $path_dir = \pathinfo($path);
-        $path_avif = $path_dir['dirname'] . DS . $path_dir['filename'] . '.avif';
-        $extension = \pathinfo($path, PATHINFO_EXTENSION);
-
-        if ($extension == 'avif')
-            return $path;
-
-        if (\file_exists($path_avif))
-            return $absolute_path ? $path_avif : str_replace(BQ_ROOT . DS . 'htdocs', '', $path_avif);
-
-        if (!\file_exists($path))
-            return false;
-
-        if (!\file_exists($path_avif)) {
-            $image = \imagecreatefromstring(file_get_contents($path));
-
-            //if is png use imagesavealpha
-            if ($extension == 'png') {
-                \imagepalettetotruecolor($image);
-                \imagealphablending($image, true);
-                \imagesavealpha($image, true);
-            }
-            \imageavif($image, $path_avif, 80);
-            \imagedestroy($image);
-
-            //if path name do not contain original remove it
-            if (strpos($path, 'original') === false)
-                unlink($path); //remove original image
-        }
-
-        return $absolute_path ? $path_avif : str_replace(BQ_ROOT . DS . 'htdocs', '', $path_avif);
+        self::loadSizes();
+        return self::$_sizes;
     }
 
-    private static function _setSizes()
+
+    private static function resolveMedia(int|string|Media $media): Media
+    {
+        if ($media instanceof Media)
+            return $media;
+
+        if (is_int($media)) {
+            $found = Media::find($media);
+            if (!$found)
+                throw new \Exception("Media ID $media not found");
+
+            return $found;
+        }
+
+        if (is_string($media)) {
+            // ✅ Si c'est une URL valide
+            if (filter_var($media, FILTER_VALIDATE_URL)) {
+                $uid = md5($media);
+                $extension = pathinfo(parse_url($media, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpg';
+                $filename = 'media_' . $uid . '.' . $extension;
+                $cachePath = 'cache/images/' . $uid . '/original.' . $extension;
+                $fullPath = BQ_ROOT . DS . 'htdocs' . DS . $cachePath;
+
+                // ✅ Vérifie si déjà téléchargé
+                if (!file_exists($fullPath)) {
+                    @mkdir(dirname($fullPath), 0755, true);
+                    $downloaded = self::downloadFile($media, $fullPath);
+
+                    if (!$downloaded)
+                        throw new \Exception("Impossible de télécharger le média : $media");
+                }
+
+                $mime = mime_content_type($fullPath);
+                $size = filesize($fullPath);
+
+                return new Media([
+                    'filename' => $filename,
+                    'original_name' => basename($media),
+                    'mime_type' => $mime,
+                    'extension' => $extension,
+                    'size' => $size,
+                    'path' => $cachePath,
+                    'slug' => $uid,
+                ]);
+            }
+
+            // ✅ Sinon, on tente de retrouver un média par son chemin
+            $media = Media::where('path', $media)->first();
+            if ($media) return $media;
+
+            throw new \Exception("Impossible de résoudre le média : $media");
+        }
+
+        throw new \InvalidArgumentException("Type de média non supporté");
+    }
+
+    private static function generateImage(Media $media, string $size, string $original): string
+    {
+        $hash = md5($media->path);
+        $ext = pathinfo($original, PATHINFO_EXTENSION);
+        $dir = self::cacheDir() . $hash;
+        $target = $dir . DS . "$size.$ext";
+
+        if (file_exists($target)) return $target;
+
+        if (!is_dir($dir)) mkdir($dir, 0755, true);
+
+        $sizeDef = self::$_sizes[$size];
+        $w = $sizeDef['width'] ?? 0;
+        $h = $sizeDef['height'] ?? 0;
+        $crop = $sizeDef['crop'] ?? false;
+
+        $image = new \Imagick($original);
+        self::autoRotate($image);
+
+        $iw = $image->getImageWidth();
+        $ih = $image->getImageHeight();
+
+        $rw = $w;
+        $rh = $h;
+
+        if (!$crop) {
+            $image->resizeImage($w, $h, \Imagick::FILTER_LANCZOS, 1, true);
+        } else {
+            $scale = max($w / $iw, $h / $ih);
+            $image->resizeImage(
+                (int)ceil($iw * $scale),
+                (int)ceil($ih * $scale),
+                \Imagick::FILTER_LANCZOS, 1
+            );
+
+            $x = (int)(($image->getImageWidth() - $w) / 2);
+            $y = (int)(($image->getImageHeight() - $h) / 2);
+            $image->cropImage($w, $h, $x, $y);
+            $image->setImagePage(0, 0, 0, 0);
+        }
+
+        $image->writeImage($target);
+        $image->clear();
+
+        return $target;
+    }
+
+    private static function applyCompression(string $path, string $method): string
+    {
+        $dir = pathinfo($path, PATHINFO_DIRNAME);
+        $name = pathinfo($path, PATHINFO_FILENAME);
+
+        $formatMap = [
+            'webp' => 'webp',
+            'avif' => 'avif'
+        ];
+
+        if (!isset($formatMap[$method])) return $path;
+
+        $target = $dir . DS . $name . '.' . $formatMap[$method];
+
+        if (file_exists($target)) return $target;
+
+        $img = new \Imagick($path);
+        $img->setImageFormat($formatMap[$method]);
+        $img->setImageCompressionQuality(80);
+        $img->writeImage($target);
+        $img->clear();
+
+        if (!str_contains($path, 'original')) @unlink($path);
+
+        return $target;
+    }
+
+    private static function cacheDir(): string
+    {
+        $path = BQ_ROOT . DS . 'htdocs' . DS . 'cache' . DS . 'images' . DS;
+        if (!is_dir($path)) mkdir($path, 0755, true);
+        return $path;
+    }
+
+    private static function loadSizes(): void
     {
         if (!self::$_sizes) {
-            //@todo get from config, add hook system
-            $config_image = Hooks::runFilter('config_image_sizes', [
-                ['width' => 150, 'height' => 150, 'crop' => true],
-                ['width' => 300, 'height' => 300, 'crop' => true],
-                ['width' => 768, 'height' => 768, 'crop' => true],
-                ['width' => 1024, 'height' => 1024, 'crop' => true],
-                ['width' => 1200, 'height' => 1200, 'crop' => true],
-                ['width' => 1600, 'height' => 1600, 'crop' => true],
-                ['width' => 2000, 'height' => 2000, 'crop' => true],
+            self::$_sizes = Hooks::runFilter('images:sizes', [
+                'thumbnail' => ['width' => 150, 'height' => 150, 'crop' => true],
+                'medium' => ['width' => 300, 'height' => 300, 'crop' => false],
+                'large' => ['width' => 1024, 'height' => 1024, 'crop' => false],
+                'original' => ['width' => 0, 'height' => 0, 'crop' => false],
             ]);
-            self::$_sizes = array_map(function ($size) {
-                return [$size['width'], $size['height'], $size['crop']];
-            }, $config_image);
-            self::$_sizes['original'] = [0, 0, false];
-            self::$_sizes['_original'] = [0, 0, false];
         }
     }
 
-    private static function _cacheDirectory()
+    private static function autoRotate(\Imagick &$image): void
     {
-        $cache_directory = BQ_ROOT . DS . 'htdocs' . DS . 'cache' . DS . 'images' . DS;
-        if (!is_dir($cache_directory))
-            mkdir($cache_directory, 0755, true);
+        $orientation = $image->getImageOrientation();
 
-        return $cache_directory;
-    }
-
-    private static function _autorotate(\imagick &$image, $rotation)
-    {
-        switch ($rotation) {
-            case \imagick::ORIENTATION_TOPLEFT:
-                break;
-            case \imagick::ORIENTATION_TOPRIGHT:
+        switch ($orientation) {
+            case \Imagick::ORIENTATION_TOPRIGHT:
                 $image->flopImage();
                 break;
-            case \imagick::ORIENTATION_BOTTOMRIGHT:
+            case \Imagick::ORIENTATION_BOTTOMRIGHT:
                 $image->rotateImage("#000", 180);
                 break;
-            case \imagick::ORIENTATION_BOTTOMLEFT:
+            case \Imagick::ORIENTATION_BOTTOMLEFT:
                 $image->flopImage();
                 $image->rotateImage("#000", 180);
                 break;
-            case \imagick::ORIENTATION_LEFTTOP:
+            case \Imagick::ORIENTATION_LEFTTOP:
                 $image->flopImage();
                 $image->rotateImage("#000", -90);
                 break;
-            case \imagick::ORIENTATION_RIGHTTOP:
+            case \Imagick::ORIENTATION_RIGHTTOP:
                 $image->rotateImage("#000", 90);
                 break;
-            case \imagick::ORIENTATION_RIGHTBOTTOM:
+            case \Imagick::ORIENTATION_RIGHTBOTTOM:
                 $image->flopImage();
                 $image->rotateImage("#000", 90);
                 break;
-            case \imagick::ORIENTATION_LEFTBOTTOM:
+            case \Imagick::ORIENTATION_LEFTBOTTOM:
                 $image->rotateImage("#000", -90);
-                break;
-            default: // Invalid orientation
                 break;
         }
+
         $image->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
     }
 
-    //============================== Options ==============================
-
-    private static function _getOptions(): array
+    private static function downloadFile(string $url, string $destination): bool
     {
-        //@todo get from config, add hook system
-        return [];
-    }
+        $ch = curl_init($url);
+        $fp = fopen($destination, 'wb');
 
+        if (!$fp) return false;
+
+        curl_setopt($ch, CURLOPT_FILE, $fp);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+
+        $success = curl_exec($ch);
+
+        curl_close($ch);
+        fclose($fp);
+
+        if (!$success || !file_exists($destination)) {
+            @unlink($destination);
+            return false;
+        }
+
+        return true;
+    }
 }
