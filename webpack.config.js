@@ -14,7 +14,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, '../../../htdocs/cms'),
         filename: '[name].js',
-        clean: true,
+        clean: false,
     },
     module: {
         rules: [
