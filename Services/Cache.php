@@ -123,12 +123,70 @@ class Cache
 
     private static function export(array $data): string
     {
-        return "<?php return " . var_export($data, true) . ";";
+        $data['__signature'] = self::sign($data);
+
+        return "<?php\ndeclare(strict_types=1);\nreturn " . var_export($data, true) . ";";
     }
 
     private static function import(string $path): array|null
     {
         $payload = @include $path;
-        return is_array($payload) ? $payload : null;
+        if (!is_array($payload)) {
+            @unlink($path); // fichier corrompu ou invalide
+            return null;
+        }
+
+        $signature = $payload['__signature'] ?? null;
+        unset($payload['__signature']);
+
+        if (!$signature || !hash_equals($signature, self::sign($payload))) {
+            @unlink($path); // signature invalide = suppression
+            return null;
+        }
+
+        return $payload;
+    }
+
+    private static function sign(array $data): string
+    {
+        ksort($data); // assure l’ordre pour un hash stable
+        return hash_hmac('sha256', serialize($data), BQ_CACHE_SECRET);
+    }
+
+    public static function clean(string $group = 'default'): void
+    {
+        $directory = self::getCacheDir($group);
+        if (!is_dir($directory)) return;
+
+        foreach (scandir($directory) as $file) {
+            if (in_array($file, ['.', '..'])) continue;
+
+            $path = $directory . DS . $file;
+            if (!is_file($path)) continue;
+
+            $payload = @include $path;
+
+            // 1. Fichier invalide ou pas un tableau
+            if (!is_array($payload)) {
+                @unlink($path);
+                continue;
+            }
+
+            // 2. Vérification de la signature
+            $signature = $payload['__signature'] ?? null;
+            $original = $payload;
+            unset($original['__signature']);
+
+            if (!$signature || !hash_equals($signature, self::sign($original))) {
+                @unlink($path);
+                continue;
+            }
+
+            // 3. Vérification de l'expiration
+            if (isset($payload['expires_at']) && $payload['expires_at'] !== null && time() > $payload['expires_at']) {
+                @unlink($path);
+                continue;
+            }
+        }
     }
 }
