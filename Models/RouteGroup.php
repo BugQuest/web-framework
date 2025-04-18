@@ -43,7 +43,10 @@ class RouteGroup
             _callback: $route->getCallable(true),
             _methods: $route->getMethods(),
             _middlewares: array_merge($this->_middlewares, $route->getMiddlewares()),
-            group: $this
+            group: $this,
+            _cache_key: $route->getCacheKey(),
+            _cache_group: $route->getCacheGroup(),
+            _cache_ttl: $route->getCacheTTL()
         )->register();
     }
 
