@@ -2,6 +2,8 @@
 
 namespace BugQuest\Framework\Models;
 
+use BugQuest\Framework\Debug;
+use BugQuest\Framework\Services\Hooks;
 use BugQuest\Framework\Services\View;
 
 readonly class Response
@@ -88,6 +90,19 @@ readonly class Response
         );
     }
 
+    public static function json401(
+        string $message = 'Unauthorized',
+        int    $status = 401,
+        array  $headers = [],
+    ): static
+    {
+        return new static(
+            content: ['success' => false, 'message' => $message],
+            status: $status,
+            headers: array_merge($headers, ['Content-Type' => 'application/json']),
+        );
+    }
+
     public static function html(
         string $content,
         int    $status = 200,
@@ -148,14 +163,22 @@ readonly class Response
     {
         http_response_code($this->status);
 
-        foreach ($this->headers as $key => $value) {
+        foreach ($this->headers as $key => $value)
             header("$key: $value");
-        }
 
         if (is_array($this->content) || is_object($this->content)) {
             echo json_encode($this->content);
         } else {
             echo $this->content;
         }
+    }
+
+    public static function __set_state(array $array): static
+    {
+        return new static(
+            content: $array['content'],
+            status: $array['status'],
+            headers: $array['headers'],
+        );
     }
 }

@@ -2,6 +2,7 @@
 
 namespace BugQuest\Framework\Models;
 
+use BugQuest\Framework\Debug;
 use BugQuest\Framework\Helpers\CallbackHelper;
 use BugQuest\Framework\Router;
 use BugQuest\Framework\Services\Cache;
@@ -113,14 +114,20 @@ class Route
 
         self::$_current = $this;
         Hooks::runAction('route.before', $this, $args);
-        if (!is_null($this->_cache_key))
+        Debug::log('Route', 'name', $this->name);
+        Debug::log('Route', 'slug', $this->_slug);
+        if (!is_null($this->_cache_key)) {
+
+            Debug::log('Route', 'cache_key', $this->_cache_key);
+            Debug::log('Route', 'cache_group', $this->_cache_group);
+            Debug::log('Route', 'cache_ttl', $this->_cache_ttl . ' sec <br> (' . date('Y-m-d H:i:s', time() + $this->_cache_ttl) . ')');
             return Cache::remember(
                 key: $this->_cache_key,
                 ttl: $this->_cache_ttl,
                 callback: $this->_callback,
                 group: $this->_cache_group,
             );
-        else
+        } else
             return call_user_func_array(CallbackHelper::parse($this->_callback), $args);
     }
 
@@ -346,17 +353,17 @@ class Route
         self::$customPatterns[$type] = $pattern;
     }
 
-    public function getCacheKey() : ?string
+    public function getCacheKey(): ?string
     {
         return $this->_cache_key;
     }
 
-    public function getCacheGroup() : string
+    public function getCacheGroup(): string
     {
         return $this->_cache_group;
     }
 
-    public function getCacheTTL() : int
+    public function getCacheTTL(): int
     {
         return $this->_cache_ttl;
     }

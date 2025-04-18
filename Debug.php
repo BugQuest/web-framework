@@ -3,49 +3,63 @@
 namespace BugQuest\Framework;
 
 use BugQuest\Framework\Debug\RouterDebugger;
+use BugQuest\Framework\Models\Response;
+use BugQuest\Framework\Services\Auth;
+use BugQuest\Framework\Services\Cache;
 
 class Debug
 {
-    private static float $startTime;
-    private static int $startMemory;
+    private static array $_logs = [];
 
-    public static function start(): void
+    public static function log(string $group, string $key, int|float|string $value): void
     {
-        self::$startTime = microtime(true);
-        self::$startMemory = memory_get_usage(true);
+        if (!Auth::isAdmin())
+            return;
+
+        if (!isset(self::$_logs[$group]))
+            self::$_logs[$group] = [];
+
+        self::$_logs[$group][$key] = $value;
     }
 
-    public static function isEnabled(string $key = ''): bool
+    public static function saveStatus(): void
     {
-        $debug = $_ENV['APP_DEBUG'] ?? '';
-        if ($debug === 'true') return true;
+        $user = Auth::user();
 
-        if ($key && str_contains($debug, $key)) {
-            return true;
-        }
+        if (!$user || !$user->isAdmin())
+            return;
 
-        return false;
-    }
+        if (!defined('BQ_START_TIME') || !defined('BQ_START_MEMORY'))
+            return;
 
-    public static function panel(string $uri): void
-    {
-        if (!self::isEnabled()) return;
-
-        $routerDebug = self::isEnabled('route') ? RouterDebugger::show($uri) : '';
-
-        $time = number_format((microtime(true) - self::$startTime) * 1000, 2);
-        $memory = number_format((memory_get_usage(true) - self::$startMemory) / 1024 / 1024, 2);
+        $end_time = microtime(true);
+        $end_memory = memory_get_usage(true);
+        $time = number_format(($end_time - BQ_START_TIME) * 1000, 2);
+        $memory = number_format(($end_memory - BQ_START_MEMORY) / 1024 / 1024, 2);
         $memoryPeak = number_format(memory_get_peak_usage(true) / 1024 / 1024, 2);
 
-        echo <<<HTML
-        <div style="margin-top:2em; border-top: 2px dashed #ccc; padding-top:1em;">
-            <details open>
-                <summary style="cursor:pointer; font-family:sans-serif; font-weight:bold;">
-                    🐞 Debug Panel – {$time}ms / {$memory}Mo (peak: {$memoryPeak}Mo)
-                </summary>
-                {$routerDebug}
-            </details>
-        </div>
-        HTML;
+
+        self::$_logs['Metrics'] = [
+            'PHP Version' => PHP_VERSION,
+            '⏱️ Time' => $time . 'ms',
+            '💾 Memory' => $memory . 'MB',
+            '💾 Memory Peek' => $memoryPeak . 'MB',
+        ];
+
+
+        Cache::put('metrics.' . $user->id, self::$_logs, 300, 'debug');
+    }
+
+    public static function metrics(): Response
+    {
+        $user = Auth::user();
+
+        if (!$user || !$user->isAdmin())
+            return Response::json401();
+
+        if ($metrics = Cache::get('metrics.' . $user->id, null, 'debug', true))
+            return Response::json($metrics);
+
+        return Response::json404('Metrics not found');
     }
 }

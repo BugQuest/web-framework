@@ -8,8 +8,10 @@ use BugQuest\Framework\Router;
 use BugQuest\Framework\Services\Admin;
 use BugQuest\Framework\Services\Assets;
 use BugQuest\Framework\Services\Auth;
+use BugQuest\Framework\Services\Hooks;
 use BugQuest\Framework\Services\Image;
 use BugQuest\Framework\Services\Locale;
+use BugQuest\Framework\Services\View;
 use Twig\TwigFunction;
 
 class TwigExtention extends \Twig\Extension\AbstractExtension implements \Twig\Extension\GlobalsInterface
@@ -69,7 +71,7 @@ class TwigExtention extends \Twig\Extension\AbstractExtension implements \Twig\E
                 return Image::getImageHtml($media, $size, $alt, $attributes);
             }, [
                 'is_safe' => ['html'],
-            ]),
+            ])
         ];
     }
 }
