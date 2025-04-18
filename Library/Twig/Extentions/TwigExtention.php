@@ -2,11 +2,13 @@
 
 namespace BugQuest\Framework\Library\Twig\Extentions;
 
+use BugQuest\Framework\Models\Database\Media;
 use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Router;
 use BugQuest\Framework\Services\Admin;
 use BugQuest\Framework\Services\Assets;
 use BugQuest\Framework\Services\Auth;
+use BugQuest\Framework\Services\Image;
 use BugQuest\Framework\Services\Locale;
 use Twig\TwigFunction;
 
@@ -57,6 +59,12 @@ class TwigExtention extends \Twig\Extension\AbstractExtension implements \Twig\E
             ]),
             new TwigFunction('bq_user', function () {
                 return Auth::user();
+            }),
+            new TwigFunction('getImageUrl', function (Media|string|int|null $media, string $size = 'original', bool $absolute = false) {
+                return Image::getImageUrl($media, $size, $absolute);
+            }),
+            new TwigFunction('getImageHtml', function (Media|string|int|null $media, string $size = 'original', ?string $alt = '', array $attributes = []) {
+                return Image::getImageHtml($media, $size, $alt, $attributes);
             }),
         ];
     }
