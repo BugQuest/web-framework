@@ -2,13 +2,14 @@
 
 namespace BugQuest\Framework\Controllers\Admin;
 
+use BugQuest\Framework\Models\Response;
 use BugQuest\Framework\Services\Image;
 use BugQuest\Framework\Services\Locale;
 use BugQuest\Framework\Services\View;
 
 abstract class ImagesController
 {
-    public static function index()
+    public static function index(): Response
     {
         $imagick_installed = extension_loaded('imagick');
         $webp_supported = function_exists('imagewebp');
@@ -34,7 +35,7 @@ abstract class ImagesController
             $help_path = '@framework/admin/config/images-help-fr.twig';
 
 
-        return View::render('@framework/admin/config/images.twig', [
+        return Response::view('@framework/admin/config/images.twig', [
             'imagick_installed' => $imagick_installed,
             'webp_supported' => $webp_supported,
             'avif_supported' => $avif_supported,

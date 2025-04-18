@@ -4,6 +4,7 @@ namespace BugQuest\Framework\Controllers;
 
 use BugQuest\Framework\Models\Database\Meta;
 use BugQuest\Framework\Models\Database\User;
+use BugQuest\Framework\Models\Response;
 use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Services\Database;
 use BugQuest\Framework\Services\MetaService;
@@ -15,7 +16,7 @@ use BugQuest\Framework\Router;
 
 class InstallController
 {
-    public static function index(): string
+    public static function index(): Response
     {
         if (Database::isInstalled())
             Router::redirect('admin.dashboard');
@@ -145,12 +146,12 @@ class InstallController
             }
         }
 
-        return View::render('@framework/install/index.twig',
+        return Response::view('@framework/install/index.twig',
             [
                 'error' => $error,
                 'email' => $email ?? '',
-                'username' => $username ?? '',
-                'password' => $password ?? ''
+                'username' => $username,
+                'password' => $password
             ]);
     }
 }

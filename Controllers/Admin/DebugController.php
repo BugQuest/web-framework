@@ -2,13 +2,12 @@
 
 namespace BugQuest\Framework\Controllers\Admin;
 
-use BugQuest\Framework\Debug\RouterDebugger;
+use BugQuest\Framework\Models\Response;
 use BugQuest\Framework\Router;
-use BugQuest\Framework\Services\View;
 
 class DebugController
 {
-    public static function routes()
+    public static function routes(): Response
     {
         $routes = [];
         foreach (Router::getRoutes() as $route) {
@@ -28,7 +27,7 @@ class DebugController
             $routes[] = $doc;
         }
 
-        return View::render('@framework/admin/debug/routes.twig', [
+        return Response::view('@framework/admin/debug/routes.twig', [
             'routes' => $routes
         ]);
     }

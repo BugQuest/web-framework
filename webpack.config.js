@@ -8,7 +8,6 @@ module.exports = {
         'admin/dist/css/admin-light': './Assets/scss/admin-light.scss',
         'admin/dist/js/admin': './Assets/js/admin.js',
         'admin/dist/js/admin-options-images': './Assets/js/admin-options-images.js',
-        'admin/dist/js/admin-options-test': './Assets/js/admin-options-test.js',
         'dist/js/global': './Assets/js/global.js',
     },
     output: {
