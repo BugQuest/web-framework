@@ -1,121 +1,96 @@
-$page-border: #08f;
-$page-bg: #0a0a0a;
-$page-hover: #111111;
-$page-text: #0ff;
-$page-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
-$page-highlight: #ff00cc;
-
 #page-list {
-  background: $page-bg;
+  font-family: sans-serif;
+  background: #0a0a0a;
+  color: white;
   padding: 1rem;
-  border: 2px solid $page-border;
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-  font-family: 'Orbitron', monospace, sans-serif;
-  color: $page-text;
-  user-select: none;
-  max-width: 800px;
-  margin: auto;
 
-  .page-list-content {
+  .page-list-actions {
     margin-bottom: 1rem;
+    display: flex;
+    gap: 0.5rem;
+  }
 
-    .page-item {
+  .page-actions {
+    display: flex;
+    gap: 0.3rem;
+
+    .icon-button {
       background: transparent;
-      padding: 0.6rem 1rem 0.6rem 2rem;
-      margin-bottom: 0.25rem;
-      border: 1px solid $page-border;
-      border-left: 5px solid $page-highlight;
-      box-shadow: $page-shadow;
-      cursor: move;
-      transition: all 0.25s ease-in-out;
-      position: relative;
-      font-size: 14px;
-      min-height: 36px;
-      display: flex;
-      align-items: center;
-      transform: translateZ(0);
-
-      &::before {
-        content: '';
-        position: absolute;
-        left: 0.8rem;
-        top: 0.4rem;
-        bottom: 0.4rem;
-        width: 2px;
-        background-color: $page-highlight;
-        opacity: 0.4;
-      }
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.2rem;
 
       &:hover {
-        background: $page-hover;
-        box-shadow: 0 0 12px rgba(255, 0, 255, 0.4);
-        border-left-color: mix($page-highlight, white, 20%);
+        color: #0ff;
+      }
+    }
+  }
+
+  .page-list-content {
+    .page-item {
+      display: flex;
+      align-items: center;
+      padding: 0.4rem;
+      margin: 0.2rem 0;
+      background: #111;
+      border: 1px solid #333;
+      position: relative;
+      transition: background 0.2s;
+
+      &:hover {
+        background: #1c1c1c;
       }
 
       &.dragging {
-        opacity: 0.5;
-        border-color: #f0f;
-        box-shadow: 0 0 20px rgba(255, 0, 255, 0.7);
-        transform: scale(1.02);
+        opacity: 0.6;
+        background: #222;
       }
 
-      &.highlight-parent {
-        outline: 1px dashed #aaa;
-        background-color: rgba(0, 188, 212, 0.1);
+      .drag-handle {
+        cursor: grab;
+        margin-right: 0.5rem;
+        user-select: none;
+      }
+
+      .page-title {
+        flex: 1;
+      }
+
+      .page-actions {
+        margin-left: auto;
+        cursor: pointer;
       }
     }
 
     .preview-indicator {
       height: 4px;
       background: #00bcd4;
-      margin: 6px 0;
-      border-radius: 2px;
-      animation: pulse 0.4s infinite alternate ease-in-out;
+      margin: 2px 0;
     }
   }
 
-  .page-list-actions {
+  .page-list-pagination {
+    margin-top: 1rem;
     display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
+    gap: 0.25rem;
 
     button {
-      padding: 0.5rem 1rem;
-      background: #e91e63;
+      padding: 0.3rem 0.6rem;
+      background: #222;
       color: white;
-      border: none;
+      border: 1px solid #555;
+      border-radius: 4px;
       cursor: pointer;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 14px;
-      transition: background 0.2s ease;
 
-      &:hover {
-        background: darken(#e91e63, 10%);
+      &:disabled {
+        background: #333;
+        cursor: default;
       }
-    }
-  }
 
-  @keyframes pulse {
-    from { opacity: 0.4; }
-    to { opacity: 1; }
-  }
-
-  @media (max-width: 600px) {
-    padding: 0.5rem;
-
-    .page-list-content .page-item {
-      font-size: 12px;
-      padding: 0.4rem 0.8rem 0.4rem 1.5rem;
-    }
-
-    .page-list-actions {
-      flex-direction: column;
-      align-items: stretch;
-
-      button {
-        width: 100%;
-        text-align: center;
+      &:hover:not(:disabled) {
+        background: #333;
       }
     }
   }
