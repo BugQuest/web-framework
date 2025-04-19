@@ -3,9 +3,11 @@
 namespace BugQuest\Framework\Services;
 
 use BugQuest\Framework\Controllers\Admin\DebugController;
+use BugQuest\Framework\Controllers\Admin\GlobalStyleController;
 use BugQuest\Framework\Controllers\Admin\ImagesController;
 use BugQuest\Framework\Controllers\Admin\MediasController;
 use BugQuest\Framework\Controllers\Admin\PageBuilderController;
+use BugQuest\Framework\Controllers\Admin\PageListController;
 use BugQuest\Framework\Helpers\StringHelper;
 use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Router;
@@ -94,7 +96,7 @@ abstract class Admin
         self::addMenu(
             name: 'Pages',
             icon: '📄',
-            route: self::addPage('Pages - List', PageBuilderController::class . '::list')
+            route: self::addPage('Pages - List', PageListController::class . '::index')
         );
 
         self::addMenu(

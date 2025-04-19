@@ -1,9 +1,200 @@
+
+
 @use './admin/variables';
-@use "~grapesjs/src/styles/scss/main.scss";
+@use "~grapesjs/src/styles/scss/main";
 
-
-/* add margin to the top of the grapesjs editor */
+/* Zone principale */
 #gjs {
-
   height: calc(100vh - var(--header-height) - var(--footer-height));
 }
+
+//#gjs::before {
+//  content: '';
+//  pointer-events: none;
+//  position: absolute;
+//  top: 0; left: 0;
+//  width: 100%; height: 100%;
+//  background: repeating-linear-gradient(
+//                  to bottom,
+//                  transparent,
+//                  transparent 1px,
+//                  rgba(255, 255, 255, 0.03) 2px
+//  );
+//  z-index: 999;
+//}
+//
+///* Panneaux latéraux */
+//.gjs-pn-panels {
+//  background: #131325;
+//  border: none;
+//}
+//
+///* Toolbar du haut */
+//.gjs-pn-panel.gjs-pn-commands {
+//  background-color: #1a1a2e;
+//  border-bottom: 1px solid #2f2f4f;
+//}
+//
+//.gjs-pn-buttons .gjs-pn-btn {
+//  background: #1a1a2e;
+//  color: #0ff;
+//  border: 1px solid transparent;
+//
+//  &:hover {
+//    background: #232348;
+//    border-color: #0ff;
+//    color: #fff;
+//    box-shadow: 0 0 5px #0ff;
+//  }
+//
+//  &.gjs-pn-active {
+//    background: #0ff;
+//    color: #000;
+//    font-weight: bold;
+//    box-shadow: 0 0 10px #0ff;
+//  }
+//}
+//
+///* Catégories de blocs */
+//.gjs-block-category {
+//  background: #1e1e38;
+//  color: #0ff;
+//  border-bottom: 1px solid #2e2e50;
+//
+//  .gjs-title {
+//    font-family: 'Orbitron', sans-serif;
+//    text-transform: uppercase;
+//    letter-spacing: 0.05em;
+//    font-size: 0.9rem;
+//    padding: 0.6rem;
+//    background: #121222;
+//    color: #55f;
+//  }
+//}
+//
+///* Blocs */
+//.gjs-block {
+//  background: #191932;
+//  color: #0ff;
+//  border: 1px solid #333366;
+//  border-radius: 4px;
+//  padding: 8px;
+//
+//  &:hover {
+//    background: #252545;
+//    border-color: #0ff;
+//    box-shadow: 0 0 6px #0ff;
+//  }
+//}
+//
+///* Canvas area */
+//.gjs-cv-canvas {
+//  background-color: #0f0f1b;
+//}
+//
+///* Stage (le fond derrière la page éditée) */
+//.gjs-cv-stage {
+//  background: #0f0f1b;
+//  border: 1px solid #111;
+//}
+//
+///* Sidebar composants, styles, paramètres */
+//.gjs-pn-panel.gjs-pn-views {
+//  background: #131325;
+//  border-left: 1px solid #2f2f4f;
+//}
+//
+///* Panneau des styles et paramètres */
+//.gjs-sm-properties, .gjs-trt-traits {
+//  background-color: #121222;
+//  color: #0ff;
+//
+//  .gjs-sm-property, .gjs-trt-trait {
+//    background: #0f0f1b;
+//    border: 1px solid #0ff;
+//    margin-bottom: 10px;
+//
+//    label {
+//      color: #55f;
+//      font-family: 'Orbitron', monospace;
+//    }
+//
+//    input, select {
+//      background: #131325;
+//      color: #0ff;
+//      border: 1px solid #0ff;
+//
+//      &:focus {
+//        outline: none;
+//        box-shadow: 0 0 4px #0ff;
+//      }
+//    }
+//  }
+//}
+//
+///* Sélecteurs de styles */
+//.gjs-clm-tags {
+//  background: #191932;
+//  color: #0ff;
+//  border: 1px solid #333366;
+//}
+//
+///* Inputs / Traits généraux */
+//input, select, textarea {
+//  background: #0f0f1b;
+//  border: 1px solid #0ff;
+//  color: #0ff;
+//  font-family: 'Orbitron', monospace;
+//
+//  &:focus {
+//    outline: none;
+//    box-shadow: 0 0 4px #0ff;
+//  }
+//}
+//
+///* Tooltips */
+//.gjs-tooltip {
+//  background: #0ff;
+//  color: #000;
+//  border-radius: 2px;
+//  font-size: 0.75rem;
+//  font-weight: bold;
+//}
+//
+///* Popins, modals, etc. */
+//.gjs-mdl-dialog {
+//  background: #121222;
+//  color: #0ff;
+//  border: 1px solid #0ff;
+//
+//  .gjs-mdl-header {
+//    background: #1a1a2e;
+//    border-bottom: 1px solid #0ff;
+//    color: #55f;
+//  }
+//
+//  .gjs-mdl-content {
+//    background: #191932;
+//  }
+//}
+//
+///* Code viewer */
+//.gjs-code {
+//  background: #000000;
+//  color: #00ffcc;
+//  font-family: 'Courier New', monospace;
+//}
+//
+///* Device selector */
+//.gjs-device-buttons {
+//  button {
+//    background: #1a1a2e;
+//    color: #0ff;
+//
+//    &.gjs-pn-active {
+//      background: #0ff;
+//      color: #000;
+//      font-weight: bold;
+//    }
+//  }
+//}
