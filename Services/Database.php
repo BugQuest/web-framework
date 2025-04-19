@@ -30,7 +30,8 @@ class Database
         $manager->setAsGlobal();
         $manager->bootEloquent();
 
-        if (!self::isInstalled()) {
+
+        if (!self::isInstalled() && !str_starts_with(Router::test(), 'framework.assets')) {
             $route = new Route(
                 name: 'install',
                 _slug: '/install',

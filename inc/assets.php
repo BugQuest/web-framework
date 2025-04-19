@@ -19,14 +19,6 @@ Assets::add(
 );
 
 Assets::add(
-    group: 'admin-options-images',
-    id: 'js:admin:options:images',
-    url: '/framework/assets/js/admin-options-images',
-    type: 'js',
-    isLocalUrl: true,
-);
-
-Assets::add(
     group: 'admin-light',
     id: 'css:admin:light',
     url: '/framework/assets/css/admin-light',
@@ -35,7 +27,7 @@ Assets::add(
 );
 
 Assets::add(
-    group: 'admin-global',
+    group: 'global',
     id: 'js:global',
     url: '/framework/assets/js/global',
     type: 'js',

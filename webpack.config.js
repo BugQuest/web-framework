@@ -9,8 +9,11 @@ module.exports = {
     entry: {
         'css/admin': '@framework/scss/admin.scss',
         'css/admin-light': '@framework/scss/admin-light.scss',
+        'css/admin-page-builder': '@framework/scss/admin-page-builder.scss',
+        'css/theme-default': '@framework/scss/theme.scss',
         'js/admin': '@framework/js/admin.js',
         'js/admin-options-images': '@framework/js/admin-options-images.js',
+        'js/admin-page-builder': '@framework/js/admin-page-builder.js',
         'js/global': '@framework/js/global.js',
     },
     resolve: {

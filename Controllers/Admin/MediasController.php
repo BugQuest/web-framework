@@ -5,8 +5,10 @@ namespace BugQuest\Framework\Controllers\Admin;
 use BugQuest\Framework\Models\Database\Media;
 use BugQuest\Framework\Models\Database\Tag;
 use BugQuest\Framework\Models\Response;
+use BugQuest\Framework\Services\Image;
 use BugQuest\Framework\Services\MediaManager;
 use BugQuest\Framework\Services\View;
+use mysql_xdevapi\SqlStatementResult;
 
 abstract class MediasController
 {
@@ -153,5 +155,23 @@ abstract class MediasController
         } catch (\Exception $e) {
             return Response::jsonServerError($e->getMessage());
         }
+    }
+
+    public static function resize(int $id, string $size): Response
+    {
+        $media = MediaManager::getById($id);
+        if (!$media)
+            return Response::json404('Media not found');
+
+        try {
+            return Response::json(['url' => $media->imageUrl($size)]);
+        } catch (\Exception $e) {
+            return Response::jsonServerError($e->getMessage());
+        }
+    }
+
+    public static function sizes(): Response
+    {
+        return Response::json(Image::getSizes());
     }
 }

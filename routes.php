@@ -6,6 +6,7 @@ use BugQuest\Framework\Controllers\Admin\DebugController;
 use BugQuest\Framework\Controllers\Admin\LocaleController;
 use BugQuest\Framework\Controllers\Admin\MediasController;
 use BugQuest\Framework\Controllers\Admin\OptionController;
+use BugQuest\Framework\Controllers\Admin\PageBuilderController;
 use BugQuest\Framework\Controllers\AssetsController;
 use BugQuest\Framework\Controllers\AuthController;
 use BugQuest\Framework\Debug;
@@ -23,6 +24,12 @@ new RouteGroup(
             name: 'dashboard',
             _slug: '/',
             _callback: DashboardController::class . '::index',
+            _methods: ['GET'],
+        ),
+        new Route(
+            name: 'page.edit',
+            _slug: '/page/{id:int?}',
+            _callback: PageBuilderController::class . '::edit',
             _methods: ['GET'],
         ),
     ],
@@ -125,6 +132,18 @@ new RouteGroup(
             _callback: MediasController::class . '::view',
             _methods: ['GET']
         ),
+        new Route(
+            name: 'medias.resize',
+            _slug: '/medias/resize/{id:int}/{size:slug}',
+            _callback: MediasController::class . '::resize',
+            _methods: ['GET']
+        ),
+        new Route(
+            name: 'medias.sizes',
+            _slug: '/medias/sizes',
+            _callback: MediasController::class . '::sizes',
+            _methods: ['GET']
+        ),
         /*
          * Medias Tags
          */
@@ -152,11 +171,29 @@ new RouteGroup(
             _callback: MediasController::class . '::setTags',
             _methods: ['POST']
         ),
+        /*
+         * Locale
+         */
         new Route(
             name: 'locale.domain.get',
             _slug: '/locale/domain/get/{domain:alpha}',
             _callback: LocaleController::class . '::getDomain',
             _methods: ['GET']
+        ),
+        /*
+         * Page
+         */
+        new Route(
+            name: 'page.builder.load',
+            _slug: '/page/load/{id:int}',
+            _callback: PageBuilderController::class . '::load',
+            _methods: ['GET']
+        ),
+        new Route(
+            name: 'page.builder.save',
+            _slug: '/page/save/{id:int}',
+            _callback: PageBuilderController::class . '::save',
+            _methods: ['POST']
         ),
     ],
     _middlewares: [

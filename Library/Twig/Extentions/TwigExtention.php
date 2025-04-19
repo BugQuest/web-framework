@@ -35,10 +35,10 @@ class TwigExtention extends \Twig\Extension\AbstractExtension implements \Twig\E
             }, [
                 'is_safe' => ['html'],
             ]),
-            new TwigFunction('bq_is_route', function (string $name) {
+            new TwigFunction('bq_is_route', function (?string $name) {
                 return Route::current()?->name === $name;
             }),
-            new TwigFunction('bq_route_url', function (string $name) {
+            new TwigFunction('bq_route_url', function (?string $name) {
                 if ($route = Router::getRoute($name))
                     return $route->getSlug();
 
