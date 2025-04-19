@@ -6,10 +6,12 @@ use BugQuest\Framework\Controllers\Admin\DebugController;
 use BugQuest\Framework\Controllers\Admin\LocaleController;
 use BugQuest\Framework\Controllers\Admin\MediasController;
 use BugQuest\Framework\Controllers\Admin\OptionController;
+use BugQuest\Framework\Controllers\AssetsController;
 use BugQuest\Framework\Controllers\AuthController;
 use BugQuest\Framework\Debug;
 use BugQuest\Framework\Middleware\AdminAuthMiddleware;
-use BugQuest\Framework\Middleware\ApiAuthMiddleware;
+use BugQuest\Framework\Middleware\ApiAdminAuthMiddleware;
+use BugQuest\Framework\Middleware\PlainAdminAuthMiddleware;
 use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Models\RouteGroup;
 
@@ -23,8 +25,75 @@ new RouteGroup(
             _callback: DashboardController::class . '::index',
             _methods: ['GET'],
         ),
+    ],
+    _middlewares: [
+        AdminAuthMiddleware::class
+    ]
+)->register();
+
+new RouteGroup(
+    name: 'framework.assets',
+    _prefix: '/framework/assets',
+    _routes: [
+        new Route(
+            name: 'js',
+            _slug: '/js/{file:slug}',
+            _callback: AssetsController::class . '::js',
+            _methods: ['GET']
+        ),
+        new Route(
+            name: 'css',
+            _slug: '/css/{file:slug}',
+            _callback: AssetsController::class . '::css',
+            _methods: ['GET']
+        ),
+        new Route(
+            name: 'js',
+            _slug: '/js-map/{file:slug}',
+            _callback: AssetsController::class . '::jsMap',
+            _methods: ['GET']
+        ),
+        new Route(
+            name: 'css',
+            _slug: '/css-map/{file:slug}',
+            _callback: AssetsController::class . '::cssMap',
+            _methods: ['GET']
+        ),
+    ]
+)->register();
+
+new RouteGroup(
+    name: 'admin.api',
+    _prefix: '/admin/api',
+    _routes: [
+        new Route(
+            name: 'debug',
+            _slug: '/debug/metrics',
+            _callback: Debug::class . '::metrics',
+            _methods: ['GET']
+        ),
+        /**
+         * Options
+         */
+        new Route(
+            name: 'options.get',
+            _slug: '/options/get/{group:alpha}/{key:slug?}',
+            _callback: OptionController::class . '::get',
+            _methods: ['GET']
+        ),
+        new Route(name: 'options.set',
+            _slug: '/options/set/{group:alpha}/{key:slug?}',
+            _callback: OptionController::class . '::set',
+            _methods: ['POST']
+        ),
+        new Route(
+            name: 'options.delete',
+            _slug: '/options/delete/{group:alpha}/{key:slug}',
+            _callback: OptionController::class . '::delete',
+            _methods: ['DELETE']
+        ),
         /*
-         * Routes pour la gestion des médias
+         * Medias
          */
         new Route(
             name: 'medias.upload',
@@ -57,7 +126,7 @@ new RouteGroup(
             _methods: ['GET']
         ),
         /*
-         * Routes pour la gestion des Media tags
+         * Medias Tags
          */
         new Route(
             name: 'medias.tags.all',
@@ -89,45 +158,9 @@ new RouteGroup(
             _callback: LocaleController::class . '::getDomain',
             _methods: ['GET']
         ),
-        /**
-         * Options
-         */
-        new Route(
-            name: 'options.get',
-            _slug: '/options/get/{group:alpha}/{key:slug?}',
-            _callback: OptionController::class . '::get',
-            _methods: ['GET']
-        ),
-        new Route(name: 'options.set',
-            _slug: '/options/set/{group:alpha}/{key:slug?}',
-            _callback: OptionController::class . '::set',
-            _methods: ['POST']
-        ),
-        new Route(
-            name: 'options.delete',
-            _slug: '/options/delete/{group:alpha}/{key:slug}',
-            _callback: OptionController::class . '::delete',
-            _methods: ['DELETE']
-        ),
     ],
     _middlewares: [
-        AdminAuthMiddleware::class
-    ]
-)->register();
-
-new RouteGroup(
-    name: 'admin.api',
-    _prefix: '/admin/api',
-    _routes: [
-        new Route(
-            name: 'debug',
-            _slug: '/debug/metrics',
-            _callback: Debug::class . '::metrics',
-            _methods: ['GET']
-        ),
-    ],
-    _middlewares: [
-        ApiAuthMiddleware::class
+        ApiAdminAuthMiddleware::class
     ]
 )->register();
 

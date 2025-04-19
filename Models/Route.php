@@ -2,13 +2,10 @@
 
 namespace BugQuest\Framework\Models;
 
-use BugQuest\Framework\Debug;
 use BugQuest\Framework\Helpers\CallbackHelper;
 use BugQuest\Framework\Router;
 use BugQuest\Framework\Services\Cache;
 use BugQuest\Framework\Services\Hooks;
-use http\Header;
-use JetBrains\PhpStorm\NoReturn;
 
 class Route
 {
@@ -114,13 +111,7 @@ class Route
 
         self::$_current = $this;
         Hooks::runAction('route.before', $this, $args);
-        Debug::log('Route', 'name', $this->name);
-        Debug::log('Route', 'slug', $this->_slug);
         if (!is_null($this->_cache_key)) {
-
-            Debug::log('Route', 'cache_key', $this->_cache_key);
-            Debug::log('Route', 'cache_group', $this->_cache_group);
-            Debug::log('Route', 'cache_ttl', $this->_cache_ttl . ' sec <br> (' . date('Y-m-d H:i:s', time() + $this->_cache_ttl) . ')');
             return Cache::remember(
                 key: $this->_cache_key,
                 ttl: $this->_cache_ttl,
@@ -299,7 +290,7 @@ class Route
         return $this;
     }
 
-    #[NoReturn] public function redirect(): void
+    public function redirect(): void
     {
         header('Location: ' . $this->getSlug());
         exit;

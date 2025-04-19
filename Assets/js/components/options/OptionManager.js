@@ -8,7 +8,7 @@ export default class OptionManager {
         }
 
         // Sinon fetch
-        const res = await fetch(`/admin/options/get/${group}/${key}`);
+        const res = await fetch(`/admin/api/options/get/${group}/${key}`);
         if (!res.ok) throw new Error(`Erreur chargement de l'option "${key}"`);
 
         const data = await res.json();
@@ -25,7 +25,7 @@ export default class OptionManager {
             return Object.fromEntries(this._cache.get(group));
         }
 
-        const res = await fetch(`/admin/options/get/${group}`);
+        const res = await fetch(`/admin/api/options/get/${group}`);
         if (!res.ok) throw new Error(`Erreur chargement des options du groupe "${group}"`);
 
         const data = await res.json();
@@ -46,7 +46,7 @@ export default class OptionManager {
         if (!group || !key || typeof type !== 'string')
             throw new Error('Paramètres invalides pour saveOption()');
 
-        const url = `/admin/options/set/${group}/${key}`;
+        const url = `/admin/api/options/set/${group}/${key}`;
         const payload = {type, value};
 
         const res = await fetch(url, {
@@ -80,7 +80,7 @@ export default class OptionManager {
             'value' in opt
         );
 
-        const res = await fetch(`/admin/options/set/${group}`, {
+        const res = await fetch(`/admin/api/options/set/${group}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -104,7 +104,7 @@ export default class OptionManager {
     }
 
     static async deleteOption(group, key) {
-        const res = await fetch(`/admin/options/delete/${group}/${key}`, {
+        const res = await fetch(`/admin/api/options/delete/${group}/${key}`, {
             method: 'DELETE'
         });
 

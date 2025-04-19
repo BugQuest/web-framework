@@ -2,32 +2,44 @@
 
 use BugQuest\Framework\Services\Assets;
 
-Assets::registerDist(BQ_PUBLIC_DIR . '/cms/dist');
-Assets::registerDist(BQ_PUBLIC_DIR . '/cms/admin/dist');
-
-Assets::addCss(
+Assets::add(
     group: 'admin',
-    url: '/css/admin.css'
+    id: 'css:admin',
+    url: '/framework/assets/css/admin',
+    type: 'css',
+    isLocalUrl: true,
 );
 
-Assets::addJs(
+Assets::add(
     group: 'admin',
-    url: '/js/admin.js',
+    id: 'js:admin',
+    url: '/framework/assets/js/admin',
+    type: 'js',
+    isLocalUrl: true,
 );
 
-Assets::addJs(
+Assets::add(
     group: 'admin-options-images',
-    url: '/js/admin-options-images.js',
+    id: 'js:admin:options:images',
+    url: '/framework/assets/js/admin-options-images',
+    type: 'js',
+    isLocalUrl: true,
 );
 
-Assets::addCss(
+Assets::add(
     group: 'admin-light',
-    url: '/css/admin-light.css',
+    id: 'css:admin:light',
+    url: '/framework/assets/css/admin-light',
+    type: 'css',
+    isLocalUrl: true,
 );
 
-Assets::addJs(
-    group: 'global',
-    url: '/js/global.js',
+Assets::add(
+    group: 'admin-global',
+    id: 'js:global',
+    url: '/framework/assets/js/global',
+    type: 'js',
+    isLocalUrl: true,
 );
 
 Assets::addFonts(

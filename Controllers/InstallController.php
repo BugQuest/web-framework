@@ -108,7 +108,6 @@ class InstallController
                     $table->timestamps();
                 });
 
-
                 Manager::schema()->create('media_tag_media', function (Blueprint $table) {
                     $table->unsignedBigInteger('media_id');
                     $table->unsignedBigInteger('tag_id');
@@ -128,6 +127,16 @@ class InstallController
                     $table->timestamps();
 
                     $table->unique(['group', 'key']);
+                });
+
+                //page
+                Manager::schema()->create('pages', function (Blueprint $table) {
+                    $table->id();
+                    $table->string('title');
+                    $table->string('slug')->unique();
+                    $table->text('html')->nullable();
+                    $table->json('builder_data')->nullable();
+                    $table->timestamps();
                 });
 
                 // Hash + insertion dans la table users
