@@ -12,7 +12,7 @@ abstract class View
     private static ?Environment $twig = null;
     private static array $paths = [
         [
-            'path' => BQ_ROOT . '/Framework/Views',
+            'path' => BQ_FRAMEWORK_PATH . DS . 'Views',
             'namespace' => "framework",
         ],
     ];
