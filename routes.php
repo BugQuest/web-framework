@@ -7,6 +7,7 @@ use BugQuest\Framework\Controllers\Admin\LocaleController;
 use BugQuest\Framework\Controllers\Admin\MediasController;
 use BugQuest\Framework\Controllers\Admin\OptionController;
 use BugQuest\Framework\Controllers\Admin\PageBuilderController;
+use BugQuest\Framework\Controllers\Admin\PageListController;
 use BugQuest\Framework\Controllers\AssetsController;
 use BugQuest\Framework\Controllers\AuthController;
 use BugQuest\Framework\Debug;
@@ -191,8 +192,20 @@ new RouteGroup(
         ),
         new Route(
             name: 'page.builder.save',
-            _slug: '/page/save/{id:int}',
+            _slug: '/page/save/{id:int?}',
             _callback: PageBuilderController::class . '::save',
+            _methods: ['POST']
+        ),
+        new Route(
+            name: 'page.list',
+            _slug: '/page/list',
+            _callback: PageListController::class . '::list',
+            _methods: ['POST']
+        ),
+        new Route(
+            name: 'page.hierachy',
+            _slug: '/page/hierachy',
+            _callback: PageListController::class . '::hierachy',
             _methods: ['POST']
         ),
     ],

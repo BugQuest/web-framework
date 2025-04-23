@@ -132,11 +132,15 @@ class InstallController
                 //page
                 Manager::schema()->create('pages', function (Blueprint $table) {
                     $table->id();
+                    $table->unsignedBigInteger('parent_id')->nullable();
                     $table->string('title');
                     $table->string('slug')->unique();
                     $table->text('html')->nullable();
                     $table->json('builder_data')->nullable();
+                    $table->integer('order')->default(0);
                     $table->timestamps();
+
+                    $table->foreign('parent_id')->references('id')->on('pages')->onDelete('set null');
                 });
 
                 // Hash + insertion dans la table users

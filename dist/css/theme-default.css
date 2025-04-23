@@ -37,6 +37,8 @@ button:hover,
   max-width: 1140px;
   margin: 0 auto;
   padding: 0 1rem;
+  background-color: #aaa;
+  min-height: 300px;
 }
 
 .section {

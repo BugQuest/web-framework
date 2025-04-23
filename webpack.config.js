@@ -14,6 +14,7 @@ module.exports = {
         'js/admin': '@framework/js/admin.js',
         'js/admin-options-images': '@framework/js/admin-options-images.js',
         'js/admin-page-builder': '@framework/js/admin-page-builder.js',
+        'js/admin-page-list': '@framework/js/admin-page-list.js',
         'js/global': '@framework/js/global.js',
     },
     resolve: {

@@ -102,6 +102,13 @@ export default class BuildHelper {
         return h3;
     }
 
+    static h4(content, className = '') {
+        let h4 = document.createElement('h4');
+        h4.className = className;
+        h4.textContent = content;
+        return h4;
+    }
+
     static img(src, alt = '', className = '') {
         let img = document.createElement('img');
         img.src = src;

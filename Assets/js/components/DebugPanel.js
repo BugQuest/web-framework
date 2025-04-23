@@ -41,6 +41,13 @@ export class DebugPanel {
 
         await this.loadMetrics();
 
+        this.kvSection = BuildHelper.div('kv-section');
+        this.kvWrap = BuildHelper.div('wrap');
+        const kvTitle = BuildHelper.h4('Debug Infos dynamiques');
+        this.kvSection.append(kvTitle, this.kvWrap);
+        this.panel.appendChild(this.kvSection);
+        this.kvValues = {}; // pour stocker les refs HTML des valeurs
+
         window.debugPanel = this;
     }
 
@@ -129,4 +136,18 @@ export class DebugPanel {
                     this.addGroup(group_key, data[group_key]);
             });
     }
+
+    static updateValue(key, value) {
+        if (!this.kvValues) return;
+
+        if (!this.kvValues[key]) {
+            const line = BuildHelper.div('debug-line');
+            line.innerHTML = `<strong>${key}</strong>: <span class="debug-value">${value}</span>`;
+            this.kvWrap.appendChild(line);
+            this.kvValues[key] = line.querySelector('.debug-value');
+        } else {
+            this.kvValues[key].textContent = value;
+        }
+    }
+
 }

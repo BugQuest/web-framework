@@ -3642,7 +3642,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   color: #ffffff;
 }
 
-/* add margin to the top of the grapesjs editor */
+/* Zone principale */
 #gjs {
   height: calc(100vh - var(--header-height) - var(--footer-height));
 }
