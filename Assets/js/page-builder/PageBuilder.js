@@ -11,6 +11,14 @@ export default class PageBuilder {
         this.editor = null;
         this.id = element.dataset.id || null;
         this.theme = element.dataset.theme || 'default';
+        this.blocks = {};
+        //try get dataset blocks and parse it
+        try {
+            this.blocks = JSON.parse(element.dataset.blocks);
+        } catch (e) {
+            console.error('Impossible de parser les blocs :', e);
+            this.blocks = {};
+        }
     }
 
     async initEditor() {
@@ -29,9 +37,10 @@ export default class PageBuilder {
                 }
             });
             loadBasicBlocks(this.editor);
+            await this.loadBlocks();
             this.addSaveButton();
             this.addReloadStylesButton();
-            this.reloadCanvasStyles();
+            // this.reloadCanvasStyles();
             return;
         }
 
@@ -68,10 +77,26 @@ export default class PageBuilder {
         if (data.builder_data)
             this.editor.loadProjectData(data.builder_data);
 
-
+        await this.loadBlocks();
         this.addSaveButton();
         this.addReloadStylesButton();
         this.reloadCanvasStyles();
+    }
+
+    async loadBlocks() {
+        Object.values(this.blocks).forEach(block => {
+            this.editor.BlockManager.add(block.name, {
+                label: block.label,
+                category: block.category,
+                content: {
+                    type: 'custom-block',
+                    attributes: {
+                        'data-block-type': block.name,
+                    },
+                    'custom-data': block.defaultContent || {},
+                },
+            });
+        });
     }
 
     reloadCanvasStyles() {

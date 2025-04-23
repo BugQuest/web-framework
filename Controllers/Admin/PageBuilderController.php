@@ -5,6 +5,7 @@ namespace BugQuest\Framework\Controllers\Admin;
 use BugQuest\Framework\Helpers\StringHelper;
 use BugQuest\Framework\Models\Database\Page;
 use BugQuest\Framework\Models\Response;
+use BugQuest\Framework\PageBuilder\BlockRegistry;
 use BugQuest\Framework\Services\Assets;
 use BugQuest\Framework\Services\PageService;
 use BugQuest\Framework\Services\Payload;
@@ -32,6 +33,7 @@ class PageBuilderController
 
         return Response::view('@framework/admin/page/edit.twig', [
             'page' => $id,
+            'blocks' => BlockRegistry::toJS(),
             'theme' => PageService::getTheme(),
         ]);
     }
