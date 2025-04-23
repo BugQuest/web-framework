@@ -72,21 +72,15 @@ class MediaManager
         return self::$allowedMimeTypes;
     }
 
-    public static function tagFile(int $mediaFileId, array $tags): void
+    public static function setTags(Media $media, array $tags): void
     {
-        $file = Media::findOrFail($mediaFileId);
-        $tagModels = [];
+        $tags = array_filter($tags, fn($t) => is_numeric($t)); // nettoyage simple
+        $tags = array_map(fn($t) => (int)$t, $tags); // cast to int
 
-        foreach ($tags as $tagName) {
-            $slug = StringHelper::sanitize_title($tagName);
-            $tagModels[] = Tag::firstOrCreate([
-                'slug' => $slug,
-            ], [
-                'name' => $tagName,
-            ]);
-        }
+        $existingTags = Tag::whereIn('id', $tags)->pluck('id')->toArray();
 
-        $file->tags()->syncWithoutDetaching(collect($tagModels)->pluck('id'));
+        //sync tags
+        $media->tags()->sync($existingTags);
     }
 
     public static function updateMeta(Media $media, array $meta): void
@@ -95,21 +89,28 @@ class MediaManager
         $media->save();
     }
 
-    public static function getPaginated(int $perPage = 24, int $page = 1, ?string $tagSlug = null): array
+    public static function getPaginated(int $perPage = 24, int $page = 1, array $tagIds = []): array
     {
         $query = Media::query()->with('tags');
 
-        if ($tagSlug)
-            $query->whereHas('tags', fn($q) => $q->where('slug', $tagSlug));
+        if (!empty($tagIds)) {
+            $query->whereHas('tags', fn($q) => $q->whereIn('id', $tagIds));
+        }
 
         $total = $query->count();
-        $media = $query->orderByDesc('created_at')
+
+        $medias = $query->orderByDesc('created_at')
             ->skip(($page - 1) * $perPage)
             ->take($perPage)
-            ->get();
+            ->get()->toArray();
+
+        foreach ($medias as &$media) {
+            $media['exif'] = json_decode($media['exif'], true);
+            $media['meta'] = json_decode($media['meta'], true);
+        }
 
         return [
-            'items' => $media,
+            'items' => $medias,
             'total' => $total,
             'per_page' => $perPage,
             'current_page' => $page,
@@ -117,4 +118,28 @@ class MediaManager
         ];
     }
 
+    public static function addTag(string $name): Tag
+    {
+        $slug = StringHelper::sanitize_title($name);
+        return Tag::firstOrCreate([
+            'slug' => $slug,
+        ], [
+            'name' => $name,
+        ]);
+    }
+
+    public static function deleteTag(int $id): bool
+    {
+        $tag = Tag::find($id);
+        if ($tag) {
+            $tag->delete();
+            return true;
+        }
+        return false;
+    }
+
+    public static function getTags(): \Illuminate\Database\Eloquent\Collection
+    {
+        return Tag::all();
+    }
 }

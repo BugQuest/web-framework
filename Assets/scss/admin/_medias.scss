@@ -1,31 +1,29 @@
-/* Media Manager Styles */
-
-.__mediaUploadOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 255, 255, 0.05);
-  border: 2px dashed #0ff;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-
-  &.active {
-    display: flex;
-  }
-
-  .upload-message {
-    text-align: center;
-    font-size: 1.2rem;
-    color: cyan;
-    background: #0ff2;
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    box-shadow: 0 0 10px cyan;
-  }
-}
-
 .media {
+  /* .media-dropzone */
+  &-dropzone {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 255, 255, 0.05);
+    border: 2px dashed #0ff;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+
+    &.active {
+      display: flex;
+    }
+
+    .upload-message {
+      text-align: center;
+      font-size: 1.2rem;
+      color: cyan;
+      background: #0ff2;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px cyan;
+    }
+  }
 
   /* .media-filter */
   &-filters {
@@ -50,12 +48,18 @@
 
   /* .media-gallery */
   &-gallery {
+    display: flex;
+    padding: 0 1rem;
+    position: relative;
+
+    /* .media-gallery-content */
     &-content {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
       gap: 1rem;
     }
 
+    /* .media-gallery-header */
     &-pagination {
       display: flex;
       justify-content: center;
@@ -84,6 +88,51 @@
         }
       }
     }
+
+    /* .media-gallery-tags */
+    &-tags {
+
+      max-width: 200px;
+      padding: 0 .5rem;
+
+      /* .media-gallery-tags-header */
+      &-header {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      /* .media-gallery-tags-content */
+      &-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0 .5rem;
+
+        span {
+          padding: 0.5rem 1rem;
+          background: #111827;
+          color: #fff;
+          border: 1px solid #0ff3;
+          border-radius: 4px;
+          text-decoration: none;
+          font-size: 0.85rem;
+          cursor: pointer;
+
+          &.active {
+            background: cyan;
+            color: black;
+            font-weight: bold;
+          }
+
+          &:hover {
+            background: #0ff3;
+            color: black;
+          }
+        }
+      }
+    }
   }
 
   /* .media-card */
@@ -95,6 +144,7 @@
     color: #fff;
     box-shadow: 0 0 8px rgba(0, 255, 255, 0.05);
     transition: transform 0.2s ease;
+    position: relative;
 
     &.uploading {
       opacity: 0.6;
@@ -104,6 +154,19 @@
       transform: scale(1.02);
     }
 
+    /* .media-card--mime */
+    &--mime {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: #0ff6;
+      padding: 0.2rem;
+      font-size: 0.5rem;
+      color: #000;
+      border-radius: 0 0 0 8px;
+    }
+
+    /* .media-card--preview */
     &--preview {
       background: #0ff1;
       display: flex;
@@ -138,6 +201,78 @@
       .size {
         color: #ccc;
         font-size: 0.75rem;
+      }
+    }
+  }
+
+  /* .media-modal */
+  &-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem;
+    background: linear-gradient(to bottom right, #0f0f0f, #1a1a2e);
+    border: 2px solid #0ff3;
+    border-radius: 8px;
+    box-shadow: 0 0 20px #0ff3;
+    color: #e0f7fa;
+    font-family: 'Courier New', monospace;
+    max-width: 800px;
+    margin: 0 auto;
+
+    &--preview {
+      text-align: center;
+
+      img {
+        max-width: 100%;
+        max-height: 400px;
+        border: 1px solid #0ff5;
+        box-shadow: 0 0 10px #0ff6;
+        border-radius: 4px;
+      }
+
+      .media-modal--icon {
+        font-size: 6rem;
+        color: cyan;
+        text-shadow: 0 0 10px #0ff;
+      }
+    }
+
+    &--info {
+      h2 {
+        margin: 0 0 1rem;
+        font-size: 1.5rem;
+        color: #76eec6;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1rem;
+
+        li {
+          margin-bottom: 0.5rem;
+          font-size: 0.95rem;
+
+          strong {
+            color: #0ff;
+          }
+        }
+      }
+
+      &--download {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: #00f2ff44;
+        border: 1px solid #0ff;
+        border-radius: 4px;
+        color: cyan;
+        text-decoration: none;
+        transition: background 0.3s;
+
+        &:hover {
+          background: #00f2ffaa;
+        }
       }
     }
   }

@@ -1,7 +1,7 @@
 .header {
   background: linear-gradient(to right, #111827, #1f2937);
   color: #fff;
-  padding: 1rem 2rem;
+  padding: 0 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -9,6 +9,7 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  height: var(--header-height);
   max-height: var(--header-height);
 
   .header-left {

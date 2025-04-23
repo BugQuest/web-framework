@@ -5,6 +5,11 @@
   max-width: 1200px;
   margin: 0 auto;
 
+  &-admin {
+    //margin-top: calc(var(--header-height) + 20px);
+    margin-bottom: calc(var(--footer-height) + 1rem);
+  }
+
   &-centered {
     display: flex;
     flex-direction: column;

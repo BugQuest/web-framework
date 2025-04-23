@@ -15,23 +15,11 @@ abstract class Admin
             'route' => 'admin.dashboard',
             'children' => []
         ],
-        'config' => [
-            'name' => 'Config',
-            'icon' => '🔧',
-            'route' => null,
-            'children' => []
-        ],
-        'debug' => [
-            'name' => 'Debug',
-            'icon' => '🐞',
-            'route' => null,
-            'children' => []
-        ]
     ];
 
     public static array $_pages = [];
 
-    public static function addMenu(string $name, string $icon, string $route, array $children = []): void
+    public static function addMenu(string $name, ?string $icon, ?string $route, array $children = []): void
     {
         //check if menu already exists
         if (key_exists($name, self::$_menus))
@@ -97,18 +85,29 @@ abstract class Admin
 
     public static function registerPages(): void
     {
+        self::addMenu(
+            name: 'Medias',
+            icon: '🖼️',
+            route: self::addPage('Config - Medias', \BugQuest\Framework\Controllers\Admin\MediasController::class . '::index')
+        );
+
+        self::addMenu(
+            name: 'Config',
+            icon: '🔧',
+            route: null
+        );
+
+        self::addMenu(
+            name: 'Debug',
+            icon: '🐞',
+            route: null
+        );
+
         self::addSubmenu(
             parent: 'debug',
             name: 'Routes',
             icon: '🗺️',
             route: self::addPage('Debug - Routes', \BugQuest\Framework\Controllers\Admin\DebugController::class . '::routes')
-        );
-
-        self::addSubmenu(
-            parent: 'config',
-            name: 'Medias',
-            icon: '🖼️',
-            route: self::addPage('Config - Medias', \BugQuest\Framework\Controllers\Admin\MediasController::class . '::index')
         );
 
         self::addSubmenu(
