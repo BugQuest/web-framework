@@ -1,5 +1,5 @@
 import './components/dropdown';
-import './components/accordeon';
+import { Accordion } from './components/Accordion.js';
 import './components/language-switcher';
 import MediaGallery from './components/MediaGallery';
 import {Tooltip} from './components/Tooltip.js';
@@ -8,6 +8,8 @@ import {Translator} from './components/Translator.js';
 document.addEventListener('DOMContentLoaded', async () => {
 
     await Translator.load('admin');
+
+    Accordion.setup();
 
     Tooltip.setup();
     const mediaGalleries = document.querySelectorAll('.__media_gallery');

@@ -3,20 +3,15 @@ import BuildHelper from '../BuildHelper.js';
 import MediaGallery from '../MediaGallery';
 
 export class MediaBlock extends OptionBlock {
-    constructor(key, label, value = null, options = [], onChange = null) {
-        super(key, label, value, onChange);
-        this.options = options; // tableau d'objets { value: string, label: string }
+    constructor(key, label, value = null, options = {}, onChange = null, group = 'default') {
+        super(key, label, value, options, onChange, group);
+        this.type = 'media';
+        this.mimeTypes = options.mimeTypes || [];
     }
 
     render(container) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'option-block media';
-
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.value = this.value ?? '';
-        input.name = this.key;
-        wrapper.appendChild(input);
+        const wrapper = super.render()
+        wrapper.classList.add('media');
 
         const preview = document.createElement('div');
         preview.className = 'media-preview';
@@ -26,6 +21,11 @@ export class MediaBlock extends OptionBlock {
             this.modal.classList.add('active');
             // 👉 ici, déclenche ton sélecteur personnalisé et set la valeur
         });
+
+        if (this.value) {
+            preview.appendChild(this.getPreview(this.value));
+            this.value = this.value.id;
+        }
 
         const label = document.createElement('label');
         label.textContent = this.label;
@@ -43,10 +43,10 @@ export class MediaBlock extends OptionBlock {
 
         this.gallery = new MediaGallery(content);
         this.gallery.onClickItem = (media) => {
-            input.value = media.id;
+            this.value = media.id;
             preview.appendChild(this.getPreview(media));
             this.modal.classList.remove('active');
-            this.onChange(media.id);
+            this.notifyChange()
         };
     }
 

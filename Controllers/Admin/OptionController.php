@@ -8,11 +8,15 @@ use BugQuest\Framework\Services\View;
 
 abstract class OptionController
 {
-    public static function get(string $group): string
+
+    public static function get(string $group, ?string $key = null): string
     {
         header('Content-Type: application/json');
         try {
-            return json_encode(OptionService::get($group));
+            $input = json_decode(file_get_contents('php://input'), true);
+            $default = $input['default'] ?? null;
+
+            return json_encode(OptionService::get($group, $key, $default));
         } catch (\Exception $e) {
             http_response_code(500);
             return json_encode(['error' => $e->getMessage()]);
@@ -30,19 +34,25 @@ abstract class OptionController
     {
         header('Content-Type: application/json');
         try {
-            $input = file_get_contents('php://input');
+            $input = json_decode(file_get_contents('php://input'), true);
+
+            if (!$input) {
+                http_response_code(400);
+                return json_encode(['error' => 'Aucune donnée reçue.']);
+            }
 
             if ($key === null) {
-                $data = json_decode($input, true);
+                OptionService::setGroup($group, $input);
+            } else {
+                $value = $input['value'] ?? null;
+                $type = $input['type'] ?? null;
 
-                if (!is_array($data)) {
+                if (!$type) {
                     http_response_code(400);
-                    return json_encode(['error' => 'Format JSON invalide.']);
+                    return json_encode(['error' => 'Type manquant.']);
                 }
 
-                OptionService::setGroup($group, $data);
-            } else {
-                OptionService::set($group, $key, $input);
+                OptionService::set($group, $key, $type, $value);
             }
 
             return json_encode(['success' => true]);

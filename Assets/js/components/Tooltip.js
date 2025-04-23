@@ -42,7 +42,7 @@ export class Tooltip {
             tooltip.classList.add(type); // ex: .danger, .info...
         }
 
-        tooltip.textContent = text;
+        tooltip.innerHTML = text;
         document.body.appendChild(tooltip);
 
         target._bqTooltip = tooltip;

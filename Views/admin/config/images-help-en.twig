@@ -1,0 +1,58 @@
+<div class="description">
+    <p>Use the <code>ImageHelper</code> class or Twig functions <code>getImageUrl</code> or <code>getImageHtml</code> to
+        automatically generate images with fallback.</p>
+    <p><strong>Why?</strong> It ensures a placeholder image appears when the original is missing. Only requested sizes
+        are generated and cached.</p>
+    <p>📁 Generated images are stored in <code>htdocs/cache/images/</code>.</p>
+    <p>🚀 If <strong>WebP</strong> is supported, intermediate formats are deleted to save disk space.</p>
+</div>
+
+<ul class="tech-status">
+    <li>
+        <b>Imagick installed:</b>
+        {% if imagick_installed %}
+            <span class="status yes">Yes</span>
+        {% else %}
+            <span class="status no">No</span>
+            <p>💡 Install <code>Imagick</code> to enable this feature. (Required)</p>
+        {% endif %}
+    </li>
+    <li>
+        <b>WebP supported:</b>
+        {% if webp_supported %}
+            <span class="status yes">Yes</span>
+        {% else %}
+            <span class="status no">No</span>
+            <p>⚠️ WebP is not supported by your server. (Optional)</p>
+        {% endif %}
+    </li>
+    <li>
+        <b>AVIF supported:</b>
+        {% if avif_supported %}
+            <span class="status yes">Yes</span>
+        {% else %}
+            <span class="status no">No</span>
+            <p>⚠️ AVIF is not supported by your server. (Optional)</p>
+        {% endif %}
+    </li>
+</ul>
+
+<div class="wrap-doc">
+    <div class="doc-examples">
+        <h2>📄 Code examples</h2>
+
+        <h3>Twig:</h3>
+        <p>Display an image with fallback and specific size:</p>
+        <pre>{{ '<img src="{{ getImageUrl(url|id, "338x262") }}" alt="{{ alt }}" width="338" height="262">' | e }}</pre>
+        <pre>{{ '{{ getImageHtml(url|id, "338x262", alt) }}' | e }}</pre>
+
+        <h3>PHP:</h3>
+        <p>Using <code>ImageHelper</code> class:</p>
+        <pre>
+use BugQuest\Framework\Helpers\ImageHelper;
+
+$image_url = ImageHelper::getImageUrl($url_or_id, '338x262');
+$image_html = ImageHelper::getImageHtml($url_or_id, '338x262', $alt);
+        </pre>
+    </div>
+</div>

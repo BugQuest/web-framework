@@ -91,18 +91,18 @@ new RouteGroup(
          */
         new Route(
             name: 'options.get',
-            _slug: '/options/get/{group:alpha}',
+            _slug: '/options/get/{group:alpha}/{key:slug?}',
             _callback: OptionController::class . '::get',
             _methods: ['GET']
         ),
         new Route(name: 'options.set',
-            _slug: '/options/set/{group:alpha}/{key:alpha?}',
+            _slug: '/options/set/{group:alpha}/{key:slug?}',
             _callback: OptionController::class . '::set',
             _methods: ['POST']
         ),
         new Route(
             name: 'options.delete',
-            _slug: '/options/delete/{group:alpha}/{key:alpha}',
+            _slug: '/options/delete/{group:alpha}/{key:slug}',
             _callback: OptionController::class . '::delete',
             _methods: ['DELETE']
         ),

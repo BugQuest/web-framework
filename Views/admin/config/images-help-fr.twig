@@ -1,0 +1,59 @@
+<div class="description">
+    <p>Utilisez la classe <code>ImageHelper</code> ou la fonction Twig <code>getImageUrl</code> ou
+        <code>getImageHtml</code> pour générer automatiquement une image avec fallback.</p>
+    <p><strong>Pourquoi ?</strong> Pour garantir qu’une image de remplacement s’affiche si l’image
+        d’origine est manquante. Seules les tailles demandées sont générées et conservées.</p>
+    <p>📁 Les images sont stockées dans <code>htdocs/cache/images/</code>.</p>
+    <p>🚀 Si le format <strong>WebP</strong> est supporté, les autres formats intermédiaires sont
+        automatiquement supprimés pour économiser de l’espace disque.</p>
+</div>
+
+<ul class="tech-status">
+    <li>
+        <b>Imagick installé :</b>
+        {% if imagick_installed %}
+            <span class="status yes">Oui</span>
+        {% else %}
+            <span class="status no">Non</span>
+            <p>💡 Installez <code>Imagick</code> pour activer cette fonctionnalité. (Obligatoire)</p>
+        {% endif %}
+    </li>
+    <li>
+        <b>WebP supporté :</b>
+        {% if webp_supported %}
+            <span class="status yes">Oui</span>
+        {% else %}
+            <span class="status no">Non</span>
+            <p>⚠️ WebP n’est pas supporté par votre serveur. (Optionnel)</p>
+        {% endif %}
+    </li>
+    <li>
+        <b>AVIF supporté :</b>
+        {% if avif_supported %}
+            <span class="status yes">Oui</span>
+        {% else %}
+            <span class="status no">Non</span>
+            <p>⚠️ AVIF n’est pas supporté par votre serveur. (Optionnel)</p>
+        {% endif %}
+    </li>
+</ul>
+
+<div class="wrap-doc">
+    <div class="doc-examples">
+        <h2>📄 Exemples de code</h2>
+
+        <h3>Twig :</h3>
+        <p>Afficher une image avec fallback :</p>
+        <pre>{{ '<img src="{{ getImageUrl(url|id, "338x262") }}" alt="{{ alt }}" width="338" height="262">' | e }}</pre>
+        <pre>{{ '{{ getImageHtml(url|id, "338x262", alt) }}' | e }}</pre>
+
+        <h3>PHP :</h3>
+        <p>Utilisation de <code>ImageHelper</code> :</p>
+        <pre>
+use BugQuest\Framework\Helpers\ImageHelper;
+
+$image_url = ImageHelper::getImageUrl($url_or_id, '338x262');
+$image_html = ImageHelper::getImageHtml($url_or_id, '338x262', $alt);
+                </pre>
+    </div>
+</div>
