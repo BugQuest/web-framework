@@ -1,6 +1,6 @@
 import grapesjs from 'grapesjs';
 import loadBasicBlocks from './blocks/index.js';
-import CustomBlockType from './blocks/CustomBlockType.js';
+import CustomBlockType from './blocks/type/CustomBlockType.js';
 import {Toast} from '@framework/js/services/Toast';
 import {__} from '@framework/js/services/Translator';
 

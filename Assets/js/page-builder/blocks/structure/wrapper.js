@@ -1,10 +1,11 @@
 export default function (editor) {
-    editor.BlockManager.add('container', {
-        label: 'Conteneur',
+    editor.BlockManager.add('wrapper', {
+        label: 'wrapper',
         category: 'Structure',
         content: {
+            name: 'Wrapper',
             tagName: 'div',
-            classes: ['container'],
+            classes: ['wrapper'],
             components: [],
             droppable: true // 👈 important
         }
