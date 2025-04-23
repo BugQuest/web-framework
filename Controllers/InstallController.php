@@ -83,6 +83,42 @@ class InstallController
                     $table->unique(['domain', 'locale', 'keyname'], 'i18n_missing_unique');
                 });
 
+                Manager::schema()->create('medias', function (Blueprint $table) {
+                    $table->id();
+
+                    $table->string('filename'); // Nom final stocké sur le disque
+                    $table->string('original_name'); // Nom original (upload)
+                    $table->string('mime_type');
+                    $table->string('extension', 10)->nullable();
+                    $table->bigInteger('size')->nullable(); // En octets
+                    $table->string('path')->nullable(); // Chemin absolu ou relatif
+                    $table->string('url')->nullable(); // URL d'accès public
+                    $table->string('slug')->nullable(); // Pour une gestion plus lisible côté admin
+                    $table->json('exif')->nullable(); // Données EXIF (photo, orientation...)
+                    $table->json('meta')->nullable(); // Données supplémentaires (auteur, description…)
+
+                    $table->timestamps();
+                });
+
+                Manager::schema()->create('media_tags', function (Blueprint $table) {
+                    $table->id();
+                    $table->string('name');
+                    $table->string('slug')->unique();
+                    $table->timestamps();
+                });
+
+
+                Manager::schema()->create('media_tag_media', function (Blueprint $table) {
+                    $table->unsignedBigInteger('media_id');
+                    $table->unsignedBigInteger('tag_id');
+
+                    $table->foreign('media_id')->references('id')->on('medias')->onDelete('cascade');
+                    $table->foreign('tag_id')->references('id')->on('media_tags')->onDelete('cascade');
+
+                    $table->primary(['media_id', 'tag_id']);
+                });
+
+
                 // Hash + insertion dans la table users
                 $user = new User();
                 $user->username = $username;

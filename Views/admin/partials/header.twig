@@ -1,18 +1,19 @@
 <header class="header">
     <div class="header-left">
         <div class="header-logo">🛠 BugQuest</div>
-        <div class="header-title">Panneau d’administration</div>
+        <div class="header-title">{{ __('Panneau d’administration', 'admin', 'fr') }}</div>
     </div>
 
     <div class="header-right">
+        {% include '@framework/partials/language-switcher.twig' %}
         <div class="dropdown __dropdown">
             <div type="button" class="__dropdown_toggle dropdownToggle">
                 <div class="avatar"></div>
                 <div class="name">{{ bq_user().username }}</div>
             </div>
             <div class="dropdownContent">
-                <a href="{{ bq_route_url('admin.user.settings') }}" class="dropdownItem">⚙️ Mon profil</a>
-                <a href="{{ bq_route_url('auth.logout') }}" class="dropdownItem">🚪 Déconnexion</a>
+                <a href="{{ bq_route_url('admin.user.settings') }}" class="dropdownItem">⚙️ {{ __('Mon profil', 'admin', 'fr') }}</a>
+                <a href="{{ bq_route_url('auth.logout') }}" class="dropdownItem">🚪 {{ __('Déconnexion', 'admin', 'fr') }}</a>
             </div>
         </div>
     </div>
