@@ -4,13 +4,22 @@
 
 {% block content %}
     <div class="builder-header">
-        <label for="page-title">Titre de la page :</label>
-        <input type="text" id="page-title" name="title" value="{{ page.title }}"/>
-        <label for="page-slug">Slug de la page :</label>
-        <input type="text" id="page-slug" name="slug" value="{{ page.slug }}"/>
-        <a id="page-preview" href="/{{ page.slug }}" class="btn btn-primary" target="_bugquest">
-            Voir la page
-        </a>
+        <div class="left">
+            <button type="button" class="btn btn-secondary" id="back-button">
+                ⬅ Retour
+            </button>
+        </div>
+
+        <div class="center">
+            <input type="text" id="page-title" name="title" value="" placeholder="Titre de la page">
+            <input type="text" id="page-slug" name="slug" value="" placeholder="slug-de-la-page">
+        </div>
+
+        <div class="right">
+            <a id="page-preview" href="" class="btn btn-primary" target="_bq_preview">
+                👁️
+            </a>
+        </div>
     </div>
     <div id="gjs"
          data-id="{{ page }}"

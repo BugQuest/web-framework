@@ -1,6 +1,71 @@
 @use './admin/variables';
 @use "~grapesjs/src/styles/scss/main";
 
+.builder-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: #1e1e1e;
+  color: #fff;
+  border-bottom: 2px solid #333;
+
+  .left, .right {
+    flex-shrink: 0;
+  }
+
+  .center {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+
+    input {
+      background: #2e2e2e;
+      border: none;
+      border-left: 2px solid var(--color-primary);
+      padding: 0.5rem;
+      color: #fff;
+      width: 100%;
+    }
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &.btn-primary {
+      padding: .5rem;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
+      transition: background 0.2s ease, font-size 0.2s ease;
+
+      &:hover {
+        font-size: 1.4rem;
+        background-color: #2e2e2e;
+      }
+    }
+
+    &.btn-secondary {
+      background-color: #6c757d;
+      color: #fff;
+
+      &:hover {
+        background-color: #5a6268;
+      }
+    }
+  }
+}
+
+
 /* Zone principale */
 #gjs {
   height: calc(100vh - var(--header-height) - var(--footer-height));
