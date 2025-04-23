@@ -15,7 +15,8 @@ export class MediaBlock extends OptionBlock {
         wrapper.classList.add('media');
 
         const preview = Builder.div('media-preview');
-        preview.textContent = this.value || __('aucun média sélectionné', 'options');
+
+        preview.textContent = this.value?.filename || __('aucun média sélectionné', 'options');
         preview.dataset.tooltip = __('Cliquez pour changer le média', 'options');
         preview.addEventListener('click', () => {
             MediaPicker.open(this.mimeTypes, (media) => {
@@ -34,29 +35,49 @@ export class MediaBlock extends OptionBlock {
         wrapper.appendChild(preview);
 
         // Label
-        if(this.label)
+        if (this.label)
             wrapper.appendChild(Builder.label(this.label));
 
         container.appendChild(wrapper);
     }
 
     getPreview(media) {
+        let className = 'media-current';
+
+        switch (media?.mime_type) {
+            case 'image/gif':
+                className += ' gif';
+                break;
+            case 'image/svg+xml':
+            case 'image/svg':
+                className += ' svg';
+                break;
+            case 'image/jpeg':
+            case 'image/jpg':
+            case 'image/png':
+                className += ' image';
+                break;
+            default:
+                className += ' icon';
+        }
+
         //return img if media is an image, else return icon (media.mime_type)
         if (media?.mime_type?.startsWith('image/')) {
-            return Builder.img('/' + media.path, media.name, 'media-current');
+            return Builder.img('/' + media.path, media.filename, className);
         } else {
             const icon = this.getIconForMime(media.mime_type);
-            let span = Builder.span('media-current');
+            let span = Builder.span(className);
             span.textContent = icon;
             return span;
         }
     }
 
     getIconForMime(mime) {
-        if(!mime) return '?';
+        if (!mime) return '?';
         if (mime === 'application/pdf') return '📄';
         if (mime === 'text/plain') return '📃';
         if (mime.startsWith('video/')) return '🎥';
+        if (mime.startsWith('audio/')) return '🎵';
         return '📁';
     }
 }

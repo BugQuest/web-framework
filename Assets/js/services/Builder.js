@@ -2,6 +2,13 @@ import {__} from '@framework/js/services/Translator.js';
 
 export default class Builder {
 
+    static createEl = (tag, className, text = '') => {
+        const el = document.createElement(tag);
+        el.className = className;
+        if (text) el.innerText = text;
+        return el;
+    }
+
     static accordion(title, subclass) {
         let accordeon = document.createElement('div');
         accordeon.className = '__accordeon accordeon';
@@ -287,35 +294,181 @@ export default class Builder {
         };
     }
 
-    static select(options = [], value = null, className = '', onChange = null) {
-        let select = document.createElement('select');
-        if (className) select.className = className;
+    static select(label, options, selected = null, onChange = null, openTop = false) {
+        let currentValue = selected;
 
-        //if options is an array of objects, use the label and value properties, else if is simple array of values use the value as label
-        if (Array.isArray(options) && options.length > 0 && typeof options[0] === 'object') {
-            options.forEach(option => {
-                let opt = document.createElement('option');
-                opt.value = option.value;
-                opt.textContent = option.label;
-                if (value && value === option.value) opt.selected = true;
-                select.appendChild(opt);
-            });
-        } else if (Array.isArray(options) && options.length > 0) {
-            options.forEach(option => {
-                let opt = document.createElement('option');
-                opt.value = option;
-                opt.textContent = option;
-                if (value && value === option) opt.selected = true;
-                select.appendChild(opt);
+        const wrapper = this.createEl('div', 'select-wrapper');
+        const head = this.createEl('div', 'select-head');
+        const labelEl = this.createEl('div', 'select-label', label);
+        const valueEl = this.createEl('div', 'select-value', selected || '');
+        const body = this.createEl('div', 'select-body');
+
+        const isObjectOption = typeof options[0] === 'object';
+
+        const toogle = (enabled) => {
+            if (enabled) {
+                body.style.display = 'block'; // Affiche d'abord pour mesurer
+                // Force un reflow pour que la transition se déclenche
+                void body.offsetHeight;
+                body.classList.add('active');
+                body.style.top = openTop ? '0' : 'auto';
+                body.style.bottom = openTop ? 'auto' : '0';
+            } else {
+                body.classList.remove('active');
+                // Attends la fin de l'animation avant de masquer
+                setTimeout(() => {
+                    if (!body.classList.contains('active')) {
+                        body.style.display = 'none';
+                    }
+                }, 300); // doit correspondre à la durée CSS
+            }
+        };
+
+        options.forEach(option => {
+            const value = isObjectOption ? option.value : option;
+            const label = isObjectOption ? option.label : option;
+
+            const item = this.createEl('div', 'select-item', label);
+            item.dataset.value = value;
+            if (value === selected) item.classList.add('active');
+            body.appendChild(item);
+        });
+
+        if (onChange) {
+            body.addEventListener('click', (e) => {
+                if (e.target.classList.contains('select-item')) {
+                    const value = e.target.dataset.value;
+                    currentValue = value;
+                    valueEl.innerText = e.target.innerText;
+
+                    [...body.children].forEach(child => child.classList.remove('active'));
+                    e.target.classList.add('active');
+                    onChange(value);
+                    toogle(false);
+                }
             });
         }
 
-        if (onChange) select.addEventListener('change', () => {
-            onChange(select.value);
+        head.append(labelEl, valueEl);
+        wrapper.append(head, body);
+
+
+        head.addEventListener('click', () => toogle(true));
+
+        document.addEventListener('click', (e) => {
+            if (!wrapper.contains(e.target)) {
+                toogle(false)
+            }
         });
 
-        return select;
+        return {
+            element: wrapper,
+            toogle: toogle,
+            getValue: () => currentValue,
+            setValue: (value) => {
+                currentValue = value;
+                const items = [...body.children];
+                const targetItem = items.find(item => item.dataset.value === value);
+                valueEl.innerText = targetItem ? targetItem.innerText : '';
+                items.forEach(item => item.classList.remove('active'));
+                if (targetItem) targetItem.classList.add('active');
+            },
+        };
     }
+
+    static selectMultiple(label, options, selected = [], onChange = null, openTop = false) {
+        let currentValues = Array.isArray(selected) ? selected : [];
+
+        const wrapper = this.createEl('div', 'select-wrapper');
+        const head = this.createEl('div', 'select-head');
+        const labelEl = this.createEl('div', 'select-label', label);
+        const valueEl = this.createEl('div', 'select-value', currentValues.join(', '));
+        const body = this.createEl('div', 'select-body');
+
+        const isObjectOption = typeof options[0] === 'object';
+
+        const updateDisplay = () => {
+            const selectedItems = [...body.children].filter(item => currentValues.includes(item.dataset.value));
+            valueEl.innerText = selectedItems.map(item => item.innerText).join(', ') || 'Aucun';
+        };
+
+        const toogle = (enabled) => {
+            if (enabled) {
+                body.style.display = 'block';
+                void body.offsetHeight;
+                body.classList.add('active');
+                body.style.top = openTop ? '0' : 'auto';
+                body.style.bottom = openTop ? 'auto' : '0';
+            } else {
+                body.classList.remove('active');
+                setTimeout(() => {
+                    if (!body.classList.contains('active')) {
+                        body.style.display = 'none';
+                    }
+                }, 300);
+            }
+        };
+
+        options.forEach(option => {
+            const value = isObjectOption ? option.value : option;
+            const label = isObjectOption ? option.label : option;
+
+            const item = this.createEl('div', 'select-item', label);
+            item.dataset.value = value;
+            if (currentValues.includes(value)) item.classList.add('active');
+            body.appendChild(item);
+        });
+
+        if (onChange) {
+            body.addEventListener('click', (e) => {
+                if (e.target.classList.contains('select-item')) {
+                    const value = e.target.dataset.value;
+                    const index = currentValues.indexOf(value);
+
+                    if (index > -1) {
+                        currentValues.splice(index, 1);
+                        e.target.classList.remove('active');
+                    } else {
+                        currentValues.push(value);
+                        e.target.classList.add('active');
+                    }
+
+                    updateDisplay();
+                    onChange([...currentValues]);
+                }
+            });
+        }
+
+        head.append(labelEl, valueEl);
+        wrapper.append(head, body);
+
+        head.addEventListener('click', () => toogle(true));
+
+        document.addEventListener('click', (e) => {
+            if (!wrapper.contains(e.target)) {
+                toogle(false);
+            }
+        });
+
+        return {
+            element: wrapper,
+            toogle: toogle,
+            getValue: () => [...currentValues],
+            setValue: (values) => {
+                currentValues = Array.isArray(values) ? values : [];
+                const items = [...body.children];
+                items.forEach(item => {
+                    if (currentValues.includes(item.dataset.value)) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+                updateDisplay();
+            },
+        };
+    }
+
 
     static table(head = [], body = [], className = '', headClassName = '', bodyClassName = '') {
         let table = document.createElement('table');

@@ -16,6 +16,10 @@ class MediaManager
         'text/plain',
         'image/svg+xml',
         'video/mp4',
+        'audio/mpeg',
+        'audio/wav',
+        'audio/ogg',
+        'audio/mp4',
     ];
 
     public static function upload(array $file, array $meta = []): ?Media

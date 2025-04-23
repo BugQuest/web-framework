@@ -3,6 +3,7 @@ import {FloatBlock} from '@framework/js/options/FloatBlock.js';
 import {StringBlock} from '@framework/js/options/StringBlock.js';
 import {MediaBlock} from '@framework/js/options/MediaBlock.js';
 import {SelectBlock} from '@framework/js/options/SelectBlock.js';
+import {SelectMultipleBlock} from '@framework/js/options/SelectMultipleBlock.js';
 import {BoolBlock} from '@framework/js/options/BoolBlock.js';
 import {TextareaBlock} from '@framework/js/options/TextareaBlock.js';
 import {WysiwygBlock} from "@framework/js/options/WysiwygBlock";
@@ -16,6 +17,7 @@ export class BlockFactory {
         string: StringBlock,
         media: MediaBlock,
         select: SelectBlock,
+        select_multiple: SelectMultipleBlock,
         bool: BoolBlock,
         textarea: TextareaBlock,
         wysiwig: WysiwygBlock,
