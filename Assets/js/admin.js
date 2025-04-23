@@ -2,8 +2,10 @@ import './components/dropdown';
 import './components/accordeon';
 import './components/language-switcher';
 import MediaGallery from './components/MediaGallery';
+import { Tooltip } from './components/Tooltip.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+    Tooltip.setup();
     const mediaGalleries = document.querySelectorAll('.__media_gallery');
     mediaGalleries.forEach(gallery => {
         new MediaGallery(gallery);
