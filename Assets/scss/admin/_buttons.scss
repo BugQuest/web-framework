@@ -16,6 +16,7 @@
   }
 
   &.danger {
+    border: 1px solid var(--color-danger);
     color: var(--color-danger);
 
     &:hover {

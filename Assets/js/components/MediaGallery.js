@@ -1,4 +1,5 @@
 import BuildHelper from './BuildHelper.js';
+import MediaModalViewer from './MediaModalViewer.js';
 
 export default class MediaGallery {
     constructor(element) {
@@ -9,6 +10,7 @@ export default class MediaGallery {
         this.perPage = 12;
         this.selectTags = [];
         this.tags = [];
+        this.waitingTags = [];
         //check if element has data-per-page attribute
         const perPage = this.element.dataset.perPage;
         if (perPage && !isNaN(perPage))
@@ -39,15 +41,15 @@ export default class MediaGallery {
         }
 
         //====== TAGS ======
-        let tags = BuildHelper.div('media-gallery-tags');
+        const tags = BuildHelper.div('media-gallery-tags');
         this.element.appendChild(tags);
 
         //====== TAGS FORM / ACCORDION ======
-        let {accordeon, accordeon_content} = BuildHelper.accordion('Ajouter des tags', 'small');
+        const {accordeon, accordeon_content} = BuildHelper.accordion('Ajouter des tags', 'small');
         tags.appendChild(accordeon);
         tags.appendChild(BuildHelper.glow_stick());
 
-        let tags_form = BuildHelper.div('media-gallery-tags-form');
+        const tags_form = BuildHelper.div('media-gallery-tags-form');
         accordeon_content.appendChild(tags_form);
 
         this.tag_input = BuildHelper.input_text('Ajouter un tag', '', 'small full');
@@ -69,7 +71,7 @@ export default class MediaGallery {
         tags.appendChild(this.tags_content)
 
         //====== MEDIA GALLERY ======
-        let container = BuildHelper.div('fullw');
+        const container = BuildHelper.div('fullw');
         this.element.appendChild(container);
 
         this.grid = BuildHelper.div('media-gallery-content');
@@ -78,12 +80,8 @@ export default class MediaGallery {
         this.pagination = BuildHelper.div('media-gallery-pagination');
         container.appendChild(this.pagination)
 
-        if (this.canModal) {
-            let {modal, content, close} = BuildHelper.modal()
-            this.modal = modal;
-            this.modal_content = content;
-            document.body.appendChild(this.modal);
-        }
+        if (this.canModal)
+            this.modal = new MediaModalViewer(this)
     }
 
     initEvents() {
@@ -113,7 +111,7 @@ export default class MediaGallery {
                 e.preventDefault();
                 this.dropZone.classList.remove('active');
                 const files = [...e.dataTransfer.files];
-                for (const file of files)
+                for (let file of files)
                     this.uploadFile(file);
             });
         }
@@ -123,8 +121,8 @@ export default class MediaGallery {
                 const card = e.target.closest('.__media_card');
                 if (card) {
                     try {
-                        let media = JSON.parse(card.dataset.media)
-                        this.openModal(media)
+                        const media = JSON.parse(card.dataset.media)
+                        this.modal.open(media)
                     } catch (e) {
                         console.error('Erreur de parsing du média :', e);
                         return;
@@ -226,7 +224,7 @@ export default class MediaGallery {
             const tag = e.target.closest('span[data-tag]');
             if (!tag) return;
 
-            let id = tag.dataset.tag;
+            const id = tag.dataset.tag;
 
             if (!id) return;
 
@@ -248,7 +246,7 @@ export default class MediaGallery {
         const tags = this.tags_content.querySelectorAll('span[data-tag]');
         tags.forEach(tag => {
 
-            let id = tag.dataset.tag;
+            const id = tag.dataset.tag;
 
             if (!id) return;
 
@@ -341,142 +339,4 @@ export default class MediaGallery {
         }
         return `<div class="media-card--icon">📄</div>`;
     }
-
-    async openModal(media) {
-        this.modal_content.innerHTML = '';
-        let media_container = BuildHelper.div('media-modal');
-
-        // 🧰 Actions
-        let actions = BuildHelper.div('flex-actions');
-        media_container.appendChild(actions);
-
-        // 📥 Télécharger
-        let download_button = BuildHelper.div('icon');
-        download_button.innerHTML = '📥';
-        download_button.title = 'Télécharger le fichier';
-        download_button.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const image = await fetch('/' + media.path);
-            const blob = await image.blob();
-            const url = URL.createObjectURL(blob);
-
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = media.original_name;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
-        actions.appendChild(download_button);
-
-        // 🔗 Ouvrir dans un nouvel onglet
-        let open_button = BuildHelper.div('icon');
-        open_button.innerHTML = '🔗';
-        open_button.title = 'Ouvrir dans un nouvel onglet';
-        open_button.addEventListener('click', () => {
-            window.open('/' + media.path, '_BugQuest');
-        });
-        actions.appendChild(open_button);
-
-        // 🗑️ Supprimer
-        let delete_button = BuildHelper.div('icon danger');
-        delete_button.innerHTML = '🗑️';
-        delete_button.title = 'Supprimer le fichier';
-        delete_button.addEventListener('click', async () => {
-            if (confirm('Êtes-vous sûr de vouloir supprimer ce fichier ?')) {
-                try {
-                    const res = await fetch(`${this.apiUrl}/delete/${media.id}`, { method: 'DELETE' });
-                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                    await this.loadPage(1);
-                    this.modal.classList.remove('active');
-                } catch (err) {
-                    console.error('[MediaGalleryLoader] Erreur suppression média :', err);
-                }
-            }
-        });
-        actions.appendChild(delete_button);
-
-        // 🖼️ Prévisualisation
-        const preview = BuildHelper.div('media-modal--preview');
-        media_container.appendChild(preview);
-
-        if (media.mime_type.startsWith('image/')) {
-            preview.appendChild(BuildHelper.img('/' + media.path, media.original_name));
-        } else {
-            const icon = BuildHelper.div('media-card--icon');
-            icon.innerHTML = this.getIconForMime(media.mime_type);
-            preview.appendChild(icon);
-        }
-
-        // ℹ️ Infos
-        const info = BuildHelper.div('media-modal--info');
-        media_container.appendChild(info);
-
-        const info_container = BuildHelper.div('media-modal--info-container');
-        info.appendChild(info_container);
-
-        const title = BuildHelper.h2(media.original_name);
-        const info_subcontainer = BuildHelper.div();
-        info_subcontainer.appendChild(title);
-
-        const list = BuildHelper.list([
-            `<strong>Type :</strong> ${media.mime_type}`,
-            `<strong>Taille :</strong> ${(media.size / 1024).toFixed(1)} ko`,
-            `<strong>Extension :</strong> ${media.extension}`,
-            `<strong>Ajouté le :</strong> ${new Date(media.created_at).toLocaleDateString('fr-FR')}`,
-        ]);
-        info_subcontainer.appendChild(list);
-        info_container.appendChild(info_subcontainer);
-
-        // 🏷️ Tags
-        const tags = BuildHelper.div('media-modal--tags');
-        info_container.appendChild(tags);
-
-
-        const tags_list = BuildHelper.div('media-modal--tags-list');
-        tags.appendChild(tags_list);
-
-        // Affichage des tags existants
-        if (Array.isArray(media.tags)) {
-            media.tags.forEach(tag => {
-                const tagEl = BuildHelper.div('tag');
-                tagEl.textContent = tag.name;
-                tags_list.appendChild(tagEl);
-            });
-        }
-
-        const tag_input = document.createElement('input');
-        tag_input.type = 'text';
-        tag_input.placeholder = 'Ajouter un tag...';
-        tag_input.className = 'media-tag-input hidden';
-        tags.appendChild(tag_input);
-
-        const tags_button = BuildHelper.div('icon');
-        tags_button.innerHTML = '🏷️';
-        tags_button.title = 'Tags associés';
-        tags.appendChild(tags_button);
-
-        tags_button.addEventListener('click', () => {
-            tag_input.classList.toggle('hidden');
-            tag_input.focus();
-        });
-
-        // 📷 EXIF
-        if (media.exif && typeof media.exif === 'object' && Object.keys(media.exif).length > 0) {
-            let { accordeon, accordeon_content } = BuildHelper.accordion('EXIF', 'small');
-            info.appendChild(accordeon);
-
-            const exifItems = Object.entries(media.exif).map(([key, value]) =>
-                `<strong>${key}:</strong> ${typeof value === 'object' ? JSON.stringify(value) : value}`
-            );
-
-            const exifList = BuildHelper.list(exifItems);
-            exifList.classList.add('media-modal--exif');
-            accordeon_content.appendChild(exifList);
-        }
-
-        this.modal_content.appendChild(media_container);
-        this.modal.classList.add('active');
-    }
-
 }
