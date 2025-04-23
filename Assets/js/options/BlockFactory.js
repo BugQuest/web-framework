@@ -6,6 +6,7 @@ import {SelectBlock} from '@framework/js/options/SelectBlock.js';
 import {BoolBlock} from '@framework/js/options/BoolBlock.js';
 import {TextareaBlock} from '@framework/js/options/TextareaBlock.js';
 import {WysiwygBlock} from "@framework/js/options/WysiwygBlock";
+// import {RepeaterBlock} from '@framework/js/options/RepeaterBlock.js';
 
 export class BlockFactory {
     static types = {
@@ -17,6 +18,7 @@ export class BlockFactory {
         bool: BoolBlock,
         textarea: TextareaBlock,
         wysiwig: WysiwygBlock,
+        // repeater: RepeaterBlock, // WIP : RepeaterBlock - Pas encore fonctionnel
     };
 
     static register(type, clazz) {

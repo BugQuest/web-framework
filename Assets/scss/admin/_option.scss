@@ -56,6 +56,7 @@
     color: cyan;
   }
 
+  /* Blocs */
   &.media {
     .media-preview {
       background: #0f172a;
@@ -178,10 +179,9 @@
       box-sizing: border-box;
     }
 
-    textarea:hover {
-      background: #0ff1;
-      border-color: cyan;
-      color: cyan;
+    &:focus{
+        background: #0ff1;
+        border-color: #0ff3;
     }
   }
 
@@ -201,11 +201,11 @@
         color: #0ff;
       }
 
-      .ql-stroke{
+      .ql-stroke {
         stroke: #0ff;
       }
 
-      .ql-fill{
+      .ql-fill {
         fill: #0ff;
       }
     }
@@ -213,9 +213,10 @@
     .quill-editor {
       display: block;
       background: #0f172a;
-      border: 1px solid #0ff3;
-      border-radius: 4px;
-      padding: 0.5rem;
+      border-left: 1px solid #0ff3;
+      border-right: 1px solid #0ff3;
+      border-bottom: 1px solid #0ff3;
+      border-radius: 0 0 4px 4px;
       color: white;
       font-size: 1rem;
       width: 100%;
@@ -237,8 +238,63 @@
     }
   }
 
+  &.repeater {
+    align-items: stretch;
 
-  // Barre de sauvegarde pour les types dynamiques
+    .repeater-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .repeater-item {
+      position: relative;
+      padding: 1rem;
+      border: 1px dashed #0ff5;
+      border-radius: 6px;
+      background: #0f172a;
+    }
+
+    .block-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .add-button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      font-weight: bold;
+      border-radius: 4px;
+      background: #0ff2;
+      color: #0f172a;
+      border: 1px solid var(--color-primary);
+      cursor: pointer;
+
+      &:hover {
+        background: #0ff4;
+      }
+    }
+
+    .delete-button {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: #f55;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 4px;
+      padding: 0.2rem 0.5rem;
+      cursor: pointer;
+
+      &:hover {
+        background: #c33;
+      }
+    }
+  }
+
   &.string,
   &.int,
   &.float {
