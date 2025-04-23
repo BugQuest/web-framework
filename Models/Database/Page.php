@@ -3,6 +3,9 @@
 namespace BugQuest\Framework\Models\Database;
 
 use BugQuest\Framework\Helpers\StringHelper;
+use BugQuest\Framework\PageBuilder\BlockRegistry;
+use DOMDocument;
+use DOMXPath;
 use Illuminate\Database\Eloquent\Model;
 
 class Page extends Model
@@ -94,5 +97,71 @@ class Page extends Model
 
         return array_reverse($breadcrumbs);
 
+    }
+
+    public function parseBlocks(): string
+    {
+        $doc = new DOMDocument();
+        @$doc->loadHTML(mb_convert_encoding($this->html, 'HTML-ENTITIES', 'UTF-8'));
+        $xpath = new DOMXPath($doc);
+
+        foreach ($xpath->query('//*[@data-block-type]') as $node) {
+            $type = $node->getAttribute('data-block-type');
+            $block = BlockRegistry::get($type);
+
+            if (!$block) continue;
+
+            // Collecte data-* => $data[]
+            $data = [];
+            foreach ($node->attributes as $attr)
+                $data[$attr->name] = $attr->value;
+
+            // Typage + valeurs par défaut
+            $customData = $block->getCustomData();
+            foreach ($customData as $key => $conf) {
+                if (!isset($data[$key]) && isset($conf['default'])) {
+                    $data[$key] = $conf['default'];
+                }
+
+                if (isset($data[$key]) && isset($conf['type'])) {
+                    switch ($conf['type']) {
+                        case 'string':
+                            $data[$key] = (string)$data[$key];
+                            break;
+                        case 'int':
+                            $data[$key] = (int)$data[$key];
+                            break;
+                        case 'float':
+                            $data[$key] = (float)$data[$key];
+                            break;
+                        case 'bool':
+                            $data[$key] = filter_var($data[$key], FILTER_VALIDATE_BOOLEAN);
+                            break;
+                        case 'array':
+                            $data[$key] = json_decode($data[$key], true) ?? [];
+                            break;
+                    }
+                }
+            }
+
+            //keep only keys in data that are in customData keys
+            $data = array_intersect_key($data, $customData);
+
+            // Rendu HTML du bloc
+            try {
+                $htmlOutput = $block->renderCallback($data);
+
+                // Remplacement du nœud
+                $fragment = $doc->createDocumentFragment();
+                $fragment->appendXML($htmlOutput);
+                $node->parentNode->replaceChild($fragment, $node);
+            } catch (\Throwable $e) {
+                $node->nodeValue = '[Erreur bloc ' . htmlspecialchars($type) . ']';
+            }
+        }
+
+        // Nettoyage des balises inutiles <html><body>...
+        $output = $doc->saveHTML();
+        return preg_replace('~<(?:!DOCTYPE|/?(?:html|head|body))[^>]*>~i', '', $output);
     }
 }

@@ -206,6 +206,12 @@ new RouteGroup(
             _callback: PageListController::class . '::hierachy',
             _methods: ['POST']
         ),
+        new Route(
+            name: 'page.block.render',
+            _slug: '/page/block/render/{type:slug}',
+            _callback: PageBuilderController::class . '::renderBlock',
+            _methods: ['POST']
+        )
     ],
     _middlewares: [
         ApiAdminAuthMiddleware::class

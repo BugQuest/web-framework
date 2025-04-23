@@ -38,6 +38,20 @@ class PageBuilderController
         ]);
     }
 
+    public static function renderBlock(string $type): Response
+    {
+        $block = BlockRegistry::get($type);
+
+        if (!$block)
+            return Response::json404('Block not found');
+
+        try {
+            return Response::html($block->renderCallback(Payload::fromRawInput()->getRaw()));
+        } catch (\Exception $e) {
+            return Response::jsonServerError($e->getMessage());
+        }
+    }
+
     public static function load(int $id): Response
     {
         $page = Page::find($id);

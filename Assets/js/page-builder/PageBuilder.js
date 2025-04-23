@@ -1,7 +1,8 @@
 import grapesjs from 'grapesjs';
 import loadBasicBlocks from './blocks/index.js';
-import {Toast} from "@framework/js/services/Toast";
-import {__} from "@framework/js/services/Translator";
+import CustomBlockType from './blocks/CustomBlockType.js';
+import {Toast} from '@framework/js/services/Toast';
+import {__} from '@framework/js/services/Translator';
 
 export default class PageBuilder {
     constructor(element) {
@@ -12,58 +13,18 @@ export default class PageBuilder {
         this.id = element.dataset.id || null;
         this.theme = element.dataset.theme || 'default';
         this.blocks = {};
-        //try get dataset blocks and parse it
+
         try {
             this.blocks = JSON.parse(element.dataset.blocks);
         } catch (e) {
             console.error('Impossible de parser les blocs :', e);
-            this.blocks = {};
         }
     }
 
     async initEditor() {
-        if (!this.element)
-            throw new Error('Element is not defined');
+        if (!this.element) throw new Error('Element is not defined');
 
-        if (!this.id) {
-            this.editor = grapesjs.init({
-                container: this.element,
-                fromElement: true,
-                storageManager: false,
-                canvas: {
-                    styles: [
-                        this.theme !== 'default' ? this.theme : '/admin/assets/css/theme-default'
-                    ],
-                }
-            });
-            loadBasicBlocks(this.editor);
-            await this.loadBlocks();
-            this.addSaveButton();
-            this.addReloadStylesButton();
-            // this.reloadCanvasStyles();
-            return;
-        }
-
-        const data = await this.loadData();
-
-        if (!data) {
-            console.error('Impossible de charger les données de la page');
-            Toast.show(__('Impossible de charger les données de la page', 'admin'), {
-                type: 'error',
-                icon: '❌',
-                duration: 2000,
-                position: 'bottom-right',
-                closable: true
-            });
-            return;
-        }
-
-        this.element.innerHTML = data.html || '';
-
-        document.querySelector('#page-title').value = data.title || '';
-        document.querySelector('#page-slug').value = data.slug || '';
-
-        this.editor = grapesjs.init({
+        const config = {
             container: this.element,
             fromElement: true,
             storageManager: false,
@@ -72,32 +33,84 @@ export default class PageBuilder {
                     this.theme !== 'default' ? this.theme : '/admin/assets/css/theme-default'
                 ],
             }
-        });
+        };
+
+        const data = this.id ? await this.loadData() : null;
+
+        if (data) {
+            this.element.innerHTML = data.html || '';
+            document.querySelector('#page-title').value = data.title || '';
+            document.querySelector('#page-slug').value = data.slug || '';
+        }
+
+        this.editor = grapesjs.init(config);
         loadBasicBlocks(this.editor);
-        if (data.builder_data)
-            this.editor.loadProjectData(data.builder_data);
 
         await this.loadBlocks();
+
+        if (data?.builder_data) {
+            this.editor.loadProjectData(data.builder_data);
+        }
+
         this.addSaveButton();
         this.addReloadStylesButton();
-        this.reloadCanvasStyles();
+        if (data) this.reloadCanvasStyles();
     }
 
     async loadBlocks() {
-        Object.values(this.blocks).forEach(block => {
+        await this.registerCustomBlockType();
+
+        await Object.values(this.blocks).forEach(async block => {
             this.editor.BlockManager.add(block.name, {
                 label: block.label,
                 category: block.category,
                 content: {
                     type: 'custom-block',
                     attributes: {
-                        'data-block-type': block.name,
+                        'data-block-type': block.name
                     },
-                    'custom-data': block.defaultContent || {},
+                    'custom-data': block.customData || {},
                 },
             });
         });
     }
+
+
+    generateTraitsFromCustomData(customData) {
+        return Object.entries(customData).map(([key, def]) => {
+            const trait = {
+                name: key,
+                label: def.label || key,
+                default: def.default,
+            };
+
+            switch (def.type) {
+                case 'string':
+                case 'text':
+                    trait.type = 'text';
+                    break;
+                case 'select':
+                    trait.type = 'select';
+                    trait.options = Object.entries(def.options || {}).map(([value, name]) => ({value, name}));
+                    break;
+                case 'boolean':
+                    trait.type = 'checkbox';
+                    break;
+                case 'number':
+                    trait.type = 'number';
+                    break;
+                default:
+                    trait.type = def.type || 'text';
+            }
+
+            return trait;
+        });
+    }
+
+    async registerCustomBlockType() {
+        await new CustomBlockType(this).register();
+    }
+
 
     reloadCanvasStyles() {
         const iframeDoc = this.editor.Canvas.getDocument();
@@ -111,7 +124,6 @@ export default class PageBuilder {
             }
         });
 
-        console.log('[GrapesJS] Styles rechargés via shortcut.');
         Toast.show(__('Styles rechargés', 'admin'), {
             type: 'success',
             icon: '✅',
@@ -136,10 +148,6 @@ export default class PageBuilder {
         });
     }
 
-    addPageTitleInput() {
-
-    }
-
     addReloadStylesButton() {
         const panels = this.editor.Panels;
 
@@ -158,7 +166,7 @@ export default class PageBuilder {
     async loadData() {
         try {
             const url = new URL(this.loadUrl + (this.id ? `/${this.id}` : ''), window.location.origin);
-            const params = new URLSearchParams(window.location.search); // ex: ?id=5
+            const params = new URLSearchParams(window.location.search);
             url.search = params;
 
             const response = await fetch(url.toString(), {
@@ -167,7 +175,6 @@ export default class PageBuilder {
             });
 
             if (!response.ok) throw new Error('Erreur HTTP');
-
             return await response.json();
         } catch (error) {
             Toast.show(__('Erreur lors du chargement de la page: ' + error.message, 'admin'), {
@@ -212,11 +219,9 @@ export default class PageBuilder {
                     const url = new URL(window.location.href);
                     url.pathname = `/admin/page/${data.id}`;
                     window.history.pushState({}, '', url);
-                    //update title
                     document.querySelector('#page-title').value = data.title || '';
                     document.querySelector('#page-slug').value = data.slug || '';
                 }
-
 
                 Toast.show(__('page mise à jour', 'admin'), {
                     type: 'success',
@@ -224,7 +229,7 @@ export default class PageBuilder {
                     duration: 2000,
                     position: 'bottom-right',
                     closable: true
-                })
+                });
             } else {
                 Toast.show(__('Erreur lors de la mise à jour de la page', 'admin'), {
                     type: 'error',
@@ -235,7 +240,6 @@ export default class PageBuilder {
                 });
             }
         } catch (error) {
-            console.error('Erreur de sauvegarde :', error);
             Toast.show(__('Erreur lors de la mise à jour de la page: ' + error.message, 'admin'), {
                 type: 'error',
                 icon: '❌',

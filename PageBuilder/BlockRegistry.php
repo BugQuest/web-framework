@@ -30,6 +30,7 @@ abstract class BlockRegistry
             'name' => $block->getName(),
             'label' => $block->getLabel(),
             'category' => $block->getCategory(),
+            'customData' => $block->getCustomData(),
             'content' => $block->getDefaultContent(),
         ], self::$_blocks));
     }
