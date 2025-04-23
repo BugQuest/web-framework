@@ -62,10 +62,14 @@ class TwigExtention extends \Twig\Extension\AbstractExtension implements \Twig\E
             }),
             new TwigFunction('getImageUrl', function (Media|string|int|null $media, string $size = 'original', bool $absolute = false) {
                 return Image::getImageUrl($media, $size, $absolute);
-            }),
+            }, [
+                'is_safe' => ['html'],
+            ]),
             new TwigFunction('getImageHtml', function (Media|string|int|null $media, string $size = 'original', ?string $alt = '', array $attributes = []) {
                 return Image::getImageHtml($media, $size, $alt, $attributes);
-            }),
+            }, [
+                'is_safe' => ['html'],
+            ]),
         ];
     }
 }

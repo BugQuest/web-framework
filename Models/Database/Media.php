@@ -2,6 +2,7 @@
 
 namespace BugQuest\Framework\Models\Database;
 
+use BugQuest\Framework\Services\Image;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -24,6 +25,27 @@ class Media extends Model
         'exif' => 'array',
         'meta' => 'array',
     ];
+
+    public function hash(): string
+    {
+        return pathinfo($this->filename, PATHINFO_FILENAME);
+    }
+
+    public function imageUrl(string $size = 'original', bool $absolute = false): ?string
+    {
+        if (!in_array($this->mime_type, ['image/jpeg', 'image/png', 'image/gif']))
+            throw new \Exception('⚠️ Le fichier n\'est pas une image.');
+
+        return Image::getImageUrl($this, $size, $absolute);
+    }
+
+    public function imageHtml(string $size = 'original', ?string $alt = '', array $attributes = []): ?string
+    {
+        if (!in_array($this->mime_type, ['image/jpeg', 'image/png', 'image/gif']))
+            throw new \Exception('⚠️ Le fichier n\'est pas une image.');
+
+        return Image::getImageHtml($this, $size, $alt, $attributes);
+    }
 
     /**
      * Relation avec les tags

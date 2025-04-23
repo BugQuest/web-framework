@@ -16,28 +16,26 @@ class Image
         if (!extension_loaded('imagick'))
             throw new \Exception('⚠️ L’extension Imagick est requise pour le traitement des images.');
 
-        $options = OptionService::get('images');
-        $placeholder = $options['placeholder'] ?? null;
+        $placeholder = OptionService::get('images', 'placeholder');
 
         if (!$placeholder)
             throw new \Exception('⚠️ Aucune image de remplacement définie dans les options.');
 
-        $compression = $options['compression_method'] ?? null;
         self::loadSizes();
 
-        if (!isset(self::$_sizes[$size]))
-            throw new \Exception("Taille d'image inconnue : $size");
+        if ($size !== 'original')
+            if (!isset(self::$_sizes[$size]))
+                throw new \Exception("Taille d'image inconnue : $size");
 
 
         try {
-            $media = self::resolveMedia($media, $placeholder);
+            $media = self::resolveMedia($media);
             $originalPath = BQ_ROOT . DS . 'htdocs' . DS . $media->path;
             if (!file_exists($originalPath))
                 throw new \Exception("Fichier non trouvé : $originalPath");
 
 
-            $cachePath = self::generateImage($media, $size, $originalPath);
-            $final = self::applyCompression($cachePath, $compression);
+            $final = self::applyCompression($size, $media, self::generateImage($media, $size, $originalPath));
 
             return $absolute
                 ? $final
@@ -56,9 +54,8 @@ class Image
         try {
             $url = self::getImageUrl($media, $size);
             $attrString = '';
-            foreach ($attributes as $k => $v) {
+            foreach ($attributes as $k => $v)
                 $attrString .= " $k=\"" . htmlspecialchars($v, ENT_QUOTES) . "\"";
-            }
 
             return sprintf('<img src="%s" alt="%s"%s>', htmlspecialchars($url, ENT_QUOTES), htmlspecialchars($alt ?? '', ENT_QUOTES), $attrString);
         } catch (\Exception $e) {
@@ -71,7 +68,6 @@ class Image
         self::loadSizes();
         return self::$_sizes;
     }
-
 
     private static function resolveMedia(int|string|Media $media): Media
     {
@@ -130,14 +126,20 @@ class Image
 
     private static function generateImage(Media $media, string $size, string $original): string
     {
-        $hash = md5($media->path);
+        $hash = $media->hash();
+        $hash = preg_replace('/\.[^.]+$/', '', $hash);
         $ext = pathinfo($original, PATHINFO_EXTENSION);
         $dir = self::cacheDir() . $hash;
+
+        if (!is_dir($dir)) mkdir($dir, 0755, true);
+
         $target = $dir . DS . "$size.$ext";
 
         if (file_exists($target)) return $target;
 
-        if (!is_dir($dir)) mkdir($dir, 0755, true);
+        // Si taille originale demandée, on renvoie le fichier original
+        if ($size === 'original')
+            return $original;
 
         $sizeDef = self::$_sizes[$size];
         $w = $sizeDef['width'] ?? 0;
@@ -150,32 +152,30 @@ class Image
         $iw = $image->getImageWidth();
         $ih = $image->getImageHeight();
 
-        $rw = $w;
-        $rh = $h;
-
         if (!$crop) {
+            // Resize proportionnel (preserve aspect ratio)
             $image->resizeImage($w, $h, \Imagick::FILTER_LANCZOS, 1, true);
         } else {
+            // Resize + crop centré
             $scale = max($w / $iw, $h / $ih);
-            $image->resizeImage(
-                (int)ceil($iw * $scale),
-                (int)ceil($ih * $scale),
-                \Imagick::FILTER_LANCZOS, 1
-            );
+            $resizeW = (int)ceil($iw * $scale);
+            $resizeH = (int)ceil($ih * $scale);
 
-            $x = (int)(($image->getImageWidth() - $w) / 2);
-            $y = (int)(($image->getImageHeight() - $h) / 2);
+            $image->resizeImage($resizeW, $resizeH, \Imagick::FILTER_LANCZOS, 1);
+
+            $x = (int)(($resizeW - $w) / 2);
+            $y = (int)(($resizeH - $h) / 2);
             $image->cropImage($w, $h, $x, $y);
             $image->setImagePage(0, 0, 0, 0);
         }
 
         $image->writeImage($target);
-        $image->clear();
+        $image->clear();;
 
         return $target;
     }
 
-    private static function applyCompression(string $path, string $method): string
+    private static function applyCompression(string $size, Media $media, string $path): string
     {
         $dir = pathinfo($path, PATHINFO_DIRNAME);
         $name = pathinfo($path, PATHINFO_FILENAME);
@@ -185,9 +185,14 @@ class Image
             'avif' => 'avif'
         ];
 
+        $method = OptionService::get('images', 'compression_method');
+
         if (!isset($formatMap[$method])) return $path;
 
-        $target = $dir . DS . $name . '.' . $formatMap[$method];
+        if ($size == 'original')
+            $target = self::cacheDir() . $media->hash() . DS . "$size." . $formatMap[$method];
+        else
+            $target = $dir . DS . $name . '.' . $formatMap[$method];
 
         if (file_exists($target)) return $target;
 
@@ -197,7 +202,17 @@ class Image
         $img->writeImage($target);
         $img->clear();
 
-        if (!str_contains($path, 'original')) @unlink($path);
+        if ($size !== 'original') {
+            if (file_exists($path)) {
+                try {
+                    // On s'assure que le fichier est bien libéré avant de le supprimer
+                    clearstatcache(true, $path);
+                    unlink($path);
+                } catch (\Throwable $e) {
+
+                }
+            }
+        }
 
         return $target;
     }
@@ -216,7 +231,6 @@ class Image
                 'thumbnail' => ['width' => 150, 'height' => 150, 'crop' => true],
                 'medium' => ['width' => 300, 'height' => 300, 'crop' => false],
                 'large' => ['width' => 1024, 'height' => 1024, 'crop' => false],
-                'original' => ['width' => 0, 'height' => 0, 'crop' => false],
             ]);
         }
     }

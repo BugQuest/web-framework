@@ -1,9 +1,11 @@
-{# partials/components/accordeon.twig #}
-<div class="__Accordeon {{ open ? 'active' : '' }}">
-    <div class="__AccordeonTitle">
+{% set title = title|default('Titre de l’accordéon') %}
+{% set class = class|default('') %}
+
+<div class="__accordeon accordeon {{ class }}">
+    <div class="__accordeon_title accordeon-title">
         {{ title }}
     </div>
-    <div class="__AccordeonContent">
-        {{ content }}
+    <div class="accordeon-content">
+        {% block accordeon_content %}{% endblock %}
     </div>
 </div>

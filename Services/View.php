@@ -17,7 +17,7 @@ abstract class View
         ],
     ];
 
-    public static function addPath(string $path, string $namespace = null): void
+    public static function addPath(string $path, ?string $namespace = null): void
     {
         foreach (self::$paths as $entry)
             if ($entry['path'] === $path && $entry['namespace'] === $namespace)
