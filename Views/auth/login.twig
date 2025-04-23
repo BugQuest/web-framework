@@ -5,6 +5,7 @@
     <title>{{ __('Connexion', 'auth', 'fr') }} – BugQuest</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {{ bq_assets_header('global') }}
+    {{ bq_assets_header('admin-light') }}
 </head>
 <body class="fullvh">
 
@@ -24,21 +25,44 @@
                name="email"
                id="email"
                value="{{ email }}"
-               class="{{ error ? 'error' }}" required>
+               class="{{ error ? 'error' }}" autocomplete="off" required>
         <label for="password">{{ __('Mot de passe', 'auth', 'fr') }}</label>
         <input type="password"
                name="password"
                id="password"
-               class="{{ error ? 'error' }}" required>
+               class="{{ error ? 'error' }}" autocomplete="off" required>
 
         <input class="button-submit" type="submit" value="{{ __('Se connecter', 'auth', 'fr') }}"/>
     </form>
 </div>
 
 <div class="footer-note">
-    BugQuest Web Framework • v1.0 <br>
-    <a href="/">⬅ {{ __('Retour au site', 'auth', 'fr') }}</a>
+    <p>BugQuest Web Framework • v1.0</p>
+    <div class="text-center">
+        <a href="/" class="button info">⬅ {{ __('Retour au site', 'auth', 'fr') }}</a>
+    </div>
 </div>
+<script>
+    //add glow class to button submit when all inputs are filled
+    const inputs = document.querySelectorAll('input[type="text"], input[type="password"]');
+    const button = document.querySelector('.button-submit');
+
+    inputs.forEach(input => {
+        input.addEventListener('input', () => {
+            let allFilled = true;
+            inputs.forEach(i => {
+                if (i.value === '') {
+                    allFilled = false;
+                }
+            });
+            if (allFilled) {
+                button.classList.add('glow');
+            } else {
+                button.classList.remove('glow');
+            }
+        });
+    });
+</script>
 {{ bq_assets_footer('global') }}
 </body>
 </html>

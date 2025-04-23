@@ -5,6 +5,7 @@
     <title>{{ __('Installation', 'install', 'fr') }} | BugQuest</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {{ bq_assets_header('global') }}
+    {{ bq_assets_header('admin-light') }}
 </head>
 <body class="fullvh">
 <form method="post" autocomplete="off" class="container-centered">
@@ -56,9 +57,8 @@
     <button class="button-submit" type="submit">🚀 {{ __("Lancer l'installation", 'install', 'fr') }}</button>
 </form>
 
-<div class="footer-note">
-    BugQuest Web Framework - {{ "now"|date("Y") }}
-</div>
+<p>BugQuest Web Framework • v1.0</p>
+
 {{ bq_assets_footer('global') }}
 </body>
 </html>

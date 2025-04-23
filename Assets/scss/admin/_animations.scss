@@ -1,9 +1,97 @@
 @keyframes glow-pulse {
-  0% { box-shadow: none; }
-  50% { box-shadow: 0 0 10px #0ff; }
-  100% { box-shadow: none; }
+  0% {
+    box-shadow: none;
+  }
+  50% {
+    box-shadow: 0 0 10px #0ff;
+  }
+  100% {
+    box-shadow: none;
+  }
 }
 
 .glow {
-  animation: glow-pulse 2s infinite;
+  animation: glow-pulse 4s infinite;
+}
+
+@keyframes glitch {
+  0% {
+    transform: none;
+  }
+  20% {
+    transform: skew(-0.5deg, -0.9deg);
+  }
+  40% {
+    transform: skew(0.4deg, 0.1deg);
+  }
+  60% {
+    transform: skew(-0.8deg, 0.5deg);
+  }
+  80% {
+    transform: skew(0.2deg, -0.3deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes glitchTop {
+  0% {
+    clip-path: inset(0 0 85% 0);
+    transform: translate(-2px, -2px);
+  }
+  50% {
+    clip-path: inset(0 0 85% 0);
+    transform: translate(2px, 2px);
+  }
+  100% {
+    clip-path: inset(0 0 85% 0);
+    transform: translate(-2px, -2px);
+  }
+}
+
+@keyframes glitchBottom {
+  0% {
+    clip-path: inset(15% 0 0 0);
+    transform: translate(2px, 2px);
+  }
+  50% {
+    clip-path: inset(15% 0 0 0);
+    transform: translate(-2px, -2px);
+  }
+  100% {
+    clip-path: inset(15% 0 0 0);
+    transform: translate(2px, 2px);
+  }
+}
+
+.glitch {
+  font-size: 3rem;
+  font-weight: bold;
+
+  color: #0ff;
+  position: relative;
+  text-shadow: 0 0 10px cyan;
+  animation: glitch 4s infinite;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.glitch::before {
+  top: -2px;
+  color: magenta;
+  animation: glitchTop 4s infinite;
+}
+
+.glitch::after {
+  top: 2px;
+  color: lime;
+  animation: glitchBottom 4s infinite;
 }

@@ -1,5 +1,5 @@
-@use '../mixins';
-@use '../variables' as *;
+@use '../admin/mixins';
+@use '../admin/variables' as *;
 
 .card-grid {
   display: grid;
@@ -32,18 +32,18 @@
 
 .card {
   background: #111;
-  border-top: 2px solid $color-primary;
+  border-top: 2px solid var(--color-primary);
   color: #0f0;
   padding: 1.5rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  box-shadow: $glow;
+  box-shadow: var(--glow);
   display: flex;
   flex-direction: column;
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: $glow-hover;
-    border-top: 2px solid $color-secondary;
+    box-shadow: var(--glow-hover);
+    border-top: 2px solid var(--color-secondary);
   }
 
   &-header {

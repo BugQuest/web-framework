@@ -6,8 +6,3 @@
     @content;
   }
 }
-
-@mixin neon-border($color) {
-  border: 1px solid $color;
-  box-shadow: 0 0 5px $color, 0 0 10px $color inset;
-}

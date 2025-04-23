@@ -16,8 +16,8 @@ Assets::addJs(
 );
 
 Assets::addCss(
-    group: 'global',
-    url: '/css/global.css'
+    group: 'admin-light',
+    url: '/css/admin-light.css',
 );
 
 Assets::addJs(

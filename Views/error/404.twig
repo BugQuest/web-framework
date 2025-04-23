@@ -2,167 +2,53 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>404 - Donnée Introuvable</title>
+    <title>404 - {{ __('Donnée Introuvable', 'error', 'fr') }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{ bq_assets_header('global') }}
+    {{ bq_assets_header('admin-light') }}
+
     <style>
-        * {
-            box-sizing: border-box;
+        ._tilt {
+            display: none;
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Courier New', monospace;
-            background: linear-gradient(135deg, #0f172a, #020617);
-            color: #00ffe0;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .glitch-wrapper {
-            text-align: center;
-            max-width: 800px;
-        }
-
-        .glitch {
-            font-size: 4rem;
-            font-weight: bold;
-            color: #0ff;
-            position: relative;
-            text-shadow: 0 0 10px cyan;
-            animation: glitch 2s infinite;
-        }
-
-        .glitch::before,
-        .glitch::after {
-            content: attr(data-text);
-            position: absolute;
-            left: 0;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .glitch::before {
-            top: -2px;
-            color: magenta;
-            animation: glitchTop 2s infinite;
-        }
-
-        .glitch::after {
-            top: 2px;
-            color: lime;
-            animation: glitchBottom 2s infinite;
-        }
-
-        @keyframes glitch {
-            0% {
-                transform: none;
-            }
-            20% {
-                transform: skew(-0.5deg, -0.9deg);
-            }
-            40% {
-                transform: skew(0.4deg, 0.1deg);
-            }
-            60% {
-                transform: skew(-0.8deg, 0.5deg);
-            }
-            80% {
-                transform: skew(0.2deg, -0.3deg);
-            }
-            100% {
-                transform: none;
-            }
-        }
-
-        @keyframes glitchTop {
-            0% {
-                clip-path: inset(0 0 85% 0);
-                transform: translate(-2px, -2px);
-            }
-            50% {
-                clip-path: inset(0 0 85% 0);
-                transform: translate(2px, 2px);
-            }
-            100% {
-                clip-path: inset(0 0 85% 0);
-                transform: translate(-2px, -2px);
-            }
-        }
-
-        @keyframes glitchBottom {
-            0% {
-                clip-path: inset(15% 0 0 0);
-                transform: translate(2px, 2px);
-            }
-            50% {
-                clip-path: inset(15% 0 0 0);
-                transform: translate(-2px, -2px);
-            }
-            100% {
-                clip-path: inset(15% 0 0 0);
-                transform: translate(2px, 2px);
-            }
-        }
-
-        .message {
-            margin-top: 1rem;
-            font-size: 1.2rem;
-            color: #94a3b8;
-        }
-
-        .terminal {
-            background: #0f172a;
-            padding: 1rem;
-            border: 1px solid #0ff2;
-            color: #00ffe0;
-            margin-top: 2rem;
-            font-size: 0.9rem;
-            text-align: left;
-            box-shadow: 0 0 12px #0ff5;
-        }
-
-        .terminal .prompt {
-            color: #22d3ee;
-        }
-
-        a.back-home {
+        ._tilt.active {
             display: inline-block;
-            margin-top: 2rem;
-            padding: 0.75rem 1.5rem;
-            color: #000;
-            background: linear-gradient(to right, #0ff, #00ffc3);
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            text-decoration: none;
-            box-shadow: 0 0 10px #0ff;
-            transition: all 0.2s ease-in-out;
-        }
-
-        a.back-home:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px #0ff;
         }
     </style>
 </head>
-<body>
-<div class="glitch-wrapper">
-    <div class="glitch" data-text="⚠️ 404 – Donnée Introuvable">⚠️ 404 – Donnée Introuvable</div>
-    <p class="message">Le fichier recherché semble s’être égaré dans l'internet.</p>
+<body class="container-flex-center fullvh">
+<div class="wrapper">
+    <div class="glitch" data-text="⚠️ 404 – {{ __('Donnée Introuvable', 'error', 'fr') }}">
+        ⚠️ 404 – {{ __('Donnée Introuvable', 'error', 'fr') }}
+    </div>
+    <p class="message">
+        {{ __("Le fichier recherché semble s’être égaré dans l'internet.", 'error', 'fr') }}
+    </p>
 
     <div class="terminal">
         <div><span class="prompt">> system.scan()</span></div>
-        <div>⏳ Analyse des dimensions...</div>
-        <div>🧩 Résultat : Aucun paquet de données trouvé.</div>
+        <div>⏳ {{ __('Analyse des dimensions...', 'error', 'fr') }}</div>
+        <div>🧩 {{ __("Résultat : Aucun paquet de données trouvé.", 'error', 'fr') }}</div>
         <div><span class="prompt">> status</span></div>
-        <div>💥 Statut : rupture dans la matrice d’URL.</div>
+        <div>💥 {{ __("Statut : rupture dans la matrice d’URL.", 'error', 'fr') }}</div>
+        <div><span class="prompt">> <span class="_tilt">|</span></span></div>
     </div>
+    <script>
+        const tilt = document.querySelector('._tilt');
+        setInterval(() => {
+            tilt.classList.toggle('active');
+        }, 500);
 
-    <a class="back-home" href="/">🔙 Revenir à l’accueil</a>
+    </script>
+
+    <div class="flex-around">
+        <a class="button info glow" href="/">
+            🔙 {{ __("Revenir à l’accueil", 'error', 'fr') }}
+        </a>
+        {% include '@framework/partials/language-switcher.twig' %}
+    </div>
+    {{ bq_assets_footer('global') }}
 </div>
 </body>
 </html>
