@@ -1,33 +1,28 @@
-import {Toast} from "./Toast";
-
-export default class Translator {
+export class Translator {
     static _domains = {};
     static _loaded = {};
 
     static async load(domain) {
         if (this._loaded[domain]) return;
+
         try {
             const response = await fetch(`/admin/locale/domain/get/${domain}`);
-            if (!response.ok) throw new Error(`Erreur lors du chargement du domaine ${domain}`);
+            if (!response.ok) throw new Error(`Error for domain: ${domain}`);
             const data = await response.json();
             this._domains[domain] = data;
             this._loaded[domain] = true;
+            return data;
         } catch (error) {
-            Toast.show(error.message,
-                {
-                    type: 'danger',
-                    icon: '⚠️',
-                    duration: 5000,
-                    position: 'bottom-right',
-                    closable: true
-                })
             console.error(`[Translator] ${error.message}`);
         }
+
+        return null;
     }
 
     static async translate(key, domain = 'bugquest', replacements = {}) {
-        if (!this._loaded[domain])
-            await this.load(domain);
+        domain = domain.trim();
+        key = key.trim();
+        if (!this._loaded[domain]) await this.load(domain);
 
         let translation = this._domains[domain]?.[key] ?? key;
         return this._applyReplacements(translation, replacements);
@@ -43,4 +38,8 @@ export default class Translator {
             return replacements[token] ?? match;
         });
     }
+}
+
+export function __(key, domain = 'bugquest', replacements = {}) {
+    return Translator.t(key, domain, replacements);
 }

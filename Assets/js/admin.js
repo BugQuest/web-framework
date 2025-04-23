@@ -2,9 +2,13 @@ import './components/dropdown';
 import './components/accordeon';
 import './components/language-switcher';
 import MediaGallery from './components/MediaGallery';
-import { Tooltip } from './components/Tooltip.js';
+import {Tooltip} from './components/Tooltip.js';
+import {Translator} from './components/Translator.js';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+
+    await Translator.load('admin');
+
     Tooltip.setup();
     const mediaGalleries = document.querySelectorAll('.__media_gallery');
     mediaGalleries.forEach(gallery => {

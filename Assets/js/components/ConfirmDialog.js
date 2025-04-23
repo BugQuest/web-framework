@@ -1,5 +1,5 @@
 import BuildHelper from './BuildHelper.js';
-import Translator from './Translator.js';
+import {__} from './Translator.js';
 
 export default class ConfirmDialog {
     static show(
@@ -10,10 +10,10 @@ export default class ConfirmDialog {
         options = {}
     ) {
         const defaults = {
-            title: Translator.translate('Confirmation', 'admin'),
-            message: Translator.translate('Êtes-vous sûr de vouloir continuer ?', 'admin'),
-            confirmText: 'Valider',
-            cancelText: 'Annuler',
+            title: __('Confirmation', 'admin'),
+            message: __('Êtes-vous sûr de vouloir continuer ?', 'admin'),
+            confirmText: __('Valider', 'admin'),
+            cancelText: __('Annuler', 'admin'),
             confirmClass: 'button success',
             cancelClass: 'button danger'
         };
