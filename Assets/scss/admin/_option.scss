@@ -176,6 +176,72 @@
 .page-options {
   margin: 2rem;
 
+  .description {
+    color: #e0f2fe;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    font-family: "Courier New", Courier, monospace;
+  }
+
+  /* .tech-status = ul */
+  .tech-status {
+    list-style: none;
+    padding: 0;
+    margin: auto;
+    font-size: 0.8rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+
+    li {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 1rem;
+      background: #0f172a;
+      border-left: 1px solid var(--color-primary);
+      padding: 1rem;
+
+      b {
+        color: var(--color-primary, cyan);
+        font-size: 1rem;
+        font-weight: bold;
+        min-width: 160px;
+        text-align: right;
+        flex-shrink: 0;
+      }
+
+      .status {
+        font-size: 0.85rem;
+        font-weight: bold;
+        padding: 0.3rem 0.7rem;
+        border-radius: 4px;
+        text-transform: uppercase;
+        color: #0f172a;
+        background: #999;
+
+        &.yes {
+          background: #0ff3;
+          color: #36e307;
+        }
+
+        &.no {
+          background: rgba(0, 62, 62, 0.2);
+          color: #f55;
+        }
+      }
+
+      p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: #ccc;
+      }
+    }
+  }
+
+
   .wrap-doc {
     background: #0f172a;
     border: 1px solid #0ff3;
@@ -232,8 +298,7 @@
 #options-container {
   padding: 2rem;
   background: linear-gradient(to bottom right, #0f0f0f, #1a1a2e);
-  border: 1px solid #0ff3;
-  border-radius: 6px;
+  border-top: 1px solid #0ff3;
   margin-top: 2rem;
   margin-bottom: 4rem;
 }
@@ -244,3 +309,48 @@
   margin-bottom: 2rem;
   padding: 1rem;
 }
+
+.image-sizes-summary {
+  margin-top: 2rem;
+  background: #0e0e0e;
+  padding: 1rem;
+  border: 1px solid #0ff4;
+  border-radius: 6px;
+  margin: 2rem 0;
+
+  h2 {
+    color: var(--color-primary, cyan);
+    margin-bottom: 1rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+
+    th, td {
+      padding: 0.5rem 1rem;
+      border: 1px solid #222;
+      text-align: center;
+    }
+
+    th {
+      background: #111;
+      color: #0ff;
+    }
+
+    td {
+      background: #1a1a1a;
+      color: #eee;
+    }
+
+    .crop-yes {
+      color: #33ff44;
+    }
+
+    .crop-no {
+      color: #f55;
+    }
+  }
+}
+

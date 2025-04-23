@@ -1,10 +1,10 @@
 <div class="description">
-    <p>Utilisez la classe <code>ImageHelper</code> ou la fonction Twig <code>getImageUrl</code> ou
+    <p>Utilisez le service <code>Image</code> ou la fonction Twig <code>getImageUrl</code> ou
         <code>getImageHtml</code> pour générer automatiquement une image avec fallback.</p>
     <p><strong>Pourquoi ?</strong> Pour garantir qu’une image de remplacement s’affiche si l’image
         d’origine est manquante. Seules les tailles demandées sont générées et conservées.</p>
     <p>📁 Les images sont stockées dans <code>htdocs/cache/images/</code>.</p>
-    <p>🚀 Si le format <strong>WebP</strong> est supporté, les autres formats intermédiaires sont
+    <p>🚀 Si le format <strong>WebP</strong> ou <strong>AVIF</strong> est supporté, les autres formats intermédiaires sont
         automatiquement supprimés pour économiser de l’espace disque.</p>
 </div>
 
@@ -44,16 +44,16 @@
 
         <h3>Twig :</h3>
         <p>Afficher une image avec fallback :</p>
-        <pre>{{ '<img src="{{ getImageUrl(url|id, "338x262") }}" alt="{{ alt }}" width="338" height="262">' | e }}</pre>
-        <pre>{{ '{{ getImageHtml(url|id, "338x262", alt) }}' | e }}</pre>
+        <pre>{{ '<img src="{{ getImageUrl(url|id|media, "medium") }}" alt="{{ alt }}" width="338" height="262">' | e }}</pre>
+        <pre>{{ '{{ getImageHtml(url|id|media, "medium", alt) }}' | e }}</pre>
 
         <h3>PHP :</h3>
-        <p>Utilisation de <code>ImageHelper</code> :</p>
+        <p>Utilisation de <code>Image</code> :</p>
         <pre>
-use BugQuest\Framework\Helpers\ImageHelper;
+use BugQuest\Framework\Services\Image;
 
-$image_url = ImageHelper::getImageUrl($url_or_id, '338x262');
-$image_html = ImageHelper::getImageHtml($url_or_id, '338x262', $alt);
+$image_url = Image::getImageUrl($url|id|media, 'medium');
+$image_html = Image::getImageHtml($url|id|media, 'medium', $alt);
                 </pre>
     </div>
 </div>

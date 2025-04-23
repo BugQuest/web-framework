@@ -13,6 +13,41 @@
             </div>
         </div>
 
+        <div class="__accordeon accordeon">
+            <div class="__accordeon_title accordeon-title">
+                📐 {{ __('Tailles d’images configurées', 'admin', 'fr') }}</div>
+            <div class="accordeon-content">
+                <div class="image-sizes-summary">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Largeur</th>
+                            <th>Hauteur</th>
+                            <th>Crop</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for name, size in sizes %}
+                            <tr>
+                                <td><code>{{ name }}</code></td>
+                                <td>{{ size.width ?: 'auto' }}</td>
+                                <td>{{ size.height ?: 'auto' }}</td>
+                                <td>
+                                    {% if size.crop %}
+                                        <span class="crop-yes">✅</span>
+                                    {% else %}
+                                        <span class="crop-no">❌</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <div id="options-container"
              data-compression-methods="{{ compression_methods }}">
         </div>

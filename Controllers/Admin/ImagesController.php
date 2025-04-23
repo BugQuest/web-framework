@@ -2,6 +2,7 @@
 
 namespace BugQuest\Framework\Controllers\Admin;
 
+use BugQuest\Framework\Services\Image;
 use BugQuest\Framework\Services\Locale;
 use BugQuest\Framework\Services\View;
 
@@ -12,6 +13,7 @@ abstract class ImagesController
         $imagick_installed = extension_loaded('imagick');
         $webp_supported = function_exists('imagewebp');
         $avif_supported = function_exists('imageavif');
+        $image_sizes = Image::getSizes();
 
         $compression_methods = [
             [
@@ -38,6 +40,7 @@ abstract class ImagesController
             'avif_supported' => $avif_supported,
             'compression_methods' => json_encode($compression_methods),
             'help_path' => $help_path,
+            'sizes' => $image_sizes,
         ]);
     }
 }
