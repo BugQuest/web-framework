@@ -371,12 +371,12 @@ export default class MediaGallery {
         ]);
 
         info.appendChild(list);
-console.log(media)
+
         // 🧠 Affichage des EXIFs s’ils existent
         if (media.exif && typeof media.exif === 'object' && Object.keys(media.exif).length > 0) {
-            const exifTitle = BuildHelper.h3('Données EXIF');
-            exifTitle.classList.add('media-modal--subtitle');
-            info.appendChild(exifTitle);
+
+            let {accordeon, accordeon_content} = BuildHelper.accordion('EXIF', 'small');
+            info.appendChild(accordeon)
 
             const exifItems = Object.entries(media.exif).map(([key, value]) => {
                 return `<strong>${key}:</strong> ${typeof value === 'object' ? JSON.stringify(value) : value}`;
@@ -384,7 +384,7 @@ console.log(media)
 
             const exifList = BuildHelper.list(exifItems);
             exifList.classList.add('media-modal--exif');
-            info.appendChild(exifList);
+            accordeon_content.appendChild(exifList);
         }
 
         this.modal_content.appendChild(media_container);

@@ -30,7 +30,7 @@
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease, padding 0.3s ease;
-    padding: 0 1rem;
+    padding: 0 2rem;
   }
 
   &.active {
@@ -40,7 +40,7 @@
 
     .__AccordeonContent {
       padding: 1rem;
-      max-height: 500px; // Ajuste si besoin
+      max-height: 600px; // Ajuste si besoin
     }
   }
 }
