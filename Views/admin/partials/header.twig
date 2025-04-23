@@ -8,11 +8,11 @@
         <div class="dropdown __dropdown">
             <div type="button" class="__dropdown_toggle dropdownToggle">
                 <div class="avatar"></div>
-                <div class="name">Steven</div>
+                <div class="name">{{ bq_user().username }}</div>
             </div>
             <div class="dropdownContent">
                 <a href="{{ bq_route_url('admin.user.settings') }}" class="dropdownItem">⚙️ Mon profil</a>
-                <a href="/logout" class="dropdownItem">🚪 Déconnexion</a>
+                <a href="{{ bq_route_url('auth.logout') }}" class="dropdownItem">🚪 Déconnexion</a>
             </div>
         </div>
     </div>

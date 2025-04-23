@@ -1,6 +1,5 @@
 <?php
 
-use BugQuest\Framework\Models\Database\Meta;
 use BugQuest\Framework\Services\Locale;
 use BugQuest\Framework\Services\MetaService;
 

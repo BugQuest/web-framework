@@ -6,6 +6,7 @@ use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Router;
 use BugQuest\Framework\Services\Admin;
 use BugQuest\Framework\Services\Assets;
+use BugQuest\Framework\Services\Auth;
 use BugQuest\Framework\Services\Locale;
 use Twig\TwigFunction;
 
@@ -54,6 +55,9 @@ class TwigExtention extends \Twig\Extension\AbstractExtension implements \Twig\E
             }, [
                 'is_safe' => ['html'],
             ]),
+            new TwigFunction('bq_user', function () {
+                return Auth::user();
+            }),
         ];
     }
 }
