@@ -1,18 +1,84 @@
 .option-block {
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
-  margin-bottom: 1rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #111827;
+  border: 1px solid #0ff3;
+  border-radius: 4px;
+  color: #e0f2fe;
 
-  label {
-    font-weight: bold;
-    margin-bottom: 0.3rem;
+  &.media {
+    label {
+      font-size: 0.9rem;
+      color: var(--color-primary, cyan);
+      margin-bottom: 0.25rem;
+    }
+
+    .media-preview {
+      background: #0f172a;
+      border: 1px dashed #0ff6;
+      border-radius: 4px;
+      min-height: 120px;
+      text-align: center;
+      color: #93c5fd;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, border-color 0.2s;
+      width: 200px;
+      height: 200px;
+      position: relative;
+      overflow: hidden;
+
+      &:hover {
+        background: #0ff1;
+        border-color: cyan;
+        color: cyan;
+      }
+
+      .media-current {
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 255, 255, 0.1);
+        object-fit: contain;
+      }
+    }
   }
 
-  input {
-    padding: 0.5rem;
-    border: 1px solid #0ff3;
-    background: #111827;
-    color: white;
-    border-radius: 4px;
+  &.select {
+    label {
+      font-size: 0.9rem;
+      color: var(--color-primary, cyan);
+      margin-bottom: 0.25rem;
+    }
+
+    select {
+      background: #0f172a;
+      border: 1px solid #0ff3;
+      border-radius: 4px;
+      padding: 0.5rem;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+
+      &:hover {
+        background: #0ff1;
+        border-color: cyan;
+        color: cyan;
+      }
+    }
   }
 }
