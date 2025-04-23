@@ -1,0 +1,131 @@
+.bq-toast-container {
+  position: fixed;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+  padding: 1rem;
+
+  &.top-right {
+    top: 0;
+    right: 0;
+    align-items: flex-end;
+  }
+
+  &.top-left {
+    top: 0;
+    left: 0;
+    align-items: flex-start;
+  }
+
+  &.bottom-right {
+    bottom: 0;
+    right: 0;
+    align-items: flex-end;
+  }
+
+  &.bottom-left {
+    bottom: 0;
+    left: 0;
+    align-items: flex-start;
+  }
+
+  &.top-center {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+  }
+
+  &.bottom-center {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+  }
+}
+
+.bq-toast {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #111827;
+  color: #fff;
+  border: 1px solid #0ff4;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.15);
+  max-width: 320px;
+  min-width: 200px;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+
+  &.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .bq-toast-icon {
+    font-size: 1.2rem;
+  }
+
+  .bq-toast-message {
+    flex: 1;
+    line-height: 1.3;
+  }
+
+  .bq-toast-close {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    padding: 0;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &.success {
+    border-color: #22c55e;
+    background: rgba(34, 197, 94, 0.1);
+    color: #bbf7d0;
+  }
+
+  &.error {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    color: #fecaca;
+  }
+
+  &.info {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
+    color: #bfdbfe;
+  }
+
+  &.warning {
+    border-color: #facc15;
+    background: rgba(250, 204, 21, 0.1);
+    color: #fde68a;
+  }
+
+  &.primary {
+    border-color: cyan;
+    background: rgba(0, 255, 255, 0.1);
+    color: cyan;
+  }
+
+  &.secondary {
+    border-color: #64748b;
+    background: rgba(100, 116, 139, 0.1);
+    color: #cbd5e1;
+  }
+}

@@ -288,6 +288,7 @@ export default class MediaGallery {
     getIconForMime(mime) {
         if (mime === 'application/pdf') return '📄';
         if (mime === 'text/plain') return '📃';
+        if (mime.startsWith('video/')) return '🎥';
         return '📁';
     }
 
