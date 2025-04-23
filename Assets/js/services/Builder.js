@@ -1,3 +1,5 @@
+import {__} from '@framework/js/services/Translator.js';
+
 export default class Builder {
 
     static accordion(title, subclass) {
@@ -72,6 +74,42 @@ export default class Builder {
         let input = this.input_text(placeholder, value, className);
         input.type = 'password';
         return input;
+    }
+
+    static checkbox(label = '', checked = false, className = '', onChange = null) {
+        let checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        if (checked) checkbox.checked = true;
+        if (className) checkbox.className = className;
+        if (onChange) checkbox.addEventListener('change', onChange);
+
+        let labelElement = this.label(label);
+        labelElement.prepend(checkbox);
+
+        return labelElement;
+    }
+
+    static switch(checked = false, onChange = null) {
+        let switcher = document.createElement('div');
+        switcher.className = 'switch';
+        switcher.dataset.state = checked ? 'on' : 'off';
+        switcher.title = checked ? __('Activé', 'options') : __('Désactivé', 'options');
+        switcher.addEventListener('click', () => {
+            switcher.dataset.state = switcher.dataset.state === 'on' ? 'off' : 'on';
+            switcher.title = switcher.dataset.state === 'on' ? __('Activé', 'options') : __('Désactivé', 'options');
+            if (onChange) onChange(switcher.dataset.state === 'on');
+        });
+
+        return {
+            element: switcher,
+            value: () => {
+                return switcher.dataset.state === 'on';
+            },
+            toggle: (enabled) => {
+                switcher.dataset.state = enabled ? 'on' : 'off';
+                switcher.title = enabled ? __('Activé', 'options') : __('Désactivé', 'options');
+            }
+        };
     }
 
     static button_submit(text = 'Envoyer', className = 'button button-primary') {
@@ -191,31 +229,62 @@ export default class Builder {
         return ul;
     }
 
-    static search(placeholder = 'Rechercher...', onSearch = null, onClickItem = null, searchMinLength = 2, openBottom = false) {
-        let searchContainer = this.div('search-container');
+    static search(placeholder = 'Rechercher...',
+                  onSearch = null,
+                  onClickItem = null,
+                  searchMinLength = 2,
+                  openBottom = false) {
+        let element = this.div('search-container');
         let input = this.input_text(placeholder);
         input.type = 'search';
         let results = this.div('search-results ' + (openBottom ? ' open-bottom' : 'open-top'));
-        searchContainer.appendChild(input);
-        searchContainer.appendChild(results);
-        if (onSearch) input.addEventListener('input', () => {
-            let value = input.value;
-            if (value.length >= searchMinLength) onSearch(value, results); else results.innerHTML = '';
+        element.appendChild(input);
+        element.appendChild(results);
+        if (onSearch)
+            input.addEventListener('input', () => {
+                let value = input.value;
+                if (value.length >= searchMinLength)
+                    onSearch(value);
+                else
+                    results.innerHTML = '';
+            });
 
-        });
+        if (onClickItem)
+            results.addEventListener('click', (e) => {
+                let item_clicked = e.target.closest('.result-item');
+                if (!item_clicked) return;
+                let item = JSON.parse(item_clicked.dataset.item);
+                if (item) onClickItem(item);
+            });
 
-        if (onClickItem) results.addEventListener('click', (e) => {
-            let item = e.target.closest('.result-item');
-            if (item) onClickItem(item);
-        });
-
-        //add custom event to close the search results
-        searchContainer.addEventListener('close', () => {
-            results.innerHTML = '';
-            input.value = '';
-        });
-
-        return {searchContainer, results};
+        return {
+            close: () => {
+                results.innerHTML = '';
+                input.value = '';
+                results.classList.remove('active');
+            },
+            clean: () => {
+                results.innerHTML = '';
+            },
+            populate: (items) => {
+                for (const [key, value] of Object.entries(items)) {
+                    const tagEl = Builder.div('result-item');
+                    tagEl.textContent = key;
+                    tagEl.dataset.item = JSON.stringify(value);
+                    results.appendChild(tagEl);
+                }
+                results.classList.add('active');
+            },
+            addItem: (label, item) => {
+                const tagEl = Builder.div('result-item');
+                tagEl.textContent = label;
+                tagEl.dataset.item = JSON.stringify(item);
+                results.appendChild(tagEl);
+                if (!results.classList.contains('active'))
+                    results.classList.add('active');
+            },
+            element
+        };
     }
 
     static select(options = [], value = null, className = '', onChange = null) {

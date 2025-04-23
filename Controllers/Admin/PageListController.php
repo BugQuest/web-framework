@@ -79,4 +79,24 @@ class PageListController
 
         return Response::json(['success' => true]);
     }
+
+    public static function search(): Response
+    {
+        try {
+            $payload = Payload::fromRawInput()->expectObject([
+                'search' => 'string',
+            ]);
+
+            $search = $payload['search'] ?? '';
+
+            $query = Page::where('title', 'LIKE', '%' . $search . '%')
+                ->orWhere('slug', 'LIKE', '%' . $search . '%')
+                ->orderBy('order')
+                ->get();
+
+            return Response::json($query);
+        } catch (\Exception $e) {
+            return Response::jsonError('Invalid data : ' . $e->getMessage());
+        }
+    }
 }

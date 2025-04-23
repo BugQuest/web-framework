@@ -14,17 +14,14 @@ export class BoolBlock extends OptionBlock {
 
         wrapper.appendChild(Builder.label(this.label));
 
-        const switcher = Builder.div('bool-switch');
-        switcher.dataset.state = this.value ? 'on' : 'off';
-        switcher.title = this.value ? __('Activé', 'options') : __('Désactivé', 'options');
-        switcher.addEventListener('click', () => {
-            this.value = !this.value;
-            switcher.dataset.state = this.value ? 'on' : 'off';
-            switcher.title = this.value ? __('Activé', 'options') : __('Désactivé', 'options');
-            this.notifyChange();
-        });
+        const switcher = Builder.switch(
+            this.value,
+            (value) => {
+                this.value = value;
+                this.notifyChange();
+            });
 
-        wrapper.appendChild(switcher);
+        wrapper.appendChild(switcher.element);
         container.appendChild(wrapper);
     }
 }

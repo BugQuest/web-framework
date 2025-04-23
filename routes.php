@@ -195,6 +195,12 @@ new RouteGroup(
             _methods: ['POST']
         ),
         new Route(
+            name: 'page.search',
+            _slug: '/page/search',
+            _callback: PageListController::class . '::search',
+            _methods: ['POST']
+        ),
+        new Route(
             name: 'page.list',
             _slug: '/page/list',
             _callback: PageListController::class . '::list',

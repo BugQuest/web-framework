@@ -5,9 +5,12 @@
 {% block content %}
     <div class="builder-header">
         <label for="page-title">Titre de la page :</label>
-        <input type="text" id="page-title" name="title" value="{{ page.title }}" />
+        <input type="text" id="page-title" name="title" value="{{ page.title }}"/>
         <label for="page-slug">Slug de la page :</label>
-        <input type="text" id="page-slug" name="slug" value="{{ page.slug }}" />
+        <input type="text" id="page-slug" name="slug" value="{{ page.slug }}"/>
+        <a id="page-preview" href="/{{ page.slug }}" class="btn btn-primary" target="_bugquest">
+            Voir la page
+        </a>
     </div>
     <div id="gjs"
          data-id="{{ page }}"

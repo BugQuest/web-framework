@@ -155,7 +155,7 @@ export default class MediaModalViewer {
                     body: 'name=' + encodeURIComponent(this.new_tag),
                 });
 
-                this.search.dispatchEvent(new Event('close'));
+                this.search.close();
                 this.new_tag = '';
                 this.tagAddBtn.classList.add('hidden')
 
@@ -232,46 +232,36 @@ export default class MediaModalViewer {
 
         this.updateTagList();
 
-        const {searchContainer, result} = Builder.search(
+        this.search = Builder.search(
             __('Ajouter un tag', 'admin') + '...',
-            (value, results_el) => {
+            (value) => {
                 this.new_tag = value;
-                results_el.innerHTML = '';
+                this.search.clean();
                 const filtered =
                     this.gallery.tags.filter(tag => tag.name.toLowerCase().includes(value.toLowerCase())
                         && !media.tags.some(t => t.id === tag.id)
                         && !this.waitingTags.some(t => t.id === tag.id));
 
-                if (filtered.length) {
+                if (filtered.length)
                     this.tagAddBtn.classList.add('hidden');
-                    results_el.classList.add('active');
-                } else {
+                else
                     this.tagAddBtn.classList.remove('hidden');
-                    results_el.classList.remove('active');
-                }
 
-                filtered.forEach(tag => {
-                    const tagEl = Builder.div('result-item');
-                    tagEl.textContent = tag.name;
-                    tagEl.dataset.tag = tag.id;
-                    results_el.appendChild(tagEl);
-                });
+                filtered.forEach(tag => this.search.addItem(tag.name, tag));
             },
             (item) => {
-                const tagId = parseInt(item.dataset.tag);
-                const tag = this.gallery.tags.find(t => t.id === tagId);
+                const tag = this.gallery.tags.find(t => t.id === item.id);
                 if (!tag) return;
 
                 tag.new = true;
                 this.waitingTags.push(tag);
 
-                searchContainer.dispatchEvent(new Event('close'));
+                this.search.close()
                 this.updateTagList();
                 this.updateTagButtonVisibility();
             }, 2);
-        this.search = searchContainer;
 
-        tagsContainer.append(tagActions, tagList, searchContainer);
+        tagsContainer.append(tagActions, tagList, this.search.element);
         return tagsContainer;
     }
 

@@ -41,6 +41,7 @@ export default class PageBuilder {
             this.element.innerHTML = data.html || '';
             document.querySelector('#page-title').value = data.title || '';
             document.querySelector('#page-slug').value = data.slug || '';
+            document.querySelector('#page-preview')?.setAttribute('href', data.slug ? '/' + data.slug : '');
         }
 
         this.editor = grapesjs.init(config);
@@ -221,6 +222,7 @@ export default class PageBuilder {
                     window.history.pushState({}, '', url);
                     document.querySelector('#page-title').value = data.title || '';
                     document.querySelector('#page-slug').value = data.slug || '';
+                    document.querySelector('#page-preview')?.setAttribute('href', data.slug ? '/' + data.slug : '');
                 }
 
                 Toast.show(__('page mise à jour', 'admin'), {
