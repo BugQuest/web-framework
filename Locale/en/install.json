@@ -1,0 +1,11 @@
+{
+  "Installation": "Setup",
+  "Créons votre compte administrateur pour débuter l’aventure.": "Let's create your admin account to begin the journey.",
+  "Nom d'utilisateur": "Username",
+  "Mot de passe": "Password",
+  "Confirmation du mot de passe": "Password confirmation",
+  "Lancer l'installation": "Start installation",
+  "Tous les champs sont obligatoires.": "All fields are required.",
+  "Les mots de passe ne correspondent pas.": "Passwords do not match.",
+  "Le nom d'utilisateur ne doit contenir que des lettres, des chiffres et des underscores.": "The username must only contain letters, numbers, and underscores."
+}

@@ -24,6 +24,14 @@ abstract class Assets
     }
 
     /**
+     * Ajoute un asset de type "fonts"
+     */
+    public static function addFonts(string $group, string $url, ?string $id = null, array $attributes = []): void
+    {
+        self::add($group, $id ?? md5("fonts:$url"), $url, 'fonts', $attributes);
+    }
+
+    /**
      * Ajoute un asset générique
      */
     public static function add(
@@ -37,7 +45,7 @@ abstract class Assets
     ): void
     {
         $type ??= self::_guessType($url);
-        if (!$type || !in_array($type, ['css', 'js'])) {
+        if (!$type || !in_array($type, ['css', 'js', 'fonts'])) {
             throw new \InvalidArgumentException("Type d'asset invalide : $type");
         }
 
@@ -73,7 +81,9 @@ abstract class Assets
 
     public static function renderHeader(string $group): string
     {
-        return self::_render($group, 'css')
+        return
+            self::_render($group, 'fonts')
+            .self::_render($group, 'css')
             . self::_render($group, 'js', 'header');
     }
 
@@ -192,6 +202,7 @@ abstract class Assets
         return match ($type) {
             'css' => "<link rel=\"stylesheet\" href=\"$url\"$attrs>",
             'js' => "<script src=\"$url\"$attrs></script>",
+            'fonts' => "<link rel=\"stylesheet\" href=\"$url\"$attrs>",
         };
     }
 

@@ -1,0 +1,12 @@
+<div class="language-switcher">
+    <select id="langSelect" name="locale">
+        {% for code, label in {
+            'en': '🇬🇧',
+            'fr': '🇫🇷'
+        } %}
+            <option value="{{ code }}" {{ code == bq_locale() ? 'selected' }}>
+                {{ label }}
+            </option>
+        {% endfor %}
+    </select>
+</div>

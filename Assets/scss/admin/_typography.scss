@@ -1,10 +1,10 @@
 @use 'variables' as *;
 
 h1, h2, h3, h4 {
-  color: $color-primary;
-  text-shadow: $glow;
+  color: var(--color-primary);
+  text-shadow: var(--glow);
 }
 
 p {
-  color: $color-muted;
+  color: var(--color-text);
 }

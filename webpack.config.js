@@ -4,6 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = {
     entry: {
         'dist/css/global': './Assets/scss/global.scss',
+        'dist/js/global': './Assets/js/global.js',
         'admin/dist/css/admin': './Assets/scss/admin.scss',
         'admin/dist/js/admin': './Assets/js/admin.js',
     },
