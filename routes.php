@@ -24,6 +24,18 @@ new RouteGroup(
             _callback: MediasController::class . '::upload',
             _methods: ['POST']
         ),
+        new Route(
+            name: 'medias.all',
+            _slug: '/medias/all/{page:int?}',
+            _callback: MediasController::class . '::all',
+            _methods: ['GET']
+        ),
+        new Route(
+            name: 'medias.view',
+            _slug: '/medias/view/{id:int}',
+            _callback: MediasController::class . '::view',
+            _methods: ['GET']
+        ),
     ],
     _middlewares: [
         AdminAuthMiddleware::class
