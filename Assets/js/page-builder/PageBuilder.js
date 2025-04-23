@@ -10,6 +10,7 @@ export default class PageBuilder {
         this.saveUrl = '/admin/api/page/save';
         this.editor = null;
         this.id = element.dataset.id || null;
+        this.theme = element.dataset.theme || 'default';
     }
 
     async initEditor() {
@@ -23,13 +24,14 @@ export default class PageBuilder {
                 storageManager: false,
                 canvas: {
                     styles: [
-                        '/framework/assets/css/theme-default'
+                        this.theme !== 'default' ? this.theme : '/admin/assets/css/theme-default'
                     ],
                 }
             });
             loadBasicBlocks(this.editor);
             this.addSaveButton();
             this.addReloadStylesButton();
+            this.reloadCanvasStyles();
             return;
         }
 
@@ -58,7 +60,7 @@ export default class PageBuilder {
             storageManager: false,
             canvas: {
                 styles: [
-                    '/admin/assets/css/theme-default'
+                    this.theme !== 'default' ? this.theme : '/admin/assets/css/theme-default'
                 ],
             }
         });
@@ -69,6 +71,7 @@ export default class PageBuilder {
 
         this.addSaveButton();
         this.addReloadStylesButton();
+        this.reloadCanvasStyles();
     }
 
     reloadCanvasStyles() {

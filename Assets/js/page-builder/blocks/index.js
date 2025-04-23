@@ -3,6 +3,7 @@ import paragraph from './paragraph.js';
 import image from './image.js';
 import button from './button.js';
 import container from './container.js';
+import wrapper from './wrapper.js';
 import Builder from '@framework/js/services/Builder.js';
 import MediaPicker from '@framework/js/services/MediaPicker.js';
 
@@ -120,6 +121,7 @@ export default function loadBasicBlocks(editor) {
     image(editor);
     button(editor);
     container(editor);
+    wrapper(editor);
 }
 
 async function fetchSizes() {

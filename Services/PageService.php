@@ -11,6 +11,8 @@ class PageService
      */
     protected static ?Page $currentPage = null;
 
+    protected static string $theme = 'default';
+
     /**
      * Définit la page courante
      *
@@ -29,6 +31,26 @@ class PageService
     public static function getCurrent(): ?Page
     {
         return self::$currentPage;
+    }
+
+    /**
+     * Définit le thème courant
+     *
+     * @param string $theme
+     */
+    public static function setTheme(string $theme): void
+    {
+        self::$theme = $theme;
+    }
+
+    /**
+     * Récupère le thème courant
+     *
+     * @return string
+     */
+    public static function getTheme(): string
+    {
+        return self::$theme;
     }
 
     /**

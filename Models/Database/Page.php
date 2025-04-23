@@ -38,7 +38,7 @@ class Page extends Model
      *
      * @return void
      */
-    public function resolveUrl(): void
+    public function resolveUrl(): bool
     {
         $segments = [];
 
@@ -55,6 +55,31 @@ class Page extends Model
         if ($this->slug !== $resolved) {
             $this->slug = $resolved;
             $this->save();
+            return true;
         }
+
+        return false;
+    }
+
+    /**
+     * Récupère le breadcrumbs de la page
+     *
+     * @return string
+     */
+    public function breadcrumbs(): array
+    {
+        $breadcrumbs = [];
+        $page = $this;
+
+        while ($page) {
+            $breadcrumbs[] = [
+                'title' => $page->title,
+                'slug' => $page->slug,
+            ];
+            $page = $page->parent;
+        }
+
+        return array_reverse($breadcrumbs);
+
     }
 }

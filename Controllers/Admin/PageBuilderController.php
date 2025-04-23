@@ -6,6 +6,7 @@ use BugQuest\Framework\Helpers\StringHelper;
 use BugQuest\Framework\Models\Database\Page;
 use BugQuest\Framework\Models\Response;
 use BugQuest\Framework\Services\Assets;
+use BugQuest\Framework\Services\PageService;
 use BugQuest\Framework\Services\Payload;
 
 class PageBuilderController
@@ -29,9 +30,9 @@ class PageBuilderController
             isLocalUrl: true,
         );
 
-
         return Response::view('@framework/admin/page/edit.twig', [
             'page' => $id,
+            'theme' => PageService::getTheme(),
         ]);
     }
 
@@ -68,13 +69,13 @@ class PageBuilderController
                 return Response::json404();
         }
 
-
         $slug = $payload['slug'] ?: StringHelper::sanitize_title($payload['title']);
         $page->title = $payload['title'] ?? '';
         $page->slug = $slug;
         $page->html = $payload['html'] ?? '';
         $page->builder_data = $payload['builder_data'] ?? [];
-        $page->resolveUrl();
+        if (!$page->resolveUrl())
+            $page->save();
 
         return Response::json($page);
     }
