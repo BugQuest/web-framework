@@ -3352,7 +3352,6 @@ input:focus.error {
   border-top: 4px solid rgba(0, 255, 255, 0.4);
   padding: 1rem;
   z-index: 9999;
-  max-width: 300px;
   display: none;
   transition: box-shadow 0.2s;
   top: 50%;
@@ -3406,6 +3405,36 @@ input:focus.error {
 }
 .debug-panel .debug-line strong {
   color: #ffcc00;
+}
+.debug-panel .debug-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  max-height: 400px;
+  overflow: auto;
+}
+.debug-panel .debug-table th, .debug-panel .debug-table td {
+  border: 1px solid #999;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: monospace;
+}
+.debug-panel .debug-table td.truncated {
+  max-width: 400px;
+  overflow: auto;
+}
+.debug-panel .debug-table th {
+  background-color: #222;
+  text-align: left;
+  color: rgba(0, 255, 255, 0.4);
+  font-weight: bold;
+}
+.debug-panel .debug-table tr:nth-child(even) {
+  background-color: #333;
+}
+.debug-panel .debug-table tfoot td {
+  font-weight: bold;
+  background-color: #222;
 }
 
 /*# sourceMappingURL=/framework/assets/css-map/admin */

@@ -46,8 +46,6 @@ export class DebugPanel {
 
         this.kvSection = Builder.div('kv-section');
         this.kvWrap = Builder.div('wrap');
-        const kvTitle = Builder.h4('Debug Infos dynamiques');
-        this.kvSection.append(kvTitle, this.kvWrap);
         this.panel.appendChild(this.kvSection);
         this.kvValues = {}; // pour stocker les refs HTML des valeurs
 
@@ -122,12 +120,71 @@ export class DebugPanel {
         accordeon_content.appendChild(wrap);
         this.panel.appendChild(accordeon);
 
-        for (const item_key in group) {
-            const item = group[item_key];
-            const item_div = Builder.div('debug-line');
-            item_div.innerHTML = `${item_key}: ${item}`;
-            wrap.appendChild(item_div);
+        if (Array.isArray(group)) {
+            // Cas spécial tableau (ex: queries SQL)
+            if (group_key === 'queries') {
+                const head = ['SQL', 'Bindings', 'Durée'];
+                const body = group.map(row => {
+                    const time = parseFloat(row.time);
+                    const displayTime = time >= 1000
+                        ? `${(time / 1000).toFixed(3)} s`
+                        : `${time.toFixed(2)} ms`;
+
+                    return [
+                        { value: row.query, full: row.query }, // pour title
+                        row.bindings.map(b => `"${b}"`).join(', '),
+                        displayTime
+                    ];
+                });
+
+                const totalTime = group.reduce((sum, row) => sum + parseFloat(row.time), 0);
+                const displayTotal = totalTime >= 1000
+                    ? `${(totalTime / 1000).toFixed(3)} s`
+                    : `${totalTime.toFixed(2)} ms`;
+
+                // Construction du tableau via Builder.table
+                const table = Builder.table(head, body, 'debug-table');
+
+                // Ajout du tfoot
+                const tfoot = document.createElement('tfoot');
+                const tr = document.createElement('tr');
+
+                const tdLabel = document.createElement('td');
+                tdLabel.textContent = 'Total';
+                tdLabel.colSpan = 2;
+
+                const tdTotal = document.createElement('td');
+                tdTotal.textContent = displayTotal;
+
+                tr.append(tdLabel, tdTotal);
+                tfoot.appendChild(tr);
+                table.appendChild(tfoot);
+
+                wrap.appendChild(table);
+                return;
+            }
+
+            // Autres tableaux si besoin (logs, appels API, etc.)
+            group.forEach((item, index) => {
+                const div = Builder.div('debug-line');
+                div.textContent = `${index}: ${JSON.stringify(item)}`;
+                wrap.appendChild(div);
+            });
+
+        } else {
+            // Cas classique objet clé: valeur
+            for (const item_key in group) {
+                const item = group[item_key];
+                const item_div = Builder.div('debug-line');
+                item_div.innerHTML = `${item_key}: ${item}`;
+                wrap.appendChild(item_div);
+            }
         }
+    }
+
+
+    static renderQueries() {
+
     }
 
     static async loadMetrics() {

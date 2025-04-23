@@ -34,6 +34,19 @@ class RouteGroup
             $this->add($route);
     }
 
+    public static function __set_state(array $properties): static
+    {
+        return new static(
+            name: $properties['name'],
+            _prefix: $properties['_prefix'],
+            _routes: $properties['_routes'],
+            _middlewares: $properties['_middlewares'],
+            _cacheKey: $properties['_cacheKey'],
+            _cacheGroup: $properties['_cacheGroup'],
+            _cacheTtl: $properties['_cacheTtl'],
+        );
+    }
+
     public function add(Route $route): Route
     {
         $slug = $this->_prefix . '/' . ltrim($route->getSlug(), '/');

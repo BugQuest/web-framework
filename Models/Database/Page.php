@@ -23,6 +23,19 @@ class Page extends Model
         'builder_data' => 'array',
     ];
 
+    public static function __set_state(array $array): static
+    {
+        $page = new self();
+        $page->id = $array['id'];
+        $page->parent_id = $array['parent_id'];
+        $page->title = $array['title'];
+        $page->slug = $array['slug'];
+        $page->html = $array['html'];
+        $page->builder_data = $array['builder_data'];
+        $page->order = $array['order'];
+        return $page;
+    }
+
     public function parent(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Page::class, 'parent_id');

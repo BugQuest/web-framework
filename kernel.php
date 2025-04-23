@@ -54,7 +54,18 @@ if ($result = Router::dispatch()) {
     } else
         echo $result;
 
-    Debug::saveStatus();
+    $currentRoute = Router::getCurrentRoute();
+    if ($currentRoute) {
+
+        if (str_starts_with($currentRoute->name, 'framework.assets'))
+            return;
+
+        if (str_starts_with($currentRoute->name, 'admin.api'))
+            return;
+
+        Debug::saveStatus();
+    }
+
 
     return;
 }

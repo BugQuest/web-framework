@@ -248,4 +248,47 @@ export default class Builder {
         return select;
     }
 
+    static table(head = [], body = [], className = '', headClassName = '', bodyClassName = '') {
+        let table = document.createElement('table');
+        if (className) table.className = className;
+
+        let thead = document.createElement('thead');
+        let tbody = document.createElement('tbody');
+
+        if (head.length > 0) {
+            head.forEach(item => {
+                let th = document.createElement('th');
+                th.textContent = item;
+                if (headClassName) th.className = headClassName;
+                thead.appendChild(th);
+            });
+        }
+
+        if (body.length > 0) {
+            body.forEach(item => {
+                let tr = document.createElement('tr');
+                item.forEach(cell => {
+                    let td = document.createElement('td');
+
+                    if (typeof cell === 'object' && cell !== null && 'value' in cell && 'full' in cell) {
+                        td.textContent = cell.value;
+                        td.title = cell.full;
+                        td.classList.add('truncated'); // on l’utilisera pour le CSS
+                    } else {
+                        td.textContent = cell;
+                    }
+
+                    if (bodyClassName) td.className = bodyClassName;
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+        }
+
+        table.appendChild(thead);
+        table.appendChild(tbody);
+
+        return table;
+    }
+
 }

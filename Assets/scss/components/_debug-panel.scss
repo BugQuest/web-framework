@@ -5,7 +5,6 @@
   border-top: 4px solid #0ff6;
   padding: 1rem;
   z-index: 9999;
-  max-width: 300px;
   display: none;
   transition: box-shadow 0.2s;
   top: 50%;
@@ -66,6 +65,42 @@
 
     strong {
       color: #ffcc00;
+    }
+  }
+
+  .debug-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    max-height: 400px;
+    overflow: auto;
+
+    th, td {
+      border: 1px solid #999;
+      padding: 6px 10px;
+      font-size: 13px;
+      font-family: monospace;
+    }
+
+    td.truncated {
+      max-width: 400px;
+      overflow: auto;
+    }
+
+    th {
+      background-color: #222;
+      text-align: left;
+      color: #0ff6;
+      font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+        background-color: #333;
+    }
+
+    tfoot td {
+      font-weight: bold;
+        background-color: #222;
     }
   }
 }

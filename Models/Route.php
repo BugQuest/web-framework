@@ -27,6 +27,21 @@ class Route
     {
     }
 
+    public static function __set_state(array $properties): static
+    {
+        return new static(
+            name: $properties['name'],
+            _slug: $properties['_slug'],
+            _callback: $properties['_callback'],
+            _methods: $properties['_methods'],
+            _middlewares: $properties['_middlewares'],
+            group: $properties['group'],
+            _cache_key: $properties['_cache_key'],
+            _cache_group: $properties['_cache_group'],
+            _cache_ttl: $properties['_cache_ttl'],
+        );
+    }
+
 
     public static function current(): ?self
     {

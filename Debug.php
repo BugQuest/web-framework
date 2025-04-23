@@ -2,14 +2,32 @@
 
 namespace BugQuest\Framework;
 
-use BugQuest\Framework\Debug\RouterDebugger;
+use BugQuest\Framework\Models\Database\Page;
 use BugQuest\Framework\Models\Response;
 use BugQuest\Framework\Services\Auth;
 use BugQuest\Framework\Services\Cache;
+use BugQuest\Framework\Services\PageService;
+use Illuminate\Support\Facades\DB;
 
 class Debug
 {
     private static array $_logs = [];
+    private static array $_queries = [];
+
+    public static function query(string $sql, array $bindings = [], int $time = 0): void
+    {
+        if (!Auth::isAdmin())
+            return;
+
+        if (!isset(self::$_queries[$sql]))
+            self::$_queries[$sql] = [];
+
+        self::$_queries[$sql] = [
+            'sql' => $sql,
+            'bindings' => $bindings,
+            'time' => $time,
+        ];
+    }
 
     public static function log(string $group, string $key, int|float|string $value): void
     {
@@ -45,6 +63,23 @@ class Debug
             '💾 Memory' => $memory . 'MB',
             '💾 Memory Peek' => $memoryPeak . 'MB',
         ];
+
+        if ($route = Router::getCurrentRoute()) {
+            self::$_logs['Route'] = $route;
+
+            if ($route->name == 'page') {
+                $page = PageService::getCurrent();
+                self::$_logs['Page'] = [
+                    'id' => $page->id,
+                    'parent_id' => $page->parent_id,
+                    'title' => $page->title,
+                    'slug' => $page->slug,
+                ];
+            }
+        }
+
+        if ($queries = DB::getQueryLog())
+            self::$_logs['queries'] = $queries;
 
 
         Cache::put('metrics.' . $user->id, self::$_logs, 300, 'debug');

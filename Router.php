@@ -9,15 +9,16 @@ use BugQuest\Framework\Services\PageService;
 
 abstract class Router
 {
+    private static ?Route $_currentRoute = null;
     /**
      * @var Route[]
      */
-    private static array $routes = [];
+    private static array $_routes = [];
 
     /**
      * @var RouteGroup[]
      */
-    private static array $groups = [];
+    private static array $_groups = [];
 
     /**
      * Ajoute une route à la liste
@@ -26,12 +27,17 @@ abstract class Router
      */
     public static function add(Route $route): void
     {
-        self::$routes[] = $route;
+        self::$_routes[] = $route;
     }
 
     public static function addGroup(RouteGroup $group): void
     {
-        self::$groups[] = $group;
+        self::$_groups[] = $group;
+    }
+
+    public static function getCurrentRoute(): ?Route
+    {
+        return self::$_currentRoute;
     }
 
     /**
@@ -47,7 +53,7 @@ abstract class Router
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         $fallback = null;
 
-        foreach (self::$routes as $route) {
+        foreach (self::$_routes as $route) {
             if ($route->isFallback()) {
                 $fallback = $route;
                 continue;
@@ -58,6 +64,7 @@ abstract class Router
             $params = $route->matchUri($uri);
 
             if ($params !== null) {
+                self::$_currentRoute = $route;
                 return self::runMiddlewares(
                     $route->getMiddlewares(),
                     fn() => $route->process($params)
@@ -70,9 +77,12 @@ abstract class Router
         if ($pageRoute && $pageRoute->acceptsMethod($method)) {
             //Remove first slash
             $uri = ltrim($uri, '/');
+            //remove last slash if exists
+            $uri = rtrim($uri, '/');
             $page = Page::where('slug', $uri)->first();
 
             if ($page) {
+                self::$_currentRoute = $pageRoute;
                 PageService::setCurrent($page);
                 return self::runMiddlewares(
                     $pageRoute->getMiddlewares(),
@@ -100,7 +110,7 @@ abstract class Router
 
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
-        foreach (self::$routes as $route) {
+        foreach (self::$_routes as $route) {
             if (!$route->acceptsMethod($method)) continue;
 
             if ($route->matchUri($uri) !== null)
@@ -130,12 +140,12 @@ abstract class Router
      */
     public static function getRoutes(): array
     {
-        return self::$routes;
+        return self::$_routes;
     }
 
     public static function getRoute(string $name): ?Route
     {
-        foreach (self::$routes as $route)
+        foreach (self::$_routes as $route)
             if ($route->name === $name)
                 return $route;
 
@@ -156,12 +166,12 @@ abstract class Router
 
     public static function getGroups(): array
     {
-        return self::$groups;
+        return self::$_groups;
     }
 
     public static function getGroup(string $name): ?RouteGroup
     {
-        foreach (self::$groups as $group)
+        foreach (self::$_groups as $group)
             if ($group->name === $name)
                 return $group;
 
@@ -173,6 +183,6 @@ abstract class Router
      */
     public static function clear(): void
     {
-        self::$routes = [];
+        self::$_routes = [];
     }
 }
