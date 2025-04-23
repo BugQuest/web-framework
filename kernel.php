@@ -22,8 +22,8 @@ set_exception_handler(function ($e) {
     exit;
 });
 
-if (php_sapi_name() !== 'cli')
-    Debug::start();
+//if (php_sapi_name() !== 'cli')
+//    Debug::start();
 
 Hooks::runAction('kernel.start');
 
@@ -53,7 +53,9 @@ if ($result = Router::dispatch()) {
     } else
         echo $result;
 
+    Debug::saveStatus();
+
     return;
 }
-die('Where da hell are i am ?');
+die('Where da hell am i ?');
 

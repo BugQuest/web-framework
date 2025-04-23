@@ -2,11 +2,14 @@
 
 
 use BugQuest\Framework\Controllers\Admin\DashboardController;
+use BugQuest\Framework\Controllers\Admin\DebugController;
 use BugQuest\Framework\Controllers\Admin\LocaleController;
 use BugQuest\Framework\Controllers\Admin\MediasController;
 use BugQuest\Framework\Controllers\Admin\OptionController;
 use BugQuest\Framework\Controllers\AuthController;
+use BugQuest\Framework\Debug;
 use BugQuest\Framework\Middleware\AdminAuthMiddleware;
+use BugQuest\Framework\Middleware\ApiAuthMiddleware;
 use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Models\RouteGroup;
 
@@ -106,10 +109,25 @@ new RouteGroup(
             _callback: OptionController::class . '::delete',
             _methods: ['DELETE']
         ),
-
     ],
     _middlewares: [
         AdminAuthMiddleware::class
+    ]
+)->register();
+
+new RouteGroup(
+    name: 'admin.api',
+    _prefix: '/admin/api',
+    _routes: [
+        new Route(
+            name: 'debug',
+            _slug: '/debug/metrics',
+            _callback: Debug::class . '::metrics',
+            _methods: ['GET']
+        ),
+    ],
+    _middlewares: [
+        ApiAuthMiddleware::class
     ]
 )->register();
 

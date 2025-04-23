@@ -2,6 +2,7 @@
 
 namespace BugQuest\Framework\Services;
 
+use BugQuest\Framework\Debug;
 use BugQuest\Framework\Helpers\CallbackHelper;
 
 class Cache
@@ -24,8 +25,11 @@ class Cache
         return self::remember($key, null, $callback, $group);
     }
 
-    public static function get(string $key, $default = null, string $group = 'default')
+    public static function get(string $key, $default = null, string $group = 'default', bool $ignoreAdmin = false)
     {
+        if (Auth::isAdmin() && !$ignoreAdmin)
+            return $default;
+
         $path = self::path($key, $group);
         if (!file_exists($path)) return $default;
 
@@ -37,6 +41,7 @@ class Cache
             return $default;
         }
 
+        Debug::saveStatus();
         return $payload['value'];
     }
 
