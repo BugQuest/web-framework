@@ -18,6 +18,4 @@ interface BlockInterface
     public function getCustomData(): array;
 
     public function renderCallback(array $data = []): string;
-
-    public function getDefaultContent(): array;
 }

@@ -107,6 +107,9 @@ export default class CustomBlockType {
                             case 'number':
                                 trait.type = 'number';
                                 break;
+                            case 'wysiwyg':
+                                trait.type = 'wysiwyg';
+                                break;
                             default:
                                 trait.type = def.type || 'text';
                         }

@@ -57,12 +57,4 @@ class TitleBlock implements BlockInterface
     {
         return View::render('@framework/blocks/title.twig', $data);
     }
-
-    public function getDefaultContent(): array
-    {
-        return [
-            'text' => 'Titre de la page',
-            'level' => 'h1',
-        ];
-    }
 }
