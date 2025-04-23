@@ -1,122 +1,127 @@
 import Builder from '@framework/js/services/Builder.js';
 import MediaPicker from '@framework/js/services/MediaPicker.js';
 
-let availableSizes = null;
 
 export default function (editor) {
     editor.TraitManager.addType('media-selector', {
+        availableSizes: [],
+        preview: null,
         createInput({trait}) {
-            const el = document.createElement('div');
-            el.classList.add('gjs-field', 'gjs-field-media');
+            const el = Builder.div('gjs-field', 'gjs-field-media');
 
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.textContent = 'Choisir une image';
-            btn.className = 'gjs-btn-media';
-
-            const preview = document.createElement('div');
-            preview.className = 'gjs-media-preview';
-
-            const sizeSelect = document.createElement('select');
-            sizeSelect.className = 'gjs-media-size';
-            sizeSelect.disabled = true;
-
-            // ⚠️ On ne retourne rien tant que ce n'est pas synchrone
-            fetchSizes().then(sizes => {
-                Object.entries(sizes).forEach(([key, val]) => {
-                    const opt = document.createElement('option');
-                    opt.value = key;
-                    opt.textContent = `${key} (${val.width}x${val.height}${val.crop ? ' crop' : ''})`;
-                    sizeSelect.appendChild(opt);
-                });
-                sizeSelect.disabled = false;
+            this.fetchSizes().then(() => {
+                this.buildElements(trait, el);
             });
 
-            // Valeur actuelle
-            const current = trait.target?.getAttributes()[trait.name];
-            if (current) {
-                preview.appendChild(Builder.img(current, 'Aperçu', 'media-current'));
+            return el;
+        },
+
+        buildElements(trait, el) {
+            this.preview = Builder.div('gjs-media-preview');
+            const clickOnMe = Builder.div('click-on-me');
+            clickOnMe.textContent = 'Choisir une image';
+
+            const currentSrc = trait.target?.getAttributes()['src'];
+            if (currentSrc)
+                this.preview.appendChild(Builder.img(currentSrc, 'Aperçu', 'media-current'));
+
+            this.preview.appendChild(clickOnMe);
+            let mimeType = [];
+            try {
+                mimeType = JSON.parse(trait.target?.getAttributes()['data-mimes']);
+            } catch (e) {
+
             }
 
-            btn.addEventListener('click', () => {
-                MediaPicker.open(['image/jpg', 'image/jpeg', 'image/png', 'image/gif'], async (media) => {
-                    const selectedSize = sizeSelect.value || 'original';
-                    let resizedUrl = '/' + media.path;
+            const current = trait.target?.getAttributes()[trait.name];
+            if (current)
+                this.preview.appendChild(Builder.img(current, 'Aperçu', 'media-current'));
 
-                    if (selectedSize && selectedSize !== 'original') {
-                        try {
-                            const res = await fetch(`/admin/api/medias/resize/${media.id}/${selectedSize}`);
-                            const data = await res.json();
-                            resizedUrl = data.url || resizedUrl;
-                        } catch (e) {
-                            console.warn('Erreur de redimensionnement', e);
-                        }
-                    }
+            el.appendChild(
+                Builder.select(
+                    this.availableSizes,
+                    null,
+                    'gjs-media-sizes',
+                    async (value) => {
+                        await this.onSizeChange(value, trait);
+                    })
+            );
 
-                    // Mettre à jour l'attribut data-size
-                    trait.target.setAttributes({
-                        'data-size': selectedSize,
-                        'data-media': media.id
-                    });
+            el.appendChild(this.preview);
 
-                    trait.setTargetValue(resizedUrl);
-                    preview.innerHTML = '';
-                    preview.appendChild(BuildHelper.img(resizedUrl, media.name, 'media-current'));
+            this.preview.addEventListener('click', () => {
+                MediaPicker.open(mimeType, (media) => {
+                    const resizedUrl = '/' + media.path;
+                    const mediaId = media.id;
+                    const size = trait.target?.getAttributes()['data-size'] || 'original';
+                    this.resize(resizedUrl, mediaId, size, trait)
                 });
             });
+        },
 
-            sizeSelect.addEventListener('change', async () => {
-                const currentSrc = trait.target?.getAttributes()['src'];
-                const mediaId = trait.target?.getAttributes()['data-media'];
+        setPreview(url) {
+            this.preview.innerHTML = '';
+            this.preview.appendChild(Builder.img(url, 'preview', 'media-current'));
+        },
 
-                if (!mediaId || !currentSrc) return;
+        resize(url, mediaId, size, trait) {
+            let resizedUrl = url;
 
-                const selectedSize = sizeSelect.value;
-
+            if (size && size !== 'original') {
                 try {
-                    const res = await fetch(`/admin/api/medias/resize/${mediaId}/${selectedSize}`);
-                    const data = await res.json();
-                    const resizedUrl = data.url || currentSrc;
+                    fetch(`/admin/api/medias/resize/${mediaId}/${size}`)
+                        .then(res => {
+                            if (!res.ok) throw new Error('Erreur HTTP');
+                            return res.json();
+                        }).then(data => {
+                        resizedUrl = data.url || resizedUrl;
 
-                    // Mettre à jour l'attribut data-size
-                    trait.target.setAttributes({
-                        'data-size': selectedSize,
-                        'data-media': mediaId
-                    });
+                        trait.target.setAttributes({
+                            'src': resizedUrl,
+                            'data-size': size,
+                            'data-media': mediaId
+                        });
 
-                    trait.setTargetValue(resizedUrl);
-                    preview.innerHTML = '';
-                    preview.appendChild(Builder.img(resizedUrl, 'Aperçu', 'media-current'));
+                        this.setPreview(resizedUrl);
+                    })
+
                 } catch (e) {
-                    console.error('Erreur de redimensionnement', e);
+                    console.warn('Erreur de redimensionnement', e);
                 }
-            });
+            }
+        },
 
-            el.appendChild(btn);
-            el.appendChild(sizeSelect);
-            el.appendChild(preview);
+        async fetchSizes() {
+            if (this.availableSizes.length) return this.availableSizes;
 
-            sizeSelect.disabled = false;
-            return el;
+            try {
+                const response = await fetch('/admin/api/medias/sizes');
+                if (!response.ok) throw new Error('Erreur HTTP');
+                const sizes = await response.json();
+                Object.entries(sizes).forEach(([key, val]) => {
+                    this.availableSizes.push({
+                        label: `${key} (${val.width}x${val.height}${val.crop ? ' crop' : ''})`,
+                        value: key
+                    });
+                });
+            } catch (e) {
+                console.error('Erreur lors du chargement des tailles', e);
+                this.availableSizes = [];
+            }
+        },
+
+        async onSizeChange(size, trait) {
+            const currentSrc = trait.target?.getAttributes()['src'];
+            const mediaId = trait.target?.getAttributes()['data-media'];
+
+            if (!mediaId || !currentSrc) return;
+
+            this.resize(currentSrc, mediaId, size, trait, this.preview);
         },
 
         onEvent({elInput, component, trait}) {
             // géré dynamiquement
+
         }
     });
-}
-
-export async function fetchSizes() {
-    if (availableSizes) return availableSizes;
-
-    try {
-        const response = await fetch('/admin/api/medias/sizes');
-        if (!response.ok) throw new Error('Erreur HTTP');
-        availableSizes = await response.json();
-    } catch (e) {
-        console.error('Erreur lors du chargement des tailles', e);
-        availableSizes = {};
-    }
-
-    return availableSizes;
 }

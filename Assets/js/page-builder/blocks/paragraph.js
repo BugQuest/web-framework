@@ -1,8 +1,23 @@
 export default function (editor) {
+    editor.DomComponents.addType('paragraph', {
+        extend: 'text',
+        model: {
+            defaults: {
+                tagName: 'p',
+                name: 'Paragraphe',
+                content: 'Voici un paragraphe de texte...',
+                editable: true,
+                droppable: false,
+                traits: [],
+            },
+        },
+    });
+
     editor.BlockManager.add('paragraph', {
-        name: 'Paragraphe',
         label: 'Paragraphe',
         category: 'Base',
-        content: '<p>Voici un paragraphe de texte...</p>',
+        content: {
+            type: 'paragraph',
+        },
     });
 }

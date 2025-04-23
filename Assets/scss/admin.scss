@@ -7,7 +7,6 @@
 @use 'admin/input';
 @use 'admin/buttons';
 @use 'admin/table';
-@use 'components/cards';
 @use 'admin/header';
 @use 'admin/menu';
 @use 'admin/form';
@@ -22,6 +21,7 @@
 @use 'admin/option';
 @use 'admin/page-list';
 
+@use 'components/cards';
 @use 'components/dropdown';
 @use 'components/accordeon';
 @use "components/language-switcher";

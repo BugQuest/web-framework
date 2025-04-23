@@ -3647,4 +3647,57 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   height: calc(100vh - var(--header-height) - var(--footer-height));
 }
 
+.gjs-field-media-selector {
+  background: none;
+}
+.gjs-field-media-selector .gjs-field {
+  background: none;
+}
+
+.gjs-media-preview {
+  width: 100%;
+  max-height: 200px;
+  min-height: 50px;
+  background: #f3f3f3;
+  position: relative;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.gjs-media-preview:hover .click-on-me {
+  opacity: 1;
+}
+.gjs-media-preview .click-on-me {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  opacity: 0;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.5);
+  color: #eee;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+.gjs-media-preview .media-current {
+  width: 100%;
+  height: auto;
+}
+
+/* select */
+.gjs-media-sizes {
+  background-color: #f3f3f3 !important;
+  color: #000 !important;
+}
+.gjs-media-sizes option {
+  color: #000;
+}
+
 /*# sourceMappingURL=/framework/assets/css-map/admin-page-builder */

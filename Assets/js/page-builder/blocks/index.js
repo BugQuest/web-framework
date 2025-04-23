@@ -1,6 +1,5 @@
 import mediaSelectorType from './trait/media-selector';
 
-import headingType from './type/heading';
 import customImageType from './type/custom-image';
 import gridType from './type/grid';
 
@@ -22,7 +21,6 @@ export default function loadBasicBlocks(editor) {
     mediaSelectorType(editor);
 
     //types
-    headingType(editor);
     customImageType(editor);
     gridType(editor);
 
