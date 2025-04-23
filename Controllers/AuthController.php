@@ -2,18 +2,22 @@
 
 namespace BugQuest\Framework\Controllers;
 
-use BugQuest\Framework\Models\User;
+use BugQuest\Framework\Models\Database\User;
 use BugQuest\Framework\Router;
+use BugQuest\Framework\Services\View;
 
 class AuthController
 {
     public static function login(): string
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+            $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_SPECIAL_CHARS);
             $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_SPECIAL_CHARS);
 
             $user = User::where('email', $email)->first();
+
+            if (!$user)
+                $user = User::where('username', $email)->first();
 
             if ($user && password_verify($password, $user->password)) {
                 session_start();
