@@ -1,0 +1,100 @@
+@use 'variables' as *;
+
+.footer-admin-menu {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #111;
+  color: $color-primary;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  z-index: 1000;
+  font-family: monospace;
+  height: $admin-footer-height;
+  max-height: $admin-footer-height;
+
+  ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+
+    > li {
+      position: relative;
+      margin: 0 1rem;
+
+      > div {
+        cursor: pointer;
+        color: $color-primary;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.3rem 0.5rem;
+        transition: background 0.3s;
+
+        &:hover {
+          background: #222;
+        }
+      }
+
+      > a {
+        color: $color-primary;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.3rem 0.5rem;
+        transition: background 0.3s;
+
+        &:hover {
+          background: #222;
+        }
+      }
+
+      &.active > a {
+        background: $color-bg-2;
+        color: $color-primary;
+      }
+
+      .submenu {
+        display: none;
+        position: absolute;
+        bottom: 100%;
+        background: #111;
+        padding: 0.5rem 0;
+        border-top: 2px solid $color-primary;
+        animation: fadeIn 0.2s ease-in-out;
+        white-space: nowrap;
+
+        li {
+          padding: 0.3rem 1rem;
+
+          a {
+            color: $color-primary;
+
+            &:hover {
+              color: #fff;
+            }
+          }
+        }
+      }
+
+      &:hover .submenu {
+        display: block;
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

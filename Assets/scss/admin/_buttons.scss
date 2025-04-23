@@ -1,0 +1,28 @@
+@use 'variables' as *;
+@use 'mixins';
+
+.btn {
+  padding: 0.6rem 1.2rem;
+  background: transparent;
+  color: $color-primary;
+  text-transform: uppercase;
+  border-radius: $radius;
+  cursor: pointer;
+  @include mixins.neon-border($color-primary);
+  transition: 0.2s;
+
+  &:hover {
+    background: $color-primary;
+    color: #000;
+  }
+
+  &.danger {
+    @include mixins.neon-border($color-danger);
+    color: $color-danger;
+
+    &:hover {
+      background: $color-danger;
+      color: #000;
+    }
+  }
+}

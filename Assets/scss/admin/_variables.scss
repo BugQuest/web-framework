@@ -1,0 +1,24 @@
+$color-bg: #0d0d0d;
+$color-bg-2: #1e293b;
+$color-primary: #0ff;
+$color-secondary: #0f0;
+$color-accent: #f0f;
+$color-danger: #f33;
+$color-text: #eee;
+$color-muted: #888;
+
+$font-main: 'Orbitron', sans-serif;
+
+$radius: 6px;
+$glow: 0 0 8px rgba(0, 255, 255, 0.6);
+$glow-hover: 0 0 12px rgba(0, 255, 0, 0.8);
+
+$breakpoints: (
+        sm: 480px,
+        md: 768px,
+        lg: 1024px,
+        xl: 1280px
+);
+
+$admin-header-height : 60px;
+$admin-footer-height : 50px;

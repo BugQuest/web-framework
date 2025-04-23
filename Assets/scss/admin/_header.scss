@@ -1,0 +1,64 @@
+@use 'variables' as *;
+
+.header {
+  background: linear-gradient(to right, #111827, #1f2937);
+  color: #fff;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0, 255, 255, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  max-height: $admin-header-height;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .header-logo {
+      font-weight: bold;
+      font-size: 1.4rem;
+      text-shadow: 0 0 5px cyan;
+    }
+
+    .header-title {
+      font-size: 1.1rem;
+      color: #93c5fd;
+      opacity: 0.8;
+    }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+
+    .dropdownToggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(145deg, #0ff, #09f);
+        box-shadow: 0 0 6px #0ff;
+        border: 2px solid #1e293b;
+      }
+
+      .name {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: $color-primary;
+        display: none;
+
+        @media (min-width: 640px) {
+          display: inline;
+        }
+      }
+    }
+  }
+}

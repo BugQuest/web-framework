@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>💥 Erreur 500</title>
+    <style>
+        body {
+            background: #0d0d0d;
+            color: #0ff;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        h1 {
+            color: #f0f;
+            font-size: 2em;
+            text-shadow: 0 0 5px #f0f;
+        }
+
+        .error-info {
+            margin-bottom: 2rem;
+        }
+
+        .trace-item {
+            border: 1px solid #0ff;
+            margin-bottom: 1rem;
+            padding: 0;
+            background: #111;
+        }
+
+        .trace-header {
+            background: #111;
+            color: #0ff;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            border-bottom: 1px solid #0ff;
+        }
+
+        .trace-body {
+            display: none;
+            padding: 1rem;
+            color: #ccc;
+            background: #000;
+        }
+
+        .trace-body pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.trace-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const body = header.nextElementSibling;
+                    body.style.display = body.style.display === 'block' ? 'none' : 'block';
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<h1>💥 Erreur interne du serveur</h1>
+
+<div class="error-info">
+    <p><strong>Message :</strong> {{ error.message }}</p>
+    <p><strong>Fichier :</strong> {{ error.file }}</p>
+    <p><strong>Ligne :</strong> {{ error.line }}</p>
+</div>
+
+<h2>🧠 Stack Trace</h2>
+{% for entry in error.trace %}
+    <div class="trace-item">
+        <div class="trace-header">
+            #{{ entry.index }} — {{ entry.class ~ entry.type ~ entry.function }}()
+        </div>
+        <div class="trace-body">
+            <p><strong>Fichier :</strong> {{ entry.file }}</p>
+            <p><strong>Ligne :</strong> {{ entry.line }}</p>
+            <p><strong>Arguments :</strong> {{ entry.args|join(', ') }}</p>
+        </div>
+    </div>
+{% endfor %}
+</body>
+</html>
