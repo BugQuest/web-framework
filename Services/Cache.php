@@ -41,7 +41,6 @@ class Cache
             return $default;
         }
 
-        Debug::saveStatus();
         return $payload['value'];
     }
 
