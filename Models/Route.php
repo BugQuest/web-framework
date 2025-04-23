@@ -4,6 +4,7 @@ namespace BugQuest\Framework\Models;
 
 use BugQuest\Framework\Helpers\CallbackHelper;
 use BugQuest\Framework\Router;
+use BugQuest\Framework\Services\Cache;
 use BugQuest\Framework\Services\Hooks;
 use http\Header;
 use JetBrains\PhpStorm\NoReturn;
@@ -20,7 +21,10 @@ class Route
         private                     $_callback = null,
         private readonly array      $_methods = ['GET'],
         private array               $_middlewares = [],
-        public readonly ?RouteGroup $group = null
+        public readonly ?RouteGroup $group = null,
+        private readonly ?string    $_cache_key = null,
+        private readonly string     $_cache_group = 'route',
+        private readonly int        $_cache_ttl = 3600,
     )
     {
     }
@@ -99,7 +103,7 @@ class Route
      */
     public function process(array $params = []): mixed
     {
-        $callback = CallbackHelper::parse($this->_callback);
+
         $defaults = $this->getCallbackParameterDefaults();
 
         $args = [];
@@ -109,7 +113,15 @@ class Route
 
         self::$_current = $this;
         Hooks::runAction('route.before', $this, $args);
-        return call_user_func_array($callback, $args);
+        if (!is_null($this->_cache_key))
+            return Cache::remember(
+                key: $this->_cache_key,
+                ttl: $this->_cache_ttl,
+                callback: $this->_callback,
+                group: $this->_cache_group,
+            );
+        else
+            return call_user_func_array(CallbackHelper::parse($this->_callback), $args);
     }
 
     /**
@@ -332,5 +344,20 @@ class Route
     public static function registerType(string $type, string $pattern): void
     {
         self::$customPatterns[$type] = $pattern;
+    }
+
+    public function getCacheKey() : ?string
+    {
+        return $this->_cache_key;
+    }
+
+    public function getCacheGroup() : string
+    {
+        return $this->_cache_group;
+    }
+
+    public function getCacheTTL() : int
+    {
+        return $this->_cache_ttl;
     }
 }
