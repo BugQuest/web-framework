@@ -18,7 +18,9 @@ class Page extends Model
         'title',
         'slug',
         'html',
+        'css',
         'builder_data',
+        'status',
         'order',
     ];
 
@@ -35,6 +37,8 @@ class Page extends Model
         $page->slug = $array['slug'];
         $page->html = $array['html'];
         $page->builder_data = $array['builder_data'];
+        $page->status = $array['status'];
+        $page->css = $array['css'];
         $page->order = $array['order'];
         return $page;
     }
@@ -75,6 +79,15 @@ class Page extends Model
         }
 
         return false;
+    }
+
+    public function setStatus(string $status): void
+    {
+        if (!in_array($status, ['draft', 'private', 'published', 'archived']))
+            throw new \InvalidArgumentException('Invalid status: ' . $status);
+
+        $this->status = $status;
+        $this->save();
     }
 
     /**

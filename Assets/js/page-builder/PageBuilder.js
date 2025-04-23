@@ -3,16 +3,21 @@ import loadBasicBlocks from './blocks/index.js';
 import CustomBlockType from './blocks/type/CustomBlockType.js';
 import {Toast} from '@framework/js/services/Toast';
 import {__} from '@framework/js/services/Translator';
+import Builder from '@framework/js/services/Builder.js';
 
 export default class PageBuilder {
     constructor(element) {
         this.element = element;
+        this.header = element.previousElementSibling;
         this.loadUrl = '/admin/api/page/load';
         this.saveUrl = '/admin/api/page/save';
         this.editor = null;
         this.id = element.dataset.id || null;
         this.theme = element.dataset.theme || 'default';
         this.blocks = {};
+        this.page = null;
+        this.statusModal = null;
+        this.selectStatus = null;
 
         try {
             this.blocks = JSON.parse(element.dataset.blocks);
@@ -38,11 +43,25 @@ export default class PageBuilder {
         const data = this.id ? await this.loadData() : null;
 
         if (data) {
+            this.page = data;
             this.element.innerHTML = data.html || '';
             document.querySelector('#page-title').value = data.title || '';
             document.querySelector('#page-slug').value = data.slug || '';
             document.querySelector('#page-preview')?.setAttribute('href', data.slug ? '/' + data.slug : '');
-        }
+        } else
+            this.page = {
+                id: null,
+                title: '',
+                slug: '',
+                html: '',
+                status: 'draft',
+            };
+
+        this.status_el = Builder.span('page-status');
+        this.status_el.addEventListener('click', () => this.onStatusClick());
+        this.updateStatus();
+
+        this.header.querySelector('.right').appendChild(this.status_el);
 
         this.editor = grapesjs.init(config);
         loadBasicBlocks(this.editor);
@@ -76,6 +95,28 @@ export default class PageBuilder {
         });
     }
 
+    updateStatus() {
+        this.status_el.classList.remove('draft', 'published', 'archived');
+        if (!this.page) {
+            this.status_el.innerText = 'draft'
+            return;
+        }
+        this.status_el.innerText = this.page.status;
+        switch (this.page.status) {
+            case 'draft':
+                this.status_el.classList.add('draft');
+                break;
+            case 'published':
+                this.status_el.classList.add('published');
+                break;
+            case 'archived':
+                this.status_el.classList.add('archived');
+                break;
+            case 'published':
+                this.status_el.classList.add('published');
+                break;
+        }
+    }
 
     generateTraitsFromCustomData(customData) {
         return Object.entries(customData).map(([key, def]) => {
@@ -111,7 +152,6 @@ export default class PageBuilder {
     async registerCustomBlockType() {
         await new CustomBlockType(this).register();
     }
-
 
     reloadCanvasStyles() {
         const iframeDoc = this.editor.Canvas.getDocument();
@@ -196,10 +236,17 @@ export default class PageBuilder {
         const css = this.editor.getCss();
         const builderData = this.editor.getProjectData();
 
+        this.page.title = title;
+        this.page.slug = slug;
+        this.page.html = html;
+        this.page.css = css;
+        this.page.builder_data = builderData;
+
         const payload = {
             slug: slug,
             title: title,
-            html: `${html}<style>${css}</style>`,
+            html: `${html}`,
+            css: `${css}`,
             builder_data: builderData
         };
 
@@ -250,5 +297,55 @@ export default class PageBuilder {
                 closable: true
             });
         }
+    }
+
+    onStatusClick() {
+        if (!this.statusModal) {
+            this.statusModal = Builder.modal('Modifier le status de la page',
+                () => {
+                },
+                () => {
+                },
+            );
+            document.body.appendChild(this.statusModal.element);
+
+            const wrapper = Builder.div('container-flex-center');
+            this.statusModal.content.appendChild(wrapper);
+
+            this.selectStatus = Builder.select(
+                'Status',
+                [
+                    {value: 'draft', label: 'Draft'},
+                    {value: 'published', label: 'Published'},
+                    {value: 'private', label: 'Private'},
+                    {value: 'archived', label: 'Archived'},
+                ],
+                this.page.status,
+                (value) => {
+                    this.page.status = value;
+                    if (!this.page.id) return;
+                    fetch('/admin/api/page/status/' + this.page.id + '/' + value, {
+                        method: 'POST',
+                    })
+                        .then(res => {
+                            if (res.status === 200)
+                                Toast.success('Status updated successfully');
+                            else
+                                Toast.error('Failed to update status');
+                            this.updateStatus();
+                            this.statusModal.close();
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            Toast.error('An error occurred while updating status');
+                            this.statusModal.close();
+                        });
+                });
+
+            wrapper.appendChild(this.selectStatus.element);
+
+        }
+        this.selectStatus.setValue(this.page.status);
+        this.statusModal.open();
     }
 }

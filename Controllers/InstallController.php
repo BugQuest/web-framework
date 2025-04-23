@@ -136,7 +136,9 @@ class InstallController
                     $table->string('title');
                     $table->string('slug')->unique();
                     $table->text('html')->nullable();
+                    $table->text('css')->nullable();
                     $table->json('builder_data')->nullable();
+                    $table->enum('status', ['draft', 'private', 'published', 'archived'])->default('draft');
                     $table->integer('order')->default(0);
                     $table->timestamps();
 

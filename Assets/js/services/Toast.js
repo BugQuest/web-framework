@@ -41,6 +41,34 @@ export class Toast {
             setTimeout(() => this._removeToast(toast_el), duration);
     }
 
+    static success(message) {
+        this.show(message, {
+            type: 'success',
+            icon: '✅'
+        });
+    }
+
+    static info(message) {
+        this.show(message, {
+            type: 'info',
+            icon: 'ℹ️'
+        });
+    }
+
+    static warning(message) {
+        this.show(message, {
+            type: 'warning',
+            icon: '⚠️'
+        });
+    }
+
+    static error(message) {
+        this.show(message, {
+            type: 'danger',
+            icon: '❌'
+        });
+    }
+
     static _getContainer(position) {
         if (!this.containers.has(position)) {
             const container = Builder.div(`bq-toast-container ${position}`);

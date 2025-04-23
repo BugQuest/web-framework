@@ -195,6 +195,12 @@ new RouteGroup(
             _methods: ['POST']
         ),
         new Route(
+            name: 'page.status',
+            _slug: '/page/status/{id:int}/{status:alpha}',
+            _callback: PageBuilderController::class . '::status',
+            _methods: ['POST']
+        ),
+        new Route(
             name: 'page.search',
             _slug: '/page/search',
             _callback: PageListController::class . '::search',

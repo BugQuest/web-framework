@@ -13,6 +13,7 @@ export class OptionBlock {
     render() {
         const wrapper = document.createElement('div');
         wrapper.className = 'option-block';
+        wrapper.dataset.lazySmooth = '';
 
         const descriptionIcon = this.renderDescriptionIcon();
         if (descriptionIcon) wrapper.appendChild(descriptionIcon);

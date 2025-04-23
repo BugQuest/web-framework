@@ -38,13 +38,12 @@ export default function (editor) {
                 this.preview.appendChild(Builder.img(current, 'Aperçu', 'media-current'));
 
             el.appendChild(
-                Builder.select(
+                Builder.select('Tailles',
                     this.availableSizes,
                     null,
-                    'gjs-media-sizes',
                     async (value) => {
                         await this.onSizeChange(value, trait);
-                    })
+                    }).element
             );
 
             el.appendChild(this.preview);

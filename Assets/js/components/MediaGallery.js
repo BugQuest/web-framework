@@ -3,6 +3,7 @@ import MediaModalViewer from './MediaModalViewer.js';
 import {Toast} from "@framework/js/services/Toast";
 import {__} from '@framework/js/services/Translator.js';
 import ConfirmDialog from "@framework/js/services/ConfirmDialog";
+import {LazySmooth} from "@framework/js/services/LazySmooth.js";
 
 export default class MediaGallery {
     constructor(element) {
@@ -303,6 +304,8 @@ export default class MediaGallery {
             })
             console.error('[MediaGalleryLoader] ' + __('Erreur de chargement des médias :', 'admin'), err);
         }
+
+        LazySmooth.process();
     }
 
     async loadTags() {
@@ -409,6 +412,7 @@ export default class MediaGallery {
         const div = document.createElement('div');
         div.className = 'media-card __media_card';
         div.dataset.id = media.id;
+        div.dataset.lazySmooth = '';
 
         const isImage = media.mime_type.startsWith('image/');
 

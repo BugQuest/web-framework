@@ -89,10 +89,28 @@ class PageBuilderController
         $page->title = $payload['title'] ?? '';
         $page->slug = $slug;
         $page->html = $payload['html'] ?? '';
+        $page->css = $payload['css'] ?? '';
         $page->builder_data = $payload['builder_data'] ?? [];
+        $page->status = $payload['status'] ?? 'draft';
+        $page->order = $payload['order'] ?? 0;
         if (!$page->resolveUrl())
             $page->save();
 
         return Response::json($page);
+    }
+
+    public static function status(int $id, string $status): Response
+    {
+        try {
+            $page = Page::find($id);
+            if (!$page)
+                return Response::json404();
+
+            $page->setStatus($status);
+
+            return Response::json($page);
+        } catch (\Exception $e) {
+            return Response::jsonError('Invalid data : ' . $e->getMessage());
+        }
     }
 }

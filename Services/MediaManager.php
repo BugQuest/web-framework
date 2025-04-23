@@ -52,7 +52,7 @@ class MediaManager
             'size' => filesize($targetPath),
             'path' => "medias/$name",
             'exif' => $exif ? json_encode($exif) : null,
-            'meta' => json_encode([]), // ou autre contenu structuré
+            'meta' => json_encode($meta), // ou autre contenu structuré
         ]);
     }
 

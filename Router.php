@@ -79,7 +79,7 @@ abstract class Router
             $uri = ltrim($uri, '/');
             //remove last slash if exists
             $uri = rtrim($uri, '/');
-            $page = Page::where('slug', $uri)->first();
+            $page = Page::where('slug', $uri)->where('status', 'published')->first();
 
             if ($page) {
                 self::$_currentRoute = $pageRoute;
