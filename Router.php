@@ -106,6 +106,18 @@ abstract class Router
         return null;
     }
 
+    public static function redirect(string $name)
+    {
+        $route = self::getRoute($name);
+
+        if ($route === null) {
+            throw new \Exception("La route [$name] n'existe pas");
+        }
+
+        header('Location: ' . $route->getSlug());
+        exit;
+    }
+
     public static function getGroups(): array
     {
         return self::$groups;

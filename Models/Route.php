@@ -5,6 +5,7 @@ namespace BugQuest\Framework\Models;
 use BugQuest\Framework\Helpers\CallbackHelper;
 use BugQuest\Framework\Router;
 use BugQuest\Framework\Services\Hooks;
+use http\Header;
 
 class Route
 {
@@ -276,6 +277,12 @@ class Route
             is_array($middleware) ? $middleware : [$middleware]
         );
         return $this;
+    }
+
+    public function redirect()
+    {
+        header('Location: ' . $this->getSlug());
+        exit;
     }
 
 

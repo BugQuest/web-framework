@@ -7,6 +7,7 @@ use BugQuest\Framework\Services\Admin;
 use BugQuest\Framework\Services\Assets;
 use BugQuest\Framework\Services\Hooks;
 use BugQuest\Framework\Services\View;
+use BugQuest\Framework\Services\Database;
 
 set_exception_handler(function ($e) {
     http_response_code(500);
@@ -37,6 +38,7 @@ if (file_exists(BQ_ROOT . '/routes.php'))
 if (file_exists(BQ_FRAMEWORK_PATH . '/routes.php'))
     require_once BQ_FRAMEWORK_PATH . '/routes.php';
 
+Database::init();
 
 hooks::addAction(
     hook: 'route.before',

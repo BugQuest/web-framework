@@ -27,6 +27,7 @@
     "larapack/dd": "^1.1",
     "twig/twig": "^3.20",
     "vlucas/phpdotenv": "^5.6",
+    "illuminate/database": "^12.8",
     "ext-gd": "*",
     "ext-imagick": "*",
     "ext-iconv": "*"

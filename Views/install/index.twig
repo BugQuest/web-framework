@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Installation | BugQuest</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(ellipse at center, #0f172a 0%, #020617 100%);
+            font-family: 'Courier New', monospace;
+            color: #00ffe0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #0ff;
+            text-shadow: 0 0 10px #0ff;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #94a3b8;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid #0ff5;
+            padding: 2rem 3rem;
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            min-width: 320px;
+            max-width: 400px;
+        }
+
+        label {
+            color: #7dd3fc;
+            margin-top: 1rem;
+            margin-bottom: 0.25rem;
+            font-size: 0.85rem;
+        }
+
+        input {
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 0.5rem 0.75rem;
+            color: #fff;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #0ff;
+            box-shadow: 0 0 5px #0ff;
+        }
+
+        button {
+            margin-top: 2rem;
+            background: linear-gradient(to right, #00f7ff, #00ffc8);
+            color: #000;
+            font-weight: bold;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            box-shadow: 0 0 10px #0ff;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #0ff;
+        }
+
+        .footer-note {
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        .error {
+            color: #ff0000;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            text-align: center;
+            border: 1px solid #ff0000;
+            background: rgba(255, 0, 0, 0.1);
+            padding: 0.5rem;
+            border-radius: 5px;
+            animation: shake 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+<form method="post" autocomplete="off">
+    <h1>🛠 <br> BugQuest <br>Web Framework</h1>
+    <p>Créons votre compte administrateur pour débuter l’aventure.</p>
+
+    {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <label for="email">📧 Email</label>
+    <input type="email"
+           id="email"
+           name="email"
+           placeholder="admin@exemple.com"
+           value="{{ email }}"
+           required>
+
+    <label for="username">👤 Login</label>
+    <input type="text"
+           id="username"
+           name="username"
+           placeholder="admin"
+           value="{{ username|default('admin') }}"
+           required>
+
+    <label for="password">🔒 Password</label>
+    <input type="password"
+           id="password"
+           name="password"
+           value="{{ password }}"
+           required>
+
+    <label for="confirm_password">✅ Confirmation</label>
+    <input type="password"
+           id="confirm_password"
+           name="confirm_password"
+           required>
+
+    <button type="submit">🚀 Lancer l'installation</button>
+</form>
+
+<div class="footer-note">
+    BugQuest Framework © {{ "now"|date("Y") }}
+</div>
+</body>
+</html>
