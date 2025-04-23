@@ -4,6 +4,8 @@ namespace BugQuest\Framework\Services;
 
 use BugQuest\Framework\Controllers\Admin\DebugController;
 use BugQuest\Framework\Controllers\Admin\ImagesController;
+use BugQuest\Framework\Controllers\Admin\MediasController;
+use BugQuest\Framework\Controllers\Admin\PageBuilderController;
 use BugQuest\Framework\Helpers\StringHelper;
 use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Router;
@@ -21,9 +23,8 @@ abstract class Admin
 
     public static array $_pages = [];
 
-    public static function addMenu(string $name, ?string $icon, ?string $route, array $children = []): void
+    public static function addMenu(string $name, ?string $icon, ?string $route, ?string $url = null, array $children = []): void
     {
-        //check if menu already exists
         if (key_exists($name, self::$_menus))
             throw new \Exception("Menu $name already exists");
 
@@ -33,26 +34,29 @@ abstract class Admin
             'name' => $name,
             'icon' => $icon,
             'route' => $route,
+            'url' => $url,
             'children' => $children
         ];
     }
 
-    public static function addSubmenu(string $parent, string $name, string $icon, string $route): void
+
+    public static function addSubmenu(string $parent, string $name, ?string $icon, ?string $route = null, ?string $url = null): void
     {
         $id_parent = StringHelper::sanitize_title($parent);
-        //check if parent menu exists
+
         if (!key_exists($id_parent, self::$_menus))
             throw new \Exception("Parent menu $parent does not exist");
 
         $id = StringHelper::sanitize_title($name);
-        //check if submenu already exists
-        if (key_exists($id, self::$_menus[$parent]['children']))
+
+        if (key_exists($id, self::$_menus[$id_parent]['children']))
             throw new \Exception("Submenu $name already exists for $parent");
 
-        self::$_menus[$parent]['children'][$id] = [
+        self::$_menus[$id_parent]['children'][$id] = [
             'name' => $name,
             'icon' => $icon,
-            'route' => $route
+            'route' => $route,
+            'url' => $url
         ];
     }
 
@@ -88,9 +92,15 @@ abstract class Admin
     public static function registerPages(): void
     {
         self::addMenu(
+            name: 'Pages',
+            icon: '📄',
+            route: self::addPage('Pages - List', PageBuilderController::class . '::list')
+        );
+
+        self::addMenu(
             name: 'Medias',
             icon: '🖼️',
-            route: self::addPage('Config - Medias', \BugQuest\Framework\Controllers\Admin\MediasController::class . '::index')
+            route: self::addPage('Config - Medias', MediasController::class . '::index')
         );
 
         self::addMenu(
@@ -117,6 +127,14 @@ abstract class Admin
             name: 'Images',
             icon: '🖼️',
             route: self::addPage('Config - Images', ImagesController::class . '::index')
+        );
+
+        //add page
+        self::addSubmenu(
+            parent: 'pages',
+            name: 'New Page',
+            icon: '🛠️',
+            url: '/admin/page/',
         );
     }
 }

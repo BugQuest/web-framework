@@ -10,6 +10,13 @@
     margin-bottom: calc(var(--footer-height) + 1rem);
   }
 
+  &-solo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
   &-centered {
     display: flex;
     flex-direction: column;
@@ -161,6 +168,6 @@
   }
 }
 
-.border-top{
-    border-top: 2px solid var(--color-primary);
+.border-top {
+  border-top: 2px solid var(--color-primary);
 }

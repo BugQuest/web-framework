@@ -1,0 +1,9 @@
+@use './admin/variables';
+@use "~grapesjs/src/styles/scss/main.scss";
+
+
+/* add margin to the top of the grapesjs editor */
+#gjs {
+
+  height: calc(100vh - var(--header-height) - var(--footer-height));
+}

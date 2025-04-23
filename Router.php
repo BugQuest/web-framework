@@ -75,6 +75,23 @@ abstract class Router
         return "404 Not Found – Aucune route ne correspond à l’URI [$uri]";
     }
 
+    public static function test(): ?string
+    {
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+
+        foreach (self::$routes as $route) {
+            if (!$route->acceptsMethod($method)) continue;
+
+            if ($route->matchUri($uri) !== null)
+                return $route->name;
+        }
+
+        return null; // Aucune route ne correspond
+    }
+
+
     private static function runMiddlewares(array $middlewares, callable $finalHandler): mixed
     {
         $stack = array_reverse($middlewares);
