@@ -49,10 +49,9 @@ class MediaManager
 
     public static function delete(Media $media): bool
     {
-        $fullPath = storage($media->path);
-        if (file_exists($fullPath)) {
+        $fullPath = BQ_PUBLIC_DIR . DS . 'medias' . DS . $media->path;
+        if (file_exists($fullPath))
             unlink($fullPath);
-        }
 
         return $media->delete();
     }
