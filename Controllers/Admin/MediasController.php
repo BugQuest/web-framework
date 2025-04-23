@@ -9,14 +9,7 @@ abstract class MediasController
 {
     public static function index(): string
     {
-        $perPage = 24;
-        $page = (int)($_GET['page'] ?? 1);
-        $tagFilter = $_GET['tag'] ?? null;
-
-        $paginated = MediaManager::getPaginated($perPage, $page, $tagFilter);
-        return View::render('@framework/admin/config/medias.twig', [
-            'media_paginated' => $paginated,
-        ]);
+        return View::render('@framework/admin/config/medias.twig');
     }
 
     public static function upload(): void
@@ -43,7 +36,7 @@ abstract class MediasController
     {
         header('Content-Type: application/json');
 
-        $perPage = 24;
+        $perPage = 10;
         $page = $page ?? (int)($_GET['page'] ?? 1);
         $tagFilter = $_GET['tag'] ?? null;
 
