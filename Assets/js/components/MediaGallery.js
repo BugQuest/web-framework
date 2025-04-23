@@ -83,7 +83,7 @@ export default class MediaGallery {
 
         const tagDeleteBtn = this.buildTagDeleteToggle();
         const search = BuildHelper.input_search(
-            __('Rechercher ...', 'admin'),
+            __('Rechercher', 'admin') + '...',
             'small',
             (value) => {
                 this.search = value

@@ -1,5 +1,6 @@
 {
   "Panneau d’administration": "Panneau d’administration",
+  "Gestion des médias": "Gestion des médias",
   "Mon profil": "Mon profil",
   "Déconnexion": "Déconnexion",
   "Système": "Système",
@@ -28,5 +29,6 @@
   "Média supprimé": "Média supprimé",
   "Erreur suppression média :": "Erreur suppression média :",
   "Supprimer ce média ?": "Supprimer ce média ?",
-  "Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?": "Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?"
+  "Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?": "Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?",
+  "Rechercher": "Rechercher"
 }

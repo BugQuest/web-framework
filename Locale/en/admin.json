@@ -1,5 +1,6 @@
 {
   "Panneau d’administration": "Admin Panel",
+  "Gestion des médias": "Media Management",
   "Mon profil": "My Profile",
   "Déconnexion": "Logout",
   "Système": "System",
@@ -28,5 +29,6 @@
   "Média supprimé": "Media deleted",
   "Erreur suppression média :": "Media deletion error:",
   "Supprimer ce média ?": "Delete this media?",
-  "Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?": "This action is irreversible. Are you sure you want to continue?"
+  "Cette action est irréversible. Êtes-vous sûr de vouloir continuer ?": "This action is irreversible. Are you sure you want to continue?",
+  "Rechercher": "Search"
 }
