@@ -10,7 +10,8 @@ class AdminAuthMiddleware
 {
     public function handle(callable $next)
     {
-        session_start();
+        if (!session_id())
+            session_start();
 
         if (!isset($_SESSION['user_id']))
             Router::redirect('auth.login');

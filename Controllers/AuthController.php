@@ -3,12 +3,13 @@
 namespace BugQuest\Framework\Controllers;
 
 use BugQuest\Framework\Models\Database\User;
+use BugQuest\Framework\Models\Response;
 use BugQuest\Framework\Router;
 use BugQuest\Framework\Services\View;
 
 class AuthController
 {
-    public static function login(): string
+    public static function login(): Response
     {
         $error = "";
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -30,7 +31,7 @@ class AuthController
 
         }
 
-        return View::render('@framework/auth/login.twig', [
+        return Response::view('@framework/auth/login.twig', [
             'error' => $error,
         ]);
     }

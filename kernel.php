@@ -25,7 +25,7 @@ set_exception_handler(function ($e) {
 if (php_sapi_name() !== 'cli')
     Debug::start();
 
-hooks::runAction('kernel.start');
+Hooks::runAction('kernel.start');
 
 if (file_exists(BQ_ROOT . '/routes.php'))
     require_once BQ_ROOT . '/routes.php';
@@ -34,6 +34,7 @@ if (file_exists(BQ_FRAMEWORK_PATH . '/routes.php'))
     require_once BQ_FRAMEWORK_PATH . '/routes.php';
 
 Admin::registerPages();
+Hooks::runAction('kernel.after.admin.register.pages');
 
 BugQuest\Framework\Services\Locale::init();
 
@@ -42,10 +43,17 @@ if (is_dir(BQ_FRAMEWORK_PATH . '/inc'))
     foreach (glob(BQ_FRAMEWORK_PATH . '/inc/*.php') as $file)
         require_once $file;
 
-Database::init();
+Database::init();;
+if ($result = Router::dispatch()) {
+    if (is_a($result, BugQuest\Framework\Models\Response::class))
+        $result->send();
+    else if (is_array($result) || is_object($result)) {
+        header('Content-Type: application/json');
+        echo json_encode($result);
+    } else
+        echo $result;
 
-echo Router::dispatch();
-
-//if (php_sapi_name() !== 'cli')
-//    Debug::panel($requestUri);
+    return;
+}
+die('Where da hell are i am ?');
 
