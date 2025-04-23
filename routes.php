@@ -4,6 +4,7 @@
 use BugQuest\Framework\Controllers\Admin\DashboardController;
 use BugQuest\Framework\Controllers\Admin\LocaleController;
 use BugQuest\Framework\Controllers\Admin\MediasController;
+use BugQuest\Framework\Controllers\Admin\OptionController;
 use BugQuest\Framework\Controllers\AuthController;
 use BugQuest\Framework\Middleware\AdminAuthMiddleware;
 use BugQuest\Framework\Models\Route;
@@ -84,7 +85,28 @@ new RouteGroup(
             _slug: '/locale/domain/get/{domain:alpha}',
             _callback: LocaleController::class . '::getDomain',
             _methods: ['GET']
-        )
+        ),
+        /**
+         * Options
+         */
+        new Route(
+            name: 'options.get',
+            _slug: '/options/get/{group:alpha}',
+            _callback: OptionController::class . '::get',
+            _methods: ['GET']
+        ),
+        new Route(name: 'options.set',
+            _slug: '/options/set/{group:alpha}/{key:alpha?}',
+            _callback: OptionController::class . '::set',
+            _methods: ['POST']
+        ),
+        new Route(
+            name: 'options.delete',
+            _slug: '/options/delete/{group:alpha}/{key:alpha}',
+            _callback: OptionController::class . '::delete',
+            _methods: ['DELETE']
+        ),
+
     ],
     _middlewares: [
         AdminAuthMiddleware::class

@@ -117,7 +117,17 @@ class InstallController
 
                     $table->primary(['media_id', 'tag_id']);
                 });
+                ;
 
+                Manager::schema()->create('options', function (Blueprint $table) {
+                    $table->id();
+                    $table->string('group', 64);
+                    $table->string('key', 128);
+                    $table->text('value')->nullable();
+                    $table->timestamps();
+
+                    $table->unique(['group', 'key']);
+                });
 
                 // Hash + insertion dans la table users
                 $user = new User();
