@@ -16,6 +16,8 @@ export default class MediaGallery {
         this.perPage = 12;
         this.selectTags = [];
         this.tags = [];
+        this.mimeTypes = [];
+        this.forced_mimeTypes = [];
         this.search = '';
         //check if element has data-per-page attribute
         const perPage = this.element.dataset.perPage;
@@ -33,6 +35,11 @@ export default class MediaGallery {
         const canEditTags = this.element.dataset.canEditTags;
         if (canEditTags && canEditTags === 'true')
             this.canEditTags = true;
+
+        const forcedMimeTypes = this.element.dataset.forcedMimeTypes;
+        if (forcedMimeTypes && forcedMimeTypes.length > 0) {
+            this.forced_mimeTypes = forcedMimeTypes.split(',').map(mime => mime.trim());
+        }
 
         this.apiUrl = '/admin/medias';
 
@@ -271,6 +278,11 @@ export default class MediaGallery {
             this.selectTags.forEach(tagId => {
                 params.append('tags[]', tagId);
             });
+
+            if(this.forced_mimeTypes)
+                this.forced_mimeTypes.forEach(mime => {
+                    params.append('mime_types[]', mime);
+                });
 
             const response = await fetch(
                 `${this.apiUrl}/all/${page}?${params}`

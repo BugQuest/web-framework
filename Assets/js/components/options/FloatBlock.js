@@ -29,7 +29,7 @@ export class FloatBlock extends OptionBlock {
         wrapper.appendChild(progress);
 
         input.addEventListener('input', (e) => {
-            this.setValue(parseFloat(e.target.value));
+            this.value = parseFloat(e.target.value);
 
             // Reset barre
             progress.style.transition = 'none';

@@ -20,6 +20,11 @@ Assets::addJs(
     url: '/js/admin-options-images.js',
 );
 
+Assets::addJs(
+    group: 'admin-options-test',
+    url: '/js/admin-options-test.js',
+);
+
 Assets::addCss(
     group: 'admin-light',
     url: '/css/admin-light.css',

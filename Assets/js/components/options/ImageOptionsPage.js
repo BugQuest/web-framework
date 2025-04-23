@@ -35,9 +35,7 @@ export class ImageOptionsPage extends OptionsPage {
             null,
             {
                 description: __('Image de remplacement pour les images manquantes', 'admin'),
-                type: 'image',
-                multiple: false,
-                allowEmpty: true
+                mimeTypes: ['image/jpeg', 'image/png'],
             }
         );
 

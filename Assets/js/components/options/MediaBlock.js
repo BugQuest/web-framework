@@ -37,6 +37,7 @@ export class MediaBlock extends OptionBlock {
         const {modal, content, close} = BuildHelper.modal(null, () => {
         });
         content.dataset.canUpload = 'true';
+        content.dataset.forcedMimeTypes = this.mimeTypes;
 
         this.modal = modal;
         document.body.appendChild(this.modal);
