@@ -40,6 +40,8 @@ export class DebugPanel {
         document.addEventListener('mouseup', this.stopDrag.bind(this));
 
         await this.loadMetrics();
+
+        window.debugPanel = this;
     }
 
     static startDrag(e) {
@@ -104,24 +106,27 @@ export class DebugPanel {
         }
     }
 
+    static addGroup(group_key, group) {
+        const {accordeon, accordeon_content} = BuildHelper.accordion(group_key);
+        const wrap = BuildHelper.div('wrap');
+        accordeon_content.appendChild(wrap);
+        this.panel.appendChild(accordeon);
+
+        for (const item_key in group) {
+            const item = group[item_key];
+            const item_div = BuildHelper.div('debug-line');
+            item_div.innerHTML = `${item_key}: ${item}`;
+            wrap.appendChild(item_div);
+        }
+    }
+
     static async loadMetrics() {
         await fetch('/admin/api/debug/metrics')
             .then(r => r.json())
             .then(data => {
 
-                for (const group_key in data) {
-                    const {accordeon, accordeon_content} = BuildHelper.accordion(group_key);
-                    const wrap = BuildHelper.div('wrap');
-                    accordeon_content.appendChild(wrap);
-                    const items = data[group_key];
-                    for (const item_key in items) {
-                        const item = items[item_key];
-                        const item_div = BuildHelper.div('debug-line');
-                        item_div.innerHTML = `${item_key}: ${item}`;
-                        wrap.appendChild(item_div);
-                    }
-                    this.panel.appendChild(accordeon);
-                }
+                for (const group_key in data)
+                    this.addGroup(group_key, data[group_key]);
             });
     }
 }
