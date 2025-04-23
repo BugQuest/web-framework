@@ -20,7 +20,7 @@ export class TextareaBlock extends OptionBlock {
         wrapper.appendChild(textarea);
 
         // Bouton Save
-        const saveBtn = Builder.button('Save');
+        const saveBtn = Builder.button('Save', 'save-button');
         wrapper.appendChild(saveBtn);
 
         // Sauvegarde manuelle

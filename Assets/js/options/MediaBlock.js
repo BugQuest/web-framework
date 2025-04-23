@@ -32,12 +32,17 @@ export class MediaBlock extends OptionBlock {
         }
 
         wrapper.appendChild(preview);
+
+        // Label
+        if(this.label)
+            wrapper.appendChild(Builder.label(this.label));
+
         container.appendChild(wrapper);
     }
 
     getPreview(media) {
         //return img if media is an image, else return icon (media.mime_type)
-        if (media.mime_type.startsWith('image/')) {
+        if (media?.mime_type?.startsWith('image/')) {
             return Builder.img('/' + media.path, media.name, 'media-current');
         } else {
             const icon = this.getIconForMime(media.mime_type);
@@ -48,6 +53,7 @@ export class MediaBlock extends OptionBlock {
     }
 
     getIconForMime(mime) {
+        if(!mime) return '?';
         if (mime === 'application/pdf') return '📄';
         if (mime === 'text/plain') return '📃';
         if (mime.startsWith('video/')) return '🎥';

@@ -1,25 +1,28 @@
+import Builder from '@framework/js/services/Builder.js';
+
 export class OptionGroup {
-    constructor(name) {
-        this.name = name;
-        this.blocks = [];
+    constructor(label = null, blocks = []) {
+        this.label = label;
+        this.blocks = blocks || [];
     }
 
     addBlock(block) {
         this.blocks.push(block);
     }
 
-    render() {
-        const container = document.createElement('div');
-        container.className = '__optionGroup';
+    render(container) {
+        const wrapper = Builder.div('option-group');
 
-        const title = document.createElement('h2');
-        title.textContent = this.name;
-        container.appendChild(title);
+        if (this.label)
+            wrapper.appendChild(Builder.h2(this.label, 'option-group-title'));
+
+        const blocksWrapper = Builder.div('option-group-blocks');
+        wrapper.appendChild(blocksWrapper);
 
         this.blocks.forEach(block => {
-            container.appendChild(block.render());
+            block.render(blocksWrapper)
         });
 
-        return container;
+        container.appendChild(wrapper);
     }
 }

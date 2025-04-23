@@ -1,10 +1,11 @@
 import {IntBlock} from './IntBlock.js';
-import {FloatBlock} from './FloatBlock.js';
-import {StringBlock} from './StringBlock.js';
-import {MediaBlock} from './MediaBlock.js';
-import {SelectBlock} from './SelectBlock.js';
-import {BoolBlock} from './BoolBlock.js';
-import {TextareaBlock} from './TextareaBlock.js';
+import {FloatBlock} from '@framework/js/options/FloatBlock.js';
+import {StringBlock} from '@framework/js/options/StringBlock.js';
+import {MediaBlock} from '@framework/js/options/MediaBlock.js';
+import {SelectBlock} from '@framework/js/options/SelectBlock.js';
+import {BoolBlock} from '@framework/js/options/BoolBlock.js';
+import {TextareaBlock} from '@framework/js/options/TextareaBlock.js';
+import {WysiwygBlock} from "@framework/js/options/WysiwygBlock";
 
 export class BlockFactory {
     static types = {
@@ -15,6 +16,7 @@ export class BlockFactory {
         select: SelectBlock,
         bool: BoolBlock,
         textarea: TextareaBlock,
+        wysiwig: WysiwygBlock,
     };
 
     static register(type, clazz) {
