@@ -5,6 +5,7 @@ namespace BugQuest\Framework\Controllers\Admin;
 use BugQuest\Framework\Models\Database\Media;
 use BugQuest\Framework\Models\Database\Tag;
 use BugQuest\Framework\Models\Response;
+use BugQuest\Framework\Services\Assets;
 use BugQuest\Framework\Services\Image;
 use BugQuest\Framework\Services\MediaManager;
 use BugQuest\Framework\Services\View;
@@ -14,6 +15,15 @@ abstract class MediasController
 {
     public static function index(): string
     {
+        Assets::add(
+            group: 'admin',
+            id: 'js:admin:page:media',
+            url: '/framework/assets/js/admin-page-media',
+            type: 'js',
+            dependencies: ['js:admin'],
+            isLocalUrl: true,
+        );
+
         return View::render('@framework/admin/config/medias.twig');
     }
 

@@ -1,6 +1,6 @@
 import {OptionsPage} from './OptionsPage';
-import {__} from '@framework/js/components/Translator';
-import BuildHelper from '@framework/js/components/BuildHelper';
+import {__} from '@framework/js/services/Translator';
+import Builder from '@framework/js/services/Builder';
 
 export class ImageOptionsPage extends OptionsPage {
     constructor() {
@@ -17,7 +17,7 @@ export class ImageOptionsPage extends OptionsPage {
             console.error('Error parsing compression methods:', e);
         }
 
-        const wrapper = BuildHelper.div('options-wrapper')
+        const wrapper = Builder.div('options-wrapper')
 
         const compressionMethod = this.createBlock(
             'select',

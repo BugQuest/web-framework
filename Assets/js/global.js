@@ -1,3 +1,3 @@
-import './components/language-switcher'
+import '@framework/js/components/language-switcher'
 
-console.log('[Global] JS chargé avec succès 🛠️');
+console.log('%c[Global] JS chargé avec succès 🛠️', 'color: cyan; font-weight: bold');

@@ -26,7 +26,7 @@ eval("document.addEventListener('DOMContentLoaded', function () {\n  var langSel
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _components_language_switcher__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/language-switcher */ \"./Assets/js/components/language-switcher.js\");\n/* harmony import */ var _components_language_switcher__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_components_language_switcher__WEBPACK_IMPORTED_MODULE_0__);\n\nconsole.log('[Global] JS chargé avec succès 🛠️');\n\n//# sourceURL=webpack:///./Assets/js/global.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _framework_js_components_language_switcher__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @framework/js/components/language-switcher */ \"./Assets/js/components/language-switcher.js\");\n/* harmony import */ var _framework_js_components_language_switcher__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_framework_js_components_language_switcher__WEBPACK_IMPORTED_MODULE_0__);\n\nconsole.log('%c[Global] JS chargé avec succès 🛠️', 'color: cyan; font-weight: bold');\n\n//# sourceURL=webpack:///./Assets/js/global.js?");
 
 /***/ })
 

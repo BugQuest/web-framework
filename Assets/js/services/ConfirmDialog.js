@@ -1,5 +1,5 @@
-import BuildHelper from './BuildHelper.js';
-import {__} from './Translator.js';
+import Builder from '@framework/js/services/Builder.js';
+import {__} from '@framework/js/services/Translator.js';
 
 export default class ConfirmDialog {
     static show(
@@ -20,23 +20,23 @@ export default class ConfirmDialog {
 
         const {title, message, confirmText, cancelText, confirmClass, cancelClass} = {...defaults, ...options};
 
-        const title_el = BuildHelper.div('confirm-title');
+        const title_el = Builder.div('confirm-title');
         title_el.textContent = title;
 
-        const overlay_el = BuildHelper.div('confirm-overlay');
-        const box_el = BuildHelper.div('confirm-box');
+        const overlay_el = Builder.div('confirm-overlay');
+        const box_el = Builder.div('confirm-box');
 
-        const message_el = BuildHelper.div('confirm-message');
+        const message_el = Builder.div('confirm-message');
         message_el.textContent = message;
 
-        const actions_el = BuildHelper.div('confirm-actions');
+        const actions_el = Builder.div('confirm-actions');
 
-        const confirm_el = BuildHelper.button(confirmText, confirmClass, () => {
+        const confirm_el = Builder.button(confirmText, confirmClass, () => {
             onConfirm();
             overlay_el.remove();
         })
 
-        const cancel_el = BuildHelper.button(cancelText, cancelClass, () => {
+        const cancel_el = Builder.button(cancelText, cancelClass, () => {
             onCancel();
             overlay_el.remove();
         })

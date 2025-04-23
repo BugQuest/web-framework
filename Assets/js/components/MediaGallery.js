@@ -1,8 +1,8 @@
-import BuildHelper from './BuildHelper.js';
+import Builder from '@framework/js/services/Builder.js';
 import MediaModalViewer from './MediaModalViewer.js';
-import {Toast} from "./Toast";
-import {__} from './Translator.js';
-import ConfirmDialog from "./ConfirmDialog";
+import {Toast} from "@framework/js/services/Toast";
+import {__} from '@framework/js/services/Translator.js';
+import ConfirmDialog from "@framework/js/services/ConfirmDialog";
 
 export default class MediaGallery {
     constructor(element) {
@@ -53,12 +53,12 @@ export default class MediaGallery {
 
         //====== DROPZONE ======
         if (this.canUpload) {
-            this.dropZone = BuildHelper.div('media-dropzone');
+            this.dropZone = Builder.div('media-dropzone');
             this.element.appendChild(this.dropZone);
         }
 
         //====== TAGS ======
-        const tags = BuildHelper.div('media-gallery-tags');
+        const tags = Builder.div('media-gallery-tags');
         this.element.appendChild(tags);
 
         if (this.canEditTags) {
@@ -66,17 +66,17 @@ export default class MediaGallery {
             const {
                 accordeon,
                 accordeon_content
-            } = BuildHelper.accordion(__('Ajouter des tags', 'admin'), 'small');
+            } = Builder.accordion(__('Ajouter des tags', 'admin'), 'small');
             tags.appendChild(accordeon);
-            tags.appendChild(BuildHelper.glow_stick());
+            tags.appendChild(Builder.glow_stick());
 
-            const tags_form = BuildHelper.div('media-gallery-tags-form');
+            const tags_form = Builder.div('media-gallery-tags-form');
             accordeon_content.appendChild(tags_form);
 
-            this.tag_input = BuildHelper.input_text(__('Ajouter un tag', 'admin'), '', 'small full');
+            this.tag_input = Builder.input_text(__('Ajouter un tag', 'admin'), '', 'small full');
 
             tags_form.appendChild(this.tag_input)
-            this.tag_submit = BuildHelper.button_submit(__('Ajouter', 'admin'), 'button button-primary');
+            this.tag_submit = Builder.button_submit(__('Ajouter', 'admin'), 'button button-primary');
             this.tag_submit.addEventListener('click', (e) => {
                 e.preventDefault();
                 this.deletionMode = false;
@@ -93,11 +93,11 @@ export default class MediaGallery {
         }
 
         //====== TAGS ACTIONS/SEARCH ======
-        const tags_actions = BuildHelper.div('media-gallery-tags-actions');
+        const tags_actions = Builder.div('media-gallery-tags-actions');
         tags.appendChild(tags_actions);
 
 
-        const search = BuildHelper.input_search(
+        const search = Builder.input_search(
             __('Rechercher', 'admin') + '...',
             'small',
             (value) => {
@@ -118,17 +118,17 @@ export default class MediaGallery {
         }
 
         //====== TAGS CONTENT ======
-        this.tags_content = BuildHelper.div('media-gallery-tags-content');
+        this.tags_content = Builder.div('media-gallery-tags-content');
         tags.appendChild(this.tags_content)
 
         //====== MEDIA GALLERY ======
-        const container = BuildHelper.div('fullw');
+        const container = Builder.div('fullw');
         this.element.appendChild(container);
 
-        this.grid = BuildHelper.div('media-gallery-content');
+        this.grid = Builder.div('media-gallery-content');
         container.appendChild(this.grid);
 
-        this.pagination = BuildHelper.div('media-gallery-pagination');
+        this.pagination = Builder.div('media-gallery-pagination');
         container.appendChild(this.pagination)
 
         if (this.canModal)
@@ -136,7 +136,7 @@ export default class MediaGallery {
     }
 
     buildTagDeleteToggle(media) {
-        const button = BuildHelper.div('icon danger');
+        const button = Builder.div('icon danger');
         button.innerHTML = '❌';
         button.dataset.tooltip = __('Mode suppression', 'admin');
         button.dataset.tooltipType = 'danger';
@@ -444,9 +444,9 @@ export default class MediaGallery {
         const formData = new FormData();
         formData.append('file', file);
 
-        const tempCard_el = BuildHelper.div('media-card uploading');
-        const preview_el = BuildHelper.div('media-card--preview');
-        const progressBar_el = BuildHelper.div('progress-bar');
+        const tempCard_el = Builder.div('media-card uploading');
+        const preview_el = Builder.div('media-card--preview');
+        const progressBar_el = Builder.div('progress-bar');
         preview_el.appendChild(this.getPreviewHTML(file));
         tempCard_el.appendChild(preview_el);
         tempCard_el.appendChild(progressBar_el);
@@ -485,12 +485,12 @@ export default class MediaGallery {
 
     getPreviewHTML(file) {
         if (file.type.startsWith('image/svg')) {
-            const svg = BuildHelper.img(URL.createObjectURL(file), 'preview');
+            const svg = Builder.img(URL.createObjectURL(file), 'preview');
             return svg;
         } else if (file.type.startsWith('image/'))
-            return BuildHelper.img(URL.createObjectURL(file), 'preview');
+            return Builder.img(URL.createObjectURL(file), 'preview');
 
-        const div = BuildHelper.div('media-card--icon');
+        const div = Builder.div('media-card--icon');
         div.innerHTML = this.getIconForMime(file.type);
 
         return div;

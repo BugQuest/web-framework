@@ -1,3 +1,5 @@
+import Builder from '@framework/js/services/Builder';
+
 export class Tooltip {
     static currentTarget = null;
 
@@ -25,22 +27,19 @@ export class Tooltip {
     }
 
     static handleMouseMove(e) {
-        if (Tooltip.currentTarget && Tooltip.currentTarget._bqTooltip) {
+        if (Tooltip.currentTarget && Tooltip.currentTarget._bqTooltip)
             Tooltip.move(e, Tooltip.currentTarget._bqTooltip);
-        }
     }
 
     static show(target) {
         const text = target.dataset.tooltip;
         if (!text) return;
 
-        const tooltip = document.createElement('div');
-        tooltip.className = 'bq-tooltip';
+        const tooltip = Builder.div('bq-tooltip');
 
         const type = target.dataset.tooltipType;
-        if (type) {
+        if (type)
             tooltip.classList.add(type); // ex: .danger, .info...
-        }
 
         tooltip.innerHTML = text;
         document.body.appendChild(tooltip);
@@ -64,13 +63,13 @@ export class Tooltip {
         let top = mouseY + offset;
         let left = mouseX + offset;
 
-        if (mouseX + tooltipRect.width + offset > winWidth) {
+        if (mouseX + tooltipRect.width + offset > winWidth)
             left = mouseX - tooltipRect.width - offset;
-        }
 
-        if (mouseY + tooltipRect.height + offset > winHeight) {
+
+        if (mouseY + tooltipRect.height + offset > winHeight)
             top = mouseY - tooltipRect.height - offset;
-        }
+
 
         tooltip.style.left = `${left}px`;
         tooltip.style.top = `${top}px`;

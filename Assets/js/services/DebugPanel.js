@@ -1,4 +1,6 @@
-import BuildHelper from '@framework/js/components/BuildHelper.js';
+import Builder from '@framework/js/services/Builder';
+import {Toast} from '@framework/js/services/Toast';
+import {__} from '@framework/js/services/Translator';
 
 export class DebugPanel {
     static panel = null;
@@ -6,9 +8,9 @@ export class DebugPanel {
     static offset = {x: 0, y: 0};
 
     static async init() {
-        this.panel = BuildHelper.div('debug-panel');
-        const title = BuildHelper.h3('Debug Panel');
-        const close_el = BuildHelper.div('close-btn');
+        this.panel = Builder.div('debug-panel');
+        const title = Builder.h3('Debug Panel');
+        const close_el = Builder.div('close-btn');
         close_el.textContent = 'x';
 
         this.panel.append(title, close_el);
@@ -31,6 +33,7 @@ export class DebugPanel {
         if (close) {
             close.addEventListener('click', () => {
                 this.panel.classList.remove('active');
+                localStorage.setItem('debugPanelActive', false);
             });
         }
 
@@ -41,9 +44,9 @@ export class DebugPanel {
 
         await this.loadMetrics();
 
-        this.kvSection = BuildHelper.div('kv-section');
-        this.kvWrap = BuildHelper.div('wrap');
-        const kvTitle = BuildHelper.h4('Debug Infos dynamiques');
+        this.kvSection = Builder.div('kv-section');
+        this.kvWrap = Builder.div('wrap');
+        const kvTitle = Builder.h4('Debug Infos dynamiques');
         this.kvSection.append(kvTitle, this.kvWrap);
         this.panel.appendChild(this.kvSection);
         this.kvValues = {}; // pour stocker les refs HTML des valeurs
@@ -114,14 +117,14 @@ export class DebugPanel {
     }
 
     static addGroup(group_key, group) {
-        const {accordeon, accordeon_content} = BuildHelper.accordion(group_key);
-        const wrap = BuildHelper.div('wrap');
+        const {accordeon, accordeon_content} = Builder.accordion(group_key);
+        const wrap = Builder.div('wrap');
         accordeon_content.appendChild(wrap);
         this.panel.appendChild(accordeon);
 
         for (const item_key in group) {
             const item = group[item_key];
-            const item_div = BuildHelper.div('debug-line');
+            const item_div = Builder.div('debug-line');
             item_div.innerHTML = `${item_key}: ${item}`;
             wrap.appendChild(item_div);
         }
@@ -132,6 +135,17 @@ export class DebugPanel {
             .then(r => r.json())
             .then(data => {
 
+                if (!data) return;
+
+                if ("success" in data && !data.success) {
+                    Toast.show(__('Erreur lors du chargement des metrics:', 'admin') + ' ' + data?.message, {
+                        type: 'danger',
+                        icon: '❌'
+                    });
+                    console.error(__('Erreur lors du chargement des metrics:', 'admin') + ' ' + data?.message);
+                    return;
+                }
+
                 for (const group_key in data)
                     this.addGroup(group_key, data[group_key]);
             });
@@ -141,7 +155,7 @@ export class DebugPanel {
         if (!this.kvValues) return;
 
         if (!this.kvValues[key]) {
-            const line = BuildHelper.div('debug-line');
+            const line = Builder.div('debug-line');
             line.innerHTML = `<strong>${key}</strong>: <span class="debug-value">${value}</span>`;
             this.kvWrap.appendChild(line);
             this.kvValues[key] = line.querySelector('.debug-value');

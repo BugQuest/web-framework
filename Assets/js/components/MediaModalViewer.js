@@ -1,7 +1,7 @@
-import BuildHelper from "./BuildHelper";
-import ConfirmDialog from "./ConfirmDialog";
-import {Toast} from "./Toast";
-import {__} from './Translator.js';
+import Builder from "@framework/js/services/Builder";
+import ConfirmDialog from "@framework/js/services/ConfirmDialog";
+import {Toast} from "@framework/js/services/Toast";
+import {__} from '@framework/js/services/Translator.js';
 
 export default class MediaModalViewer {
     constructor(gallery) {
@@ -10,15 +10,18 @@ export default class MediaModalViewer {
         this.deletionMode = false;
         this.new_tag = '';
 
-        const {modal, content, close} = BuildHelper.modal(null, () => {
-            this.gallery.loadPage();
-            this.waitingTags = [];
-            this.deletionMode = false;
-            content.innerHTML = '';
-        });
+        this.modal = Builder.modal(
+            null,
+            () => {
 
-        this.modal = modal;
-        this.modal_content = content;
+            },
+            () => {
+                this.gallery.loadPage();
+                this.waitingTags = [];
+                this.deletionMode = false;
+                content.innerHTML = '';
+            });
+
         document.body.appendChild(this.modal);
     }
 
@@ -27,19 +30,19 @@ export default class MediaModalViewer {
 
         this.waitingTags = media.tags ? JSON.parse(JSON.stringify(media.tags)) : [];
         this.deletionMode = false;
-        this.modal_content.innerHTML = '';
+        this.modal.content.innerHTML = '';
 
-        const container = BuildHelper.div('media-modal');
+        const container = Builder.div('media-modal');
 
         container.appendChild(this.buildActions(media));
         container.appendChild(this.buildPreview(media));
 
-        const info = BuildHelper.div('media-modal--info');
-        const infoContainer = BuildHelper.div('media-modal--info-container');
+        const info = Builder.div('media-modal--info');
+        const infoContainer = Builder.div('media-modal--info-container');
 
-        const title = BuildHelper.h2(media.original_name);
-        const infoSub = BuildHelper.div();
-        const list = BuildHelper.list([`<strong>Type :</strong> ${media.mime_type}`, `<strong>Taille :</strong> ${(media.size / 1024).toFixed(1)} ko`, `<strong>Extension :</strong> ${media.extension}`, `<strong>Ajouté le :</strong> ${new Date(media.created_at).toLocaleDateString('fr-FR')}`,]);
+        const title = Builder.h2(media.original_name);
+        const infoSub = Builder.div();
+        const list = Builder.list([`<strong>Type :</strong> ${media.mime_type}`, `<strong>Taille :</strong> ${(media.size / 1024).toFixed(1)} ko`, `<strong>Extension :</strong> ${media.extension}`, `<strong>Ajouté le :</strong> ${new Date(media.created_at).toLocaleDateString('fr-FR')}`,]);
 
         infoSub.appendChild(title);
         infoSub.appendChild(list);
@@ -49,20 +52,20 @@ export default class MediaModalViewer {
         info.appendChild(infoContainer);
 
         if (media.exif && typeof media.exif === 'object' && Object.keys(media.exif).length > 0) {
-            const {accordeon, accordeon_content} = BuildHelper.accordion('EXIF', 'small');
-            const exifList = BuildHelper.list(Object.entries(media.exif).map(([key, value]) => `<strong>${key}:</strong> ${typeof value === 'object' ? JSON.stringify(value) : value}`));
+            const {accordeon, accordeon_content} = Builder.accordion('EXIF', 'small');
+            const exifList = Builder.list(Object.entries(media.exif).map(([key, value]) => `<strong>${key}:</strong> ${typeof value === 'object' ? JSON.stringify(value) : value}`));
             exifList.classList.add('media-modal--exif');
             accordeon_content.appendChild(exifList);
             info.appendChild(accordeon);
         }
 
         container.appendChild(info);
-        this.modal_content.appendChild(container);
-        this.modal.classList.add('active');
+        this.modal.content.appendChild(container);
+        this.modal.open();
     }
 
     buildTagUpdateButton(media) {
-        const button = BuildHelper.div('icon info hidden');
+        const button = Builder.div('icon info hidden');
         button.innerHTML = '💾';
         button.dataset.tooltip = __('Mettre à jour les tags', 'admin');
         button.dataset.tooltipType = 'info';
@@ -107,7 +110,7 @@ export default class MediaModalViewer {
     }
 
     buildTagDeleteToggle(media) {
-        const button = BuildHelper.div('icon danger');
+        const button = Builder.div('icon danger');
         button.innerHTML = '❌';
         button.dataset.tooltip = __('Mode suppression', 'admin');
         button.dataset.tooltipType = 'danger';
@@ -131,7 +134,7 @@ export default class MediaModalViewer {
     }
 
     buildAddCategoryButton(media) {
-        const button = BuildHelper.div('icon hidden');
+        const button = Builder.div('icon hidden');
         button.innerHTML = '➕';
         button.dataset.tooltip = __('Ajouter une nouvelle catégorie', 'admin');
         button.dataset.tooltipType = 'info';
@@ -182,9 +185,9 @@ export default class MediaModalViewer {
     }
 
     buildTagEditor(media) {
-        const tagsContainer = BuildHelper.div('media-modal--tags');
-        const tagList = BuildHelper.div('media-modal--tags-list');
-        const tagActions = BuildHelper.div('media-modal--tags-actions');
+        const tagsContainer = Builder.div('media-modal--tags');
+        const tagList = Builder.div('media-modal--tags-list');
+        const tagActions = Builder.div('media-modal--tags-actions');
 
         this.tagUpdateBtn = this.buildTagUpdateButton(media);
         this.tagAddBtn = this.buildAddCategoryButton(media);
@@ -206,7 +209,7 @@ export default class MediaModalViewer {
         this.updateTagList = () => {
             tagList.innerHTML = '';
             this.waitingTags.forEach(tag => {
-                const tagEl = BuildHelper.div('tag');
+                const tagEl = Builder.div('tag');
                 tagEl.textContent = tag.name;
                 tagEl.dataset.tag = tag.id;
 
@@ -230,7 +233,7 @@ export default class MediaModalViewer {
 
         this.updateTagList();
 
-        const {searchContainer, result} = BuildHelper.search(
+        const {searchContainer, result} = Builder.search(
             __('Ajouter un tag', 'admin') + '...',
             (value, results_el) => {
                 this.new_tag = value;
@@ -249,7 +252,7 @@ export default class MediaModalViewer {
                 }
 
                 filtered.forEach(tag => {
-                    const tagEl = BuildHelper.div('result-item');
+                    const tagEl = Builder.div('result-item');
                     tagEl.textContent = tag.name;
                     tagEl.dataset.tag = tag.id;
                     results_el.appendChild(tagEl);
@@ -274,9 +277,9 @@ export default class MediaModalViewer {
     }
 
     buildActions(media) {
-        const actions = BuildHelper.div('flex-actions');
+        const actions = Builder.div('flex-actions');
 
-        const dl = BuildHelper.div('icon');
+        const dl = Builder.div('icon');
         dl.innerHTML = '📥';
         dl.dataset.tooltip = __('Télécharger', 'admin');
         dl.dataset.tooltipType = 'info';
@@ -291,13 +294,13 @@ export default class MediaModalViewer {
             document.body.removeChild(link);
         };
 
-        const open = BuildHelper.div('icon');
+        const open = Builder.div('icon');
         open.innerHTML = '🔗';
         open.dataset.tooltip = __('Ouvrir', 'admin');
         open.dataset.tooltipType = 'info';
         open.onclick = () => window.open('/' + media.path, '_blank');
 
-        const del = BuildHelper.div('icon danger');
+        const del = Builder.div('icon danger');
         del.innerHTML = '🗑️';
         del.dataset.tooltip = __('Supprimer', 'admin');
         del.dataset.tooltipType = 'danger';
@@ -311,7 +314,7 @@ export default class MediaModalViewer {
                     Toast.show(__('Média supprimé', 'admin'), {
                         type: 'success', icon: '✅', duration: 2000, position: 'bottom-right', closable: true
                     });
-                    this.close();
+                    this.modal.close();
                 } catch (e) {
                     Toast.show('[MediaModalViewer] ' + __('Erreur suppression média :', 'admin') + ' ' + e.message, {
                         type: 'danger', icon: '⚠️', duration: 5000, position: 'bottom-right', closable: true
@@ -333,23 +336,18 @@ export default class MediaModalViewer {
     }
 
     buildPreview(media) {
-        const preview = BuildHelper.div('media-modal--preview');
+        const preview = Builder.div('media-modal--preview');
         if (media.mime_type.startsWith('image/')) {
-            preview.appendChild(BuildHelper.img('/' + media.path, media.original_name));
+            preview.appendChild(Builder.img('/' + media.path, media.original_name));
         }//svg
         else if (media.mime_type.startsWith('image/svg')) {
-            const svg = BuildHelper.img('/' + media.path, media.original_name);
+            const svg = Builder.img('/' + media.path, media.original_name);
             preview.appendChild(svg);
         } else {
-            const icon = BuildHelper.div('media-card--icon');
+            const icon = Builder.div('media-card--icon');
             icon.innerHTML = this.gallery.getIconForMime(media.mime_type);
             preview.appendChild(icon);
         }
         return preview;
-    }
-
-    close() {
-        this.modal.classList.remove('active');
-        this.modal_content.innerHTML = '';
     }
 }

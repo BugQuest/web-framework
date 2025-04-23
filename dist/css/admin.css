@@ -1695,6 +1695,46 @@ input:focus.error {
 .option-block.bool .bool-switch:hover {
   background: rgba(0, 255, 255, 0.4);
 }
+.option-block.textarea {
+  align-items: stretch;
+}
+.option-block.textarea textarea {
+  background: #0f172a;
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 0.5rem;
+  color: white;
+  font-size: 1rem;
+  width: 100%;
+  resize: vertical;
+  min-height: 100px;
+}
+.option-block.textarea textarea:hover {
+  background: rgba(0, 255, 255, 0.0666666667);
+  border-color: cyan;
+  color: cyan;
+}
+.option-block.textarea .save-button {
+  margin-top: 0.5rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  font-weight: bold;
+  background: rgba(0, 255, 255, 0.1333333333);
+  color: var(--color-primary, cyan);
+  border: 1px solid var(--color-primary, cyan);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.option-block.textarea .save-button:hover {
+  background: rgba(0, 255, 255, 0.2666666667);
+  color: #000;
+}
+.option-block.textarea .save-button.saved {
+  background: #36e307;
+  color: #000;
+  border-color: #36e307;
+}
 .option-block.string .save-progress, .option-block.int .save-progress, .option-block.float .save-progress {
   height: 2px;
   background: var(--color-primary, cyan);

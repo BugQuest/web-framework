@@ -1,7 +1,7 @@
 import { BlockFactory } from './BlockFactory';
 import OptionManager from './OptionManager';
-import { Toast } from '../Toast';
-import { __ } from '../Translator';
+import { Toast } from '@framework/js/services/Toast';
+import { __ } from '@framework/js/services/Translator';
 
 export class OptionsPage {
     constructor(group, containerSelector = '#options-container') {

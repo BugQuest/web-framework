@@ -1,4 +1,6 @@
-import { OptionBlock } from './OptionBlock.js';
+import {OptionBlock} from './OptionBlock.js';
+import Builder from '@framework/js/services/Builder.js';
+import {__} from '@framework/js/services/Translator.js';
 
 export class BoolBlock extends OptionBlock {
     constructor(key, label, value = false, options = {}, onChange = null, group = 'default') {
@@ -10,19 +12,15 @@ export class BoolBlock extends OptionBlock {
         const wrapper = super.render();
         wrapper.classList.add('bool');
 
-        const label = document.createElement('label');
-        label.textContent = this.label;
-        wrapper.appendChild(label);
+        wrapper.appendChild(Builder.label(this.label));
 
-        const switcher = document.createElement('div');
-        switcher.className = 'bool-switch';
+        const switcher = Builder.div('bool-switch');
         switcher.dataset.state = this.value ? 'on' : 'off';
-        switcher.title = this.value ? 'Activé' : 'Désactivé';
-
+        switcher.title = this.value ? __('Activé', 'options') : __('Désactivé', 'options');
         switcher.addEventListener('click', () => {
             this.value = !this.value;
             switcher.dataset.state = this.value ? 'on' : 'off';
-            switcher.title = this.value ? 'Activé' : 'Désactivé';
+            switcher.title = this.value ? __('Activé', 'options') : __('Désactivé', 'options');
             this.notifyChange();
         });
 

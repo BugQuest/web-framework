@@ -3,8 +3,8 @@ import paragraph from './paragraph.js';
 import image from './image.js';
 import button from './button.js';
 import container from './container.js';
-import BuildHelper from '@framework/js/components/BuildHelper';
-import MediaGallery from '@framework/js/components/MediaGallery';
+import Builder from '@framework/js/services/Builder.js';
+import MediaPicker from '@framework/js/services/MediaPicker.js';
 
 let sharedMediaModal = null;
 let sharedGallery = null;
@@ -44,21 +44,11 @@ export default function loadBasicBlocks(editor) {
             // Valeur actuelle
             const current = trait.target?.getAttributes()[trait.name];
             if (current) {
-                preview.appendChild(BuildHelper.img(current, 'Aperçu', 'media-current'));
+                preview.appendChild(Builder.img(current, 'Aperçu', 'media-current'));
             }
 
             btn.addEventListener('click', () => {
-                if (!sharedMediaModal) {
-                    const {modal, content, close} = BuildHelper.modal(null, () => modal.remove());
-                    content.dataset.canUpload = 'true';
-                    content.dataset.forcedMimeTypes = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'];
-
-                    sharedMediaModal = modal;
-                    document.body.appendChild(sharedMediaModal);
-                    sharedGallery = new MediaGallery(content);
-                }
-
-                sharedGallery.onClickItem = async (media) => {
+                MediaPicker.open(['image/jpg', 'image/jpeg', 'image/png', 'image/gif'], async (media) => {
                     const selectedSize = sizeSelect.value || 'original';
                     let resizedUrl = '/' + media.path;
 
@@ -82,16 +72,12 @@ export default function loadBasicBlocks(editor) {
                     preview.innerHTML = '';
                     preview.appendChild(BuildHelper.img(resizedUrl, media.name, 'media-current'));
                     sharedMediaModal.classList.remove('active');
-                };
-
-                sharedMediaModal.classList.add('active');
-                sharedGallery.loadPage()
+                });
             });
 
             sizeSelect.addEventListener('change', async () => {
                 const currentSrc = trait.target?.getAttributes()['src'];
                 const mediaId = trait.target?.getAttributes()['data-media'];
-                console.log("currentSrc", currentSrc, 'mediaId', mediaId);
 
                 if (!mediaId || !currentSrc) return;
 
@@ -110,7 +96,7 @@ export default function loadBasicBlocks(editor) {
 
                     trait.setTargetValue(resizedUrl);
                     preview.innerHTML = '';
-                    preview.appendChild(BuildHelper.img(resizedUrl, 'Aperçu', 'media-current'));
+                    preview.appendChild(Builder.img(resizedUrl, 'Aperçu', 'media-current'));
                 } catch (e) {
                     console.error('Erreur de redimensionnement', e);
                 }

@@ -1,3 +1,5 @@
+import {Toast} from "@framework/js/services/Toast";
+
 export class PageListManager {
     constructor(element, options = {}) {
         this.element = element;
@@ -24,11 +26,11 @@ export class PageListManager {
     }
 
     async load(page = 1) {
-        const payload = { page, per_page: this.perPage };
+        const payload = {page, per_page: this.perPage};
 
         const res = await fetch('/admin/api/page/list', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(payload)
         });
 
@@ -102,6 +104,9 @@ export class PageListManager {
             editBtn.className = 'icon-button';
             editBtn.title = 'Edit';
             editBtn.innerHTML = '✏️';
+            editBtn.addEventListener('click', () => {
+                window.location.href = `/admin/page/${page.id}`;
+            });
 
             const viewBtn = document.createElement('button');
             viewBtn.className = 'icon-button';
@@ -226,7 +231,7 @@ export class PageListManager {
 
         fetch('/admin/api/page/hierachy', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
         });
     }

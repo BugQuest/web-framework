@@ -2,7 +2,6 @@
 
 
 use BugQuest\Framework\Controllers\Admin\DashboardController;
-use BugQuest\Framework\Controllers\Admin\DebugController;
 use BugQuest\Framework\Controllers\Admin\LocaleController;
 use BugQuest\Framework\Controllers\Admin\MediasController;
 use BugQuest\Framework\Controllers\Admin\OptionController;
@@ -13,7 +12,6 @@ use BugQuest\Framework\Controllers\AuthController;
 use BugQuest\Framework\Debug;
 use BugQuest\Framework\Middleware\AdminAuthMiddleware;
 use BugQuest\Framework\Middleware\ApiAdminAuthMiddleware;
-use BugQuest\Framework\Middleware\PlainAdminAuthMiddleware;
 use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Models\RouteGroup;
 

@@ -16,6 +16,7 @@ class PageListController
             id: 'js:admin:page:list',
             url: '/framework/assets/js/admin-page-list',
             type: 'js',
+            dependencies: ['js:admin'],
             isLocalUrl: true,
         );
 

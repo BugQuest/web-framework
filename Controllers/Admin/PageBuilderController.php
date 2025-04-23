@@ -17,6 +17,7 @@ class PageBuilderController
             id: 'js:admin:page:builder',
             url: '/framework/assets/js/admin-page-builder',
             type: 'js',
+            dependencies: ['js:admin'],
             isLocalUrl: true,
         );
 

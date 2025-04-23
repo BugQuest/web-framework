@@ -4,6 +4,7 @@ import {StringBlock} from './StringBlock.js';
 import {MediaBlock} from './MediaBlock.js';
 import {SelectBlock} from './SelectBlock.js';
 import {BoolBlock} from './BoolBlock.js';
+import {TextareaBlock} from './TextareaBlock.js';
 
 export class BlockFactory {
     static types = {
@@ -13,6 +14,7 @@ export class BlockFactory {
         media: MediaBlock,
         select: SelectBlock,
         bool: BoolBlock,
+        textarea: TextareaBlock,
     };
 
     static register(type, clazz) {
@@ -21,9 +23,9 @@ export class BlockFactory {
 
     static create(type, key, label, value = null, options = [], onChange = null, group = 'default') {
         const BlockClass = this.types[type];
-        if (!BlockClass) {
+        if (!BlockClass)
             throw new Error(`Type de bloc inconnu : ${type}`);
-        }
+
         return new BlockClass(key, label, value, options, onChange, group);
     }
 }

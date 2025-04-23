@@ -1,7 +1,7 @@
 import grapesjs from 'grapesjs';
 import loadBasicBlocks from './blocks/index.js';
-import {Toast} from "@framework/js/components/Toast";
-import {__} from "@framework/js/components/Translator";
+import {Toast} from "@framework/js/services/Toast";
+import {__} from "@framework/js/services/Translator";
 
 export default class PageBuilder {
     constructor(element) {

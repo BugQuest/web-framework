@@ -17,6 +17,7 @@ abstract class ImagesController
             id: 'js:admin:options:images',
             url: '/framework/assets/js/admin-options-images',
             type: 'js',
+            dependencies: ['js:admin'],
             isLocalUrl: true,
         );
 

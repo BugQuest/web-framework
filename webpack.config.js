@@ -13,6 +13,7 @@ module.exports = {
         'css/theme-default': '@framework/scss/theme.scss',
         'js/admin': '@framework/js/admin.js',
         'js/admin-options-images': '@framework/js/admin-options-images.js',
+        'js/admin-page-media': '@framework/js/admin-page-media.js',
         'js/admin-page-builder': '@framework/js/admin-page-builder.js',
         'js/admin-page-list': '@framework/js/admin-page-list.js',
         'js/global': '@framework/js/global.js',
