@@ -3,7 +3,6 @@
 namespace BugQuest\Framework\Services;
 
 use BugQuest\Framework\Models\Database\Meta;
-use BugQuest\Framework\Models\RouteGroup;
 use BugQuest\Framework\Router;
 use Illuminate\Database\Capsule\Manager;
 use BugQuest\Framework\Controllers\InstallController;
