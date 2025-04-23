@@ -78,8 +78,9 @@ class Debug
             }
         }
 
-        if ($queries = DB::getQueryLog())
-            self::$_logs['queries'] = $queries;
+        if (env('DEBUG_SQL', false))
+            if ($queries = DB::getQueryLog())
+                self::$_logs['queries'] = $queries;
 
 
         Cache::put('metrics.' . $user->id, self::$_logs, 300, 'debug');

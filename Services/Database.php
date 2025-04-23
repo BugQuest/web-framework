@@ -52,6 +52,8 @@ class Database
         $container->instance('db', $manager->getDatabaseManager());
         if (env('DEBUG_SQL', false))
             DB::connection()->enableQueryLog();
+        else
+            DB::connection()->disableQueryLog();
     }
 
     public static function isInstalled(): bool
