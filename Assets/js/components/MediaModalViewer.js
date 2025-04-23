@@ -19,10 +19,9 @@ export default class MediaModalViewer {
                 this.gallery.loadPage();
                 this.waitingTags = [];
                 this.deletionMode = false;
-                content.innerHTML = '';
             });
 
-        document.body.appendChild(this.modal);
+        document.body.appendChild(this.modal.element);
     }
 
     async open(media) {

@@ -80,7 +80,7 @@ export default class MediaGallery {
             this.tag_submit.addEventListener('click', (e) => {
                 e.preventDefault();
                 this.deletionMode = false;
-                tagDeleteBtn.classList.remove('active');
+                this.tagDeleteBtn.classList.remove('active');
                 this.search = '';
                 this.updateTags();
                 const tag = this.tag_input.value.trim();
@@ -113,8 +113,8 @@ export default class MediaGallery {
         tags_actions.appendChild(search);
 
         if (this.canEditTags) {
-            const tagDeleteBtn = this.buildTagDeleteToggle();
-            tags_actions.appendChild(tagDeleteBtn);
+            this.tagDeleteBtn = this.buildTagDeleteToggle();
+            tags_actions.appendChild(this.tagDeleteBtn);
         }
 
         //====== TAGS CONTENT ======
