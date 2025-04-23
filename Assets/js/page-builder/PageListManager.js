@@ -6,6 +6,7 @@ export class PageListManager {
         this.currentPage = 1;
         this.lastPage = 1;
         this.perPage = 100;
+        this.currentParentTarget = null;
 
         this.container = document.createElement('div');
         this.container.className = 'page-list-content';
@@ -112,6 +113,9 @@ export class PageListManager {
             viewBtn.className = 'icon-button';
             viewBtn.title = 'View';
             viewBtn.innerHTML = '👁️';
+            viewBtn.addEventListener('click', () => {
+                window.open(`/${page.slug}`, '_blank');
+            });
 
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'icon-button';
@@ -148,6 +152,10 @@ export class PageListManager {
         if (!this.draggedItem || this.draggedItem === target) return;
 
         if (this.previewIndicator) this.previewIndicator.remove();
+        if (this.currentParentTarget) {
+            this.currentParentTarget.classList.remove('can-be-parent');
+            this.currentParentTarget = null;
+        }
 
         const bounding = target.getBoundingClientRect();
         const offset = e.clientY - bounding.top;
@@ -162,13 +170,24 @@ export class PageListManager {
             target.after(this.previewIndicator);
             this.previewIndicator.dataset.position = 'below';
         } else {
-            target.appendChild(this.previewIndicator);
+            // CHILD ZONE
             this.previewIndicator.dataset.position = 'child';
+            target.after(this.previewIndicator);
+
+            // Marquage du parent potentiel
+            target.classList.add('can-be-parent');
+            this.currentParentTarget = target;
         }
     }
 
     onDrop(e, target) {
         e.preventDefault();
+
+        if (this.currentParentTarget) {
+            this.currentParentTarget.classList.remove('can-be-parent');
+            this.currentParentTarget = null;
+        }
+
         if (!this.draggedItem || this.draggedItem === target) return;
 
         const position = this.previewIndicator?.dataset?.position;

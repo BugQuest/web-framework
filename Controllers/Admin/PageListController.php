@@ -71,10 +71,10 @@ class PageListController
         foreach ($payload as $item)
             if (isset($item['id'], $item['order'])) {
                 $parentId = $item['parent_id'] ?? null;
-                Page::where('id', $item['id'])->update([
-                    'parent_id' => $parentId,
-                    'order' => $item['order']
-                ]);
+                $page = Page::find($item['id']);
+                $page->order = $item['order'];
+                $page->parent_id = $parentId;
+                $page->resolveUrl();
             }
 
         return Response::json(['success' => true]);

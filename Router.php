@@ -4,6 +4,8 @@ namespace BugQuest\Framework;
 
 use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Models\RouteGroup;
+use BugQuest\Framework\Models\Database\Page;
+use BugQuest\Framework\Services\PageService;
 
 abstract class Router
 {
@@ -40,8 +42,8 @@ abstract class Router
      */
     public static function dispatch(): mixed
     {
+//        $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         $fallback = null;
 
@@ -63,6 +65,23 @@ abstract class Router
             }
         }
 
+        // Tentative de résolution via le modèle Page si route 'page' existe
+        $pageRoute = self::getRoute('page');
+        if ($pageRoute && $pageRoute->acceptsMethod($method)) {
+            //Remove first slash
+            $uri = ltrim($uri, '/');
+            $page = Page::where('slug', $uri)->first();
+
+            if ($page) {
+                PageService::setCurrent($page);
+                return self::runMiddlewares(
+                    $pageRoute->getMiddlewares(),
+                    fn() => $pageRoute->process(['page' => $page])
+                );
+            }
+        }
+
+        // Fallback ou 404
         if ($fallback) {
             http_response_code(404);
             return self::runMiddlewares(

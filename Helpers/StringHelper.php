@@ -21,16 +21,37 @@ class StringHelper
 
     public static function sanitize_title(string $title): string
     {
-        // Convertir les caractères spéciaux en ASCII
-        $title = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $title);
-        $title = strtolower($title);
+        // Convertir en minuscules avec support UTF-8
+        $title = mb_strtolower($title, 'UTF-8');
 
-        // Remplacer tout ce qui n'est pas lettre, chiffre ou tiret par un espace
+        // Remplacer les caractères accentués courants (fallback si iconv échoue ou n'est pas dispo)
+        $replacements = [
+            'à' => 'a', 'â' => 'a', 'ä' => 'a', 'á' => 'a', 'ã' => 'a', 'å' => 'a',
+            'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e',
+            'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i',
+            'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o', 'ö' => 'o',
+            'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ü' => 'u',
+            'ñ' => 'n', 'ç' => 'c',
+            'œ' => 'oe', 'æ' => 'ae',
+            'ß' => 'ss',
+        ];
+        $title = strtr($title, $replacements);
+
+        // Fallback supplémentaire avec iconv (si dispo)
+        if (function_exists('iconv')) {
+            $converted = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $title);
+            if ($converted !== false) {
+                $title = $converted;
+            }
+        }
+
+        // Remplacer tout ce qui n'est pas lettre, chiffre ou tiret par un tiret
         $title = preg_replace('/[^a-z0-9]+/', '-', $title);
 
-        // Supprimer les tirets en trop
+        // Supprimer les tirets en double ou en trop
         $title = preg_replace('/-+/', '-', $title);
 
+        // Nettoyage final
         return trim($title, '-');
     }
 }

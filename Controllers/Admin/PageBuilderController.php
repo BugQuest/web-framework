@@ -74,7 +74,7 @@ class PageBuilderController
         $page->slug = $slug;
         $page->html = $payload['html'] ?? '';
         $page->builder_data = $payload['builder_data'] ?? [];
-        $page->save();
+        $page->resolveUrl();
 
         return Response::json($page);
     }

@@ -39,6 +39,13 @@
       position: relative;
       transition: background 0.2s;
 
+      &.can-be-parent {
+        background-color: rgba(0, 255, 255, 0.07);
+        box-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+        border-left: 3px solid #0ff;
+      }
+
+
       &:hover {
         background: #1c1c1c;
       }

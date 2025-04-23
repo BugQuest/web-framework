@@ -3193,6 +3193,11 @@ input:focus.error {
   position: relative;
   transition: background 0.2s;
 }
+#page-list .page-list-content .page-item.can-be-parent {
+  background-color: rgba(0, 255, 255, 0.07);
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+  border-left: 3px solid #0ff;
+}
 #page-list .page-list-content .page-item:hover {
   background: #1c1c1c;
 }
