@@ -6,6 +6,7 @@ use BugQuest\Framework\Helpers\CallbackHelper;
 use BugQuest\Framework\Router;
 use BugQuest\Framework\Services\Hooks;
 use http\Header;
+use JetBrains\PhpStorm\NoReturn;
 
 class Route
 {
@@ -279,7 +280,7 @@ class Route
         return $this;
     }
 
-    public function redirect()
+    #[NoReturn] public function redirect(): void
     {
         header('Location: ' . $this->getSlug());
         exit;

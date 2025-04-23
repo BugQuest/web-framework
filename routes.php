@@ -2,6 +2,7 @@
 
 
 use BugQuest\Framework\Controllers\Admin\DashboardController;
+use BugQuest\Framework\Controllers\Admin\LocaleController;
 use BugQuest\Framework\Controllers\Admin\MediasController;
 use BugQuest\Framework\Controllers\AuthController;
 use BugQuest\Framework\Middleware\AdminAuthMiddleware;
@@ -77,6 +78,12 @@ new RouteGroup(
             _slug: '/medias/tags/set/{id:int}',
             _callback: MediasController::class . '::setTags',
             _methods: ['POST']
+        ),
+        new Route(
+            name: 'locale.domain.get',
+            _slug: '/locale/domain/get/{domain:alpha}',
+            _callback: LocaleController::class . '::getDomain',
+            _methods: ['GET']
         )
     ],
     _middlewares: [
