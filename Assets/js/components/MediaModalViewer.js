@@ -161,6 +161,7 @@ export default class MediaModalViewer {
 
                 const tag = await response.json();
                 this.gallery.tags.push(tag);
+                this.gallery.renderTags();
                 tag.new = true;
                 this.waitingTags.push(tag);
                 this.updateTagList();
