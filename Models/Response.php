@@ -32,7 +32,6 @@ readonly class Response
 
     public static function jsonSuccess(
         string $message = '',
-        int    $status = 200,
         array  $headers = [],
     ): static
     {
@@ -42,14 +41,13 @@ readonly class Response
 
         return new static(
             content: $content,
-            status: $status,
+            status: 200,
             headers: array_merge($headers, ['Content-Type' => 'application/json']),
         );
     }
 
     public static function jsonError(
         string $message = '',
-        int    $status = 400,
         array  $headers = [],
     ): static
     {
@@ -59,46 +57,43 @@ readonly class Response
 
         return new static(
             content: $content,
-            status: $status,
+            status: 400,
             headers: array_merge($headers, ['Content-Type' => 'application/json']),
         );
     }
 
     public static function jsonServerError(
         string $message = 'Internal server error',
-        int    $status = 500,
         array  $headers = [],
     ): static
     {
         return new static(
             content: ['success' => false, 'message' => $message],
-            status: $status,
+            status: 500,
             headers: array_merge($headers, ['Content-Type' => 'application/json']),
         );
     }
 
     public static function json404(
         string $message = 'Page not found',
-        int    $status = 404,
         array  $headers = [],
     ): static
     {
         return new static(
             content: ['success' => false, 'message' => $message],
-            status: $status,
+            status: 404,
             headers: array_merge($headers, ['Content-Type' => 'application/json']),
         );
     }
 
     public static function json401(
         string $message = 'Unauthorized',
-        int    $status = 401,
         array  $headers = [],
     ): static
     {
         return new static(
             content: ['success' => false, 'message' => $message],
-            status: $status,
+            status: 401,
             headers: array_merge($headers, ['Content-Type' => 'application/json']),
         );
     }
@@ -132,13 +127,12 @@ readonly class Response
 
     public static function error404(
         string $message = 'Page not found',
-        int    $status = 404,
         array  $headers = [],
     ): static
     {
         return new static(
             content: View::render('@framework/error/404.twig', ['message' => $message]),
-            status: $status,
+            status: 404,
             headers: array_merge($headers, ['Content-Type' => 'text/html']),
         );
     }
@@ -151,11 +145,107 @@ readonly class Response
     {
         return new static(
             content: null,
-            status: $status,
+            status: 302,
             headers: array_merge($headers, [
                 'Location' => $url,
                 'Content-Type' => 'text/html',
             ]),
+        );
+    }
+
+    public static function frameworkJS(
+        string $name,
+        array  $headers = [],
+    ): static
+    {
+        $path = BQ_FRAMEWORK_PATH . DS . 'dist' . DS . 'js/' . $name . '.js';
+        if (file_exists($path)) {
+            return new static(
+                content: file_get_contents($path),
+                status: 200,
+                headers: array_merge($headers, ['Content-Type' => 'application/javascript']),
+            );
+        } else {
+            return new static(
+                content: '',
+                status: 404,
+                headers: array_merge($headers, ['Content-Type' => 'text/html']),
+            );
+        }
+    }
+
+    public static function frameworkJSMap(
+        string $name,
+        array  $headers = [],
+    ): static
+    {
+        $path = BQ_FRAMEWORK_PATH . DS . 'dist' . DS . 'js/' . $name . '.js.map';
+        if (file_exists($path)) {
+            return new static(
+                content: file_get_contents($path),
+                status: 200,
+                headers: array_merge($headers, ['Content-Type' => 'application/json']),
+            );
+        } else {
+            return new static(
+                content: '',
+                status: 404,
+                headers: array_merge($headers, ['Content-Type' => 'text/html']),
+            );
+        }
+    }
+
+    public static function frameworkCSS(
+        string $name,
+        array  $headers = [],
+    ): static
+    {
+        $path = BQ_FRAMEWORK_PATH . DS . 'dist' . DS . 'css/' . $name . '.css';
+        if (file_exists($path)) {
+            return new static(
+                content: file_get_contents($path),
+                status: 200,
+                headers: array_merge($headers, ['Content-Type' => 'text/css']),
+            );
+        } else {
+            return new static(
+                content: '',
+                status: 404,
+                headers: array_merge($headers, ['Content-Type' => 'text/html']),
+            );
+        }
+    }
+
+    public static function frameworkCSSMap(
+        string $name,
+        array  $headers = [],
+    ): static
+    {
+        $path = BQ_FRAMEWORK_PATH . DS . 'dist' . DS . 'css/' . $name . '.css.map';
+        if (file_exists($path)) {
+            return new static(
+                content: file_get_contents($path),
+                status: 200,
+                headers: array_merge($headers, ['Content-Type' => 'application/json']),
+            );
+        } else {
+            return new static(
+                content: '',
+                status: 404,
+                headers: array_merge($headers, ['Content-Type' => 'text/html']),
+            );
+        }
+    }
+
+    public static function unauthorized(
+        string $message = 'Unauthorized',
+        array  $headers = [],
+    ): static
+    {
+        return new static(
+            content: $message,
+            status: 401,
+            headers: array_merge($headers, ['Content-Type' => 'text/plain']),
         );
     }
 

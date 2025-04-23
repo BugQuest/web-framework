@@ -1,6 +1,6 @@
 import {OptionsPage} from './OptionsPage';
-import {__} from '../Translator';
-import BuildHelper from '../BuildHelper';
+import {__} from '@framework/js/components/Translator';
+import BuildHelper from '@framework/js/components/BuildHelper';
 
 export class ImageOptionsPage extends OptionsPage {
     constructor() {
@@ -8,6 +8,8 @@ export class ImageOptionsPage extends OptionsPage {
     }
 
     render() {
+        if(!this.container) return;
+
         let compression_methods = [];
         try {
             compression_methods = JSON.parse(this.container.dataset.compressionMethods);

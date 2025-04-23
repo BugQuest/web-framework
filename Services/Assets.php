@@ -41,13 +41,13 @@ abstract class Assets
         ?string $type = null,
         array   $attributes = [],
         string  $position = 'footer',
-        array   $dependencies = []
+        array   $dependencies = [],
+        bool    $isLocalUrl = false
     ): void
     {
         $type ??= self::_guessType($url);
-        if (!$type || !in_array($type, ['css', 'js', 'fonts'])) {
+        if (!$type || !in_array($type, ['css', 'js', 'fonts']))
             throw new \InvalidArgumentException("Type d'asset invalide : $type");
-        }
 
         $key = $type === 'js' ? "$id@$position" : $id;
 
@@ -56,6 +56,7 @@ abstract class Assets
         self::$_groups[$group][$type][$key] = [
             'id' => $id,
             'url' => $url,
+            'is_local_url' => $isLocalUrl,
             'attributes' => $attributes,
             'position' => $position,
             'dependencies' => $dependencies,
@@ -83,7 +84,7 @@ abstract class Assets
     {
         return
             self::_render($group, 'fonts')
-            .self::_render($group, 'css')
+            . self::_render($group, 'css')
             . self::_render($group, 'js', 'header');
     }
 
@@ -104,7 +105,7 @@ abstract class Assets
 
         $html = '';
         foreach ($sorted as $asset) {
-            $url = self::_resolveUrl($asset['url']);
+            $url = self::_resolveUrl($asset);
             $html .= self::_renderTag($type, $url, $asset['attributes']) . PHP_EOL;
         }
 
@@ -170,15 +171,15 @@ abstract class Assets
     /**
      * Résout l'URL réelle (dist ou absolu)
      */
-    private static function _resolveUrl(string $url): string
+    private static function _resolveUrl(array $asset): string
     {
         // 1. Si c’est une URL absolue (http://, https://, //)
-        if (preg_match('#^(https?:)?//#', $url)) {
-            return $url;
+        if ($asset['is_local_url'] || preg_match('#^(https?:)?//#', $asset['url'])) {
+            return $asset['url'];
         }
         // 2. Sinon, on considère que c’est un chemin relatif à un "dist" enregistré
         foreach (self::$_distSources as $source) {
-            $fullPath = rtrim($source['path'], '/') . '/' . ltrim($url, '/');
+            $fullPath = rtrim($source['path'], '/') . '/' . ltrim($asset['url'], '/');
 
             if (file_exists($fullPath))
                 return str_replace(BQ_PUBLIC_DIR, '', $fullPath);

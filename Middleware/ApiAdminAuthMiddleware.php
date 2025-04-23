@@ -3,10 +3,11 @@
 namespace BugQuest\Framework\Middleware;
 
 use BugQuest\Framework\Models\Database\User;
+use BugQuest\Framework\Models\Response;
 use BugQuest\Framework\Router;
 use BugQuest\Framework\Services\Auth;
 
-class AdminAuthMiddleware
+class ApiAdminAuthMiddleware
 {
     public function handle(callable $next)
     {
@@ -14,12 +15,12 @@ class AdminAuthMiddleware
             session_start();
 
         if (!isset($_SESSION['user_id']))
-            Router::redirect('auth.login');
+            return Response::json401();
 
         $user = User::find($_SESSION['user_id']);
 
         if (!$user || !$user->isAdmin())
-            Router::redirect('auth.logout');
+            return Response::json401();
 
         // On injecte l'utilisateur dans une helper statique ou singleton si tu veux y accéder ailleurs
         Auth::setUser($user);

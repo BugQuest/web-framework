@@ -6,7 +6,7 @@ export class Translator {
         if (this._loaded[domain]) return;
 
         try {
-            const response = await fetch(`/admin/locale/domain/get/${domain}`);
+            const response = await fetch(`/admin/api/locale/domain/get/${domain}`);
             if (!response.ok) throw new Error(`Error for domain: ${domain}`);
             const data = await response.json();
             this._domains[domain] = data;

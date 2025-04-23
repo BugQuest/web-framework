@@ -41,7 +41,7 @@ export default class MediaGallery {
             this.forced_mimeTypes = forcedMimeTypes.split(',').map(mime => mime.trim());
         }
 
-        this.apiUrl = '/admin/medias';
+        this.apiUrl = '/admin/api/medias';
 
         this.buildElements();
         this.initEvents();
