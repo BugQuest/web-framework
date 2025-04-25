@@ -5,7 +5,9 @@ namespace BugQuest\Framework;
 use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Models\RouteGroup;
 use BugQuest\Framework\Models\Database\Page;
+use BugQuest\Framework\Services\OptionService;
 use BugQuest\Framework\Services\PageService;
+use mysql_xdevapi\Exception;
 
 abstract class Router
 {
@@ -52,6 +54,27 @@ abstract class Router
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         $fallback = null;
+
+        //tentative de résolution de la homepage, get option homepage
+        $pageRouteHome = self::getRoute('home');
+        if ($pageRouteHome && $pageRouteHome->acceptsMethod($method)) {
+            //check if url is home
+            if ($pageRouteHome->matchUri($uri) !== null) {
+                try {
+                    if ($homepage = OptionService::get('cms', 'homepage'))
+                        PageService::setCurrent($homepage);
+                } catch (\Exception $e) {
+                    // Si l'option n'existe pas, on ignore l'erreur
+                    // surement la bdd n'est pas encore initialisée
+                }
+
+                self::$_currentRoute = $pageRouteHome;
+                return self::runMiddlewares(
+                    $pageRouteHome->getMiddlewares(),
+                    fn() => $pageRouteHome->process()
+                );
+            }
+        }
 
         foreach (self::$_routes as $route) {
             if ($route->isFallback()) {
