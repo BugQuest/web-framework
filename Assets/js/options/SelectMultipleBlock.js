@@ -25,7 +25,7 @@ export class SelectMultipleBlock extends OptionBlock {
         );
 
         wrapper.appendChild(label_el);
-        wrapper.appendChild(select.element);
+        wrapper.appendChild(select.getElement());
 
         container.appendChild(wrapper);
     }

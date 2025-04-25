@@ -1,13 +1,12 @@
 [data-lazy-smooth] {
   opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.6s ease, transform 0.6s ease !important;
-  will-change: opacity, transform;
   pointer-events: none;
+  transition: all 0.6s ease !important;
+  will-change: opacity, transform;
 }
 
-.lazy-animated {
+[data-lazy-smooth].lazy-animated {
   opacity: 1;
-  transform: translateY(0);
+  transform: none !important; /* fin naturelle de l'animation */
   pointer-events: auto;
 }

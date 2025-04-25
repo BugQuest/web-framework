@@ -353,6 +353,13 @@
 .page-options {
   margin: 2rem;
 
+  .options-header {
+    margin: 1rem auto;
+    background: #0f172a;
+    border-top: 1px solid var(--color-primary);
+    padding: 1rem;
+  }
+
   .description {
     color: #e0f2fe;
     font-size: 0.9rem;
@@ -471,7 +478,7 @@
   }
 }
 
-#options-container {
+.options-container {
   padding: 2rem;
   background: linear-gradient(to bottom right, #0f0f0f, #1a1a2e);
   border-top: 1px solid #0ff3;

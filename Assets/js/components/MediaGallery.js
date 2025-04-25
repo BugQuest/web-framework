@@ -46,8 +46,8 @@ export default class MediaGallery {
 
         this.buildElements();
         this.initEvents();
-        this.loadTags();
-        this.loadPage();
+        //this.loadTags();
+        //this.loadPage();
     }
 
     buildElements() {
@@ -68,6 +68,8 @@ export default class MediaGallery {
                 accordeon,
                 accordeon_content
             } = Builder.accordion(__('Ajouter des tags', 'admin'), 'small');
+            accordeon.dataset.lazySmooth = '';
+            accordeon.dataset.lazyLeft = '';
             tags.appendChild(accordeon);
             tags.appendChild(Builder.glow_stick());
 
@@ -141,6 +143,8 @@ export default class MediaGallery {
         button.innerHTML = '❌';
         button.dataset.tooltip = __('Mode suppression', 'admin');
         button.dataset.tooltipType = 'danger';
+        button.dataset.lazySmooth = '';
+        button.dataset.lazyZoom = '';
 
         button.onclick = () => {
             this.deletionMode = !this.deletionMode;
@@ -280,7 +284,7 @@ export default class MediaGallery {
                 params.append('tags[]', tagId);
             });
 
-            if(this.forced_mimeTypes)
+            if (this.forced_mimeTypes)
                 this.forced_mimeTypes.forEach(mime => {
                     params.append('mime_types[]', mime);
                 });
@@ -371,6 +375,7 @@ export default class MediaGallery {
         for (let page = 1; page <= lastPage; page++) {
             const span = document.createElement('span');
             span.dataset.page = page;
+            span.dataset.lazySmooth = '';
             span.textContent = page;
             if (page === currentPage) span.classList.add('active');
             this.pagination.appendChild(span);
@@ -383,8 +388,11 @@ export default class MediaGallery {
             const span = document.createElement('span');
             span.dataset.tag = tag.id;
             span.textContent = tag.name;
+            span.dataset.lazySmooth = '';
             this.tags_content.appendChild(span);
         });
+
+        LazySmooth.process();
     }
 
     /*
@@ -438,9 +446,11 @@ export default class MediaGallery {
     }
 
     getIconForMime(mime) {
+        if (!mime) return '?';
         if (mime === 'application/pdf') return '📄';
         if (mime === 'text/plain') return '📃';
         if (mime.startsWith('video/')) return '🎥';
+        if (mime.startsWith('audio/')) return '🎵';
         return '📁';
     }
 

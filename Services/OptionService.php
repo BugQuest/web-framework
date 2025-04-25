@@ -3,6 +3,7 @@
 namespace BugQuest\Framework\Services;
 
 use BugQuest\Framework\Models\Database\Option;
+use BugQuest\Framework\Models\OptionPage;
 
 class OptionService
 {

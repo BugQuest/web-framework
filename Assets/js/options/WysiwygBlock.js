@@ -5,7 +5,7 @@ import Quill from 'quill';
 export class WysiwygBlock extends OptionBlock {
     constructor(key, label, value = '', options = {}, onChange = null, group = 'default') {
         super(key, label, value, options, onChange, group);
-        this.type = 'wysiwyg';
+        this.type = 'Wysiwyg';
         this.placeholder = this.options?.placeholder ?? 'Commence à écrire...';
         this.theme = this.options?.theme ?? 'snow'; // snow ou bubble
         this.toolbar = this.options?.toolbar ?? [

@@ -45,10 +45,121 @@
             background: #000;
         }
 
-        .trace-body pre {
-            margin: 0;
-            white-space: pre-wrap;
+        .code-block {
+            background: #111;
+            border-left: 3px solid #0ff;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+            padding: 0.5rem 0;
+            margin-top: 1rem;
+            overflow-x: auto;
         }
+
+        .code-line {
+            display: flex;
+            padding: 0 1rem;
+            white-space: pre;
+            cursor: help;
+
+            :hover{
+                background: #222;
+            }
+        }
+
+        .code-line.highlight {
+            background: #400;
+            color: #fff;
+            position: relative;
+            box-shadow: inset 5px 0 0 #f0f;
+        }
+
+        .code-line.highlight::before {
+            content: '💥';
+            position: absolute;
+            left: 0.5rem;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            color: #f0f;
+        }
+
+        .line-number {
+            color: #888;
+            width: 4em;
+            text-align: right;
+            padding-right: 1em;
+            flex-shrink: 0;
+        }
+
+        .code-line {
+            display: flex;
+            padding: 0 1rem;
+        }
+
+        .line-number {
+            width: 4em;
+            text-align: right;
+            padding-right: 1em;
+            color: #888;
+            flex-shrink: 0;
+        }
+
+        .line-code {
+            font-family: 'Courier New', monospace;
+            white-space: pre;
+            color: #ccc;
+        }
+
+        .line-code span {
+            white-space: pre;
+        }
+
+        .php-keyword {
+            color: #f0f;
+            font-weight: bold;
+        }
+
+        .php-variable {
+            color: #0f0;
+        }
+
+        .php-string {
+            color: #ff0;
+        }
+
+        .php-number {
+            color: #0ff;
+        }
+
+        .php-default {
+            color: #ccc;
+        }
+
+
+
+        .php-keyword {
+            color: #f0f; /* mots-clés, ex : throw, public */
+        }
+
+        .php-variable {
+            color: #0f0; /* variables ou structures */
+        }
+
+        .php-string {
+            color: #ff0; /* chaînes de caractères */
+        }
+
+        .php-default {
+            color: #ccc; /* texte par défaut */
+        }
+
+        .php-other {
+            color: #0ff; /* fallback générique */
+        }
+
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -79,7 +190,19 @@
         <div class="trace-body">
             <p><strong>Fichier :</strong> {{ entry.file }}</p>
             <p><strong>Ligne :</strong> {{ entry.line }}</p>
-            <p><strong>Arguments :</strong> {{ entry.args|join(', ') }}</p>
+            {% if entry.args %}
+                <p><strong>Arguments :</strong> {{ entry.args|join(', ') }}</p>
+            {% endif %}
+            {% if entry.snippet is defined and entry.snippet %}
+                <div class="code-block">
+                    {% for line in entry.snippet %}
+                        <div class="code-line {{ line.highlight ? 'highlight' : '' }}">
+                            <span class="line-number">{{ '%4d'|format(line.number) }}</span>
+                            <span class="line-code">{{ line.code|raw }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endfor %}

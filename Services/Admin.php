@@ -3,18 +3,18 @@
 namespace BugQuest\Framework\Services;
 
 use BugQuest\Framework\Controllers\Admin\DebugController;
-use BugQuest\Framework\Controllers\Admin\GlobalStyleController;
 use BugQuest\Framework\Controllers\Admin\ImagesController;
 use BugQuest\Framework\Controllers\Admin\MediasController;
-use BugQuest\Framework\Controllers\Admin\PageBuilderController;
 use BugQuest\Framework\Controllers\Admin\PageListController;
+use BugQuest\Framework\Controllers\OptionPageController;
 use BugQuest\Framework\Helpers\StringHelper;
+use BugQuest\Framework\Models\OptionPage;
 use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Router;
 
 abstract class Admin
 {
-    public static array $_menus = [
+    private static array $_menus = [
         'dashboard' => [
             'name' => 'Dashboard',
             'icon' => '📊',
@@ -23,7 +23,14 @@ abstract class Admin
         ],
     ];
 
-    public static array $_pages = [];
+    private static array $_pages = [];
+
+    private static array $_optionPages = [];
+
+    public static function getOptionPage($id): ?OptionPage
+    {
+        return self::$_optionPages[$id] ?? null;
+    }
 
     public static function addMenu(string $name, ?string $icon, ?string $route, ?string $url = null, array $children = []): void
     {
@@ -40,7 +47,6 @@ abstract class Admin
             'children' => $children
         ];
     }
-
 
     public static function addSubmenu(string $parent, string $name, ?string $icon, ?string $route = null, ?string $url = null): void
     {
@@ -84,6 +90,44 @@ abstract class Admin
         return $route->name;
     }
 
+    public static function addOptionPage(OptionPage $page)
+    {
+        $id = StringHelper::sanitize_title($page->title);
+
+        if (in_array($id, self::$_pages))
+            throw new \Exception("Page $id already exists");
+
+        self::$_pages[] = $id;
+
+
+        $group = Router::getGroup('admin');
+        $route = $group->add(
+            new Route(
+                name: $id,
+                _slug: '/' . $id,
+                _callback: OptionPageController::class . '::index',
+                _methods: ['GET'],
+            )
+        );
+
+        self::$_optionPages[$route->name] = $page;
+
+        //check if page->$menuParent exists
+        if (!key_exists($page->menuParent, self::$_menus))
+            throw new \Exception("Menu {$page->menuParent} does not exist");
+
+        //check if page->$submenu exists
+        if (key_exists($page->submenu, self::$_menus[$page->menuParent]['children']))
+            throw new \Exception("Submenu {$page->submenu} already exists for {$page->menuParent}");
+
+        self::addSubmenu(
+            parent: $page->menuParent,
+            name: $page->menuTitle ?? $page->title,
+            icon: $page->menuIcon,
+            route: $route->name,
+        );
+    }
+
     public static function renderMenu(): string
     {
         return View::render('@framework/admin/partials/menu.twig', [
@@ -124,12 +168,12 @@ abstract class Admin
             route: self::addPage('Debug - Routes', DebugController::class . '::routes')
         );
 
-        self::addSubmenu(
-            parent: 'config',
-            name: 'Images',
-            icon: '🖼️',
-            route: self::addPage('Config - Images', ImagesController::class . '::index')
-        );
+//        self::addSubmenu(
+//            parent: 'config',
+//            name: 'Images',
+//            icon: '🖼️',
+//            route: self::addPage('Config - Images', ImagesController::class . '::index')
+//        );
 
         //add page
         self::addSubmenu(

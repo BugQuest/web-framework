@@ -8,6 +8,7 @@ import {BoolBlock} from '@framework/js/options/BoolBlock.js';
 import {TextareaBlock} from '@framework/js/options/TextareaBlock.js';
 import {WysiwygBlock} from "@framework/js/options/WysiwygBlock";
 import {UrlBlock} from '@framework/js/options/UrlBlock';
+import {PageBlock} from "@framework/js/options/PageBlock";
 // import {RepeaterBlock} from '@framework/js/options/RepeaterBlock.js';
 
 export class BlockFactory {
@@ -20,8 +21,9 @@ export class BlockFactory {
         select_multiple: SelectMultipleBlock,
         bool: BoolBlock,
         textarea: TextareaBlock,
-        wysiwig: WysiwygBlock,
+        wysiwyg: WysiwygBlock,
         url: UrlBlock,
+        page: PageBlock,
         // repeater: RepeaterBlock, // WIP : RepeaterBlock - Pas encore fonctionnel
     };
 

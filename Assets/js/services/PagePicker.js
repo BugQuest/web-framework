@@ -1,6 +1,6 @@
 import Builder from '@framework/js/services/Builder';
 
-export default class UrlPicker {
+export default class PagePicker {
     static modal = null;
     static search = null;
     static url_input = null;
@@ -8,8 +8,10 @@ export default class UrlPicker {
     static blank_switcher = null;
     static debounceTimer = null;
     static delay = 2000;
+    static page = null;
 
-    static open(url, title, blank, onValid = null) {
+    static open(page, onValid = null) {
+        this.page = page;
         if (!this.modal) {
             this.modal = Builder.modal(
                 null,
@@ -42,49 +44,27 @@ export default class UrlPicker {
             )
             form_header.appendChild(this.search.element);
 
-            const form_group_url = Builder.div('form-group');
-            const form_group_title = Builder.div('form-group');
-            const form_group_blank = Builder.div('form-group');
-            form_body.appendChild(form_group_url);
-            form_body.appendChild(form_group_title);
-            form_body.appendChild(form_group_blank);
-
-            this.url_input = Builder.input_text('URL', '', 'fullw');
-            this.title_input = Builder.input_text('Titre', '', 'fullw');
-
-            const label = Builder.label('Ouvrir dans un nouvel onglet ?');
-            this.blank_switcher = Builder.switch();
-
-            form_group_url.appendChild(this.url_input);
-            form_group_title.appendChild(this.title_input);
-
-
-            form_group_blank.appendChild(label);
-            form_group_blank.appendChild(this.blank_switcher.element);
+            this.text_page = Builder.div('form-text');
+            form_body.appendChild(this.text_page);
 
             if (onValid) {
                 this.btn = Builder.button('Valider', 'form-submit', () => {
-                    onValid(this.url_input.value, this.title_input.value, this.blank_switcher.value())
+                    if (!this.page) return;
+                    onValid(this.page)
                     this.modal.close();
                 });
                 form_footer.appendChild(this.btn);
             }
         }
 
-        if (url)
-            this.url_input.value = url;
-
-        if (title)
-            this.title_input.value = title;
-
-        if (blank)
-            this.blank_switcher.toggle(blank);
+        if (this.page)
+            this.text_page.innerText = this.page.id + ' - ' + this.page.title;
 
         this.modal.open();
     }
 
     static onSearch(value) {
-        UrlPicker.debounce(() => {
+        PagePicker.debounce(() => {
             fetch('/admin/api/page/search/', {
                 method: 'POST',
                 headers: {
@@ -98,7 +78,7 @@ export default class UrlPicker {
             })
                 .then(res => {
                     if (res.status === 404) {
-                        UrlPicker.search.clean();
+                        PagePicker.search.clean();
                         return;
                     }
                     return res.json();
@@ -106,16 +86,16 @@ export default class UrlPicker {
                 .then(data => {
                     if (!data) return;
 
-                    UrlPicker.search.clean();
-                    data.forEach((item) => UrlPicker.search.addItem(item.title, item));
+                    PagePicker.search.clean();
+                    data.forEach((item) => PagePicker.search.addItem(item.title, item));
                 })
         })
     }
 
     static onSearchClickItem(item) {
-        UrlPicker.title_input.value = item.title;
-        UrlPicker.url_input.value = '/' + item.slug;
-        UrlPicker.search.close();
+        PagePicker.page = item;
+        PagePicker.text_page.innerText = item.id + ' - ' + item.title;
+        PagePicker.search.close();
     }
 
     static debounce(callback, delay) {

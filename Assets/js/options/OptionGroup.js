@@ -12,6 +12,7 @@ export class OptionGroup {
 
     render(container) {
         const wrapper = Builder.div('option-group');
+        wrapper.dataset.lazySmooth = '';
 
         if (this.label)
             wrapper.appendChild(Builder.h2(this.label, 'option-group-title'));

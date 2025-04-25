@@ -1,0 +1,15 @@
+{% extends '@framework/admin/layout.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <div class="page-options">
+        <h1 class="title" data-lazy-smooth data-lazy-right>{{ title }}</h1>
+        {% if header %}
+            <div class="options-header" data-lazy-smooth>
+                {{ header | raw }}
+            </div>
+        {% endif %}
+        <div class="options-container" id="__option" data-option="{{ option }}" data-lazy-smooth></div>
+    </div>
+{% endblock %}

@@ -1,68 +1,57 @@
 import {__} from '@framework/js/services/Translator.js';
+import Select from '@framework/js/services/Select.js';
 
 export default class Builder {
 
     static createEl = (tag, className, text = '') => {
         const el = document.createElement(tag);
-        el.className = className;
+        if (className) el.className = className;
         if (text) el.innerText = text;
         return el;
     }
 
     static accordion(title, subclass) {
-        let accordeon = document.createElement('div');
-        accordeon.className = '__accordeon accordeon';
+        let accordeon = this.div('__accordeon accordeon');
         if (subclass) accordeon.classList.add(subclass);
 
-        let accordeon_title = document.createElement('div');
-        accordeon_title.className = '__accordeon_title accordeon-title';
+        let accordeon_title = this.div('__accordeon_title accordeon-title');
         accordeon_title.textContent = title;
         accordeon.appendChild(accordeon_title);
 
-        let accordeon_content = document.createElement('div');
-        accordeon_content.className = 'accordeon-content';
+        let accordeon_content = this.div('__accordeon_content accordeon-content');
         accordeon.appendChild(accordeon_content);
 
         return {accordeon, accordeon_content};
     }
 
     static glow_stick() {
-        let glow_stick = document.createElement('div');
-        glow_stick.className = 'glow-bar';
-        return glow_stick;
+        return this.div('glow-stick');
     }
 
     static label(text = '', className = '') {
-        let label = document.createElement('label');
-        if (className) label.className = className;
-        if (text) label.textContent = text;
-        return label;
+        return this.createEl('label', className, text);
     }
 
     static input_text(placeholder = '', value = '', className = '') {
-        let input = document.createElement('input');
+        let input = this.createEl('input', className);
         input.type = 'text';
         if (placeholder) input.placeholder = placeholder;
         if (value) input.value = value;
-        if (className) input.className = className;
         return input;
     }
 
     static textarea(placeholder = '', value = '', className = '') {
-        let textarea = document.createElement('textarea');
-        if (placeholder) textarea.placeholder = placeholder;
+        let textarea = this.createEl('textarea', className);
         if (value) textarea.value = value;
-        if (className) textarea.className = className;
         return textarea;
     }
 
     static input_number(placeholder = '', step = 1, value = '', className = '') {
-        let input = document.createElement('input');
+        let input = this.createEl('input', className);
         input.type = 'number';
         if (step) input.step = step;
         if (placeholder) input.placeholder = placeholder;
         if (value) input.value = value;
-        if (className) input.className = className;
         return input;
     }
 
@@ -84,10 +73,9 @@ export default class Builder {
     }
 
     static checkbox(label = '', checked = false, className = '', onChange = null) {
-        let checkbox = document.createElement('input');
+        let checkbox = this.createEl('input', 'checkbox');
         checkbox.type = 'checkbox';
         if (checked) checkbox.checked = true;
-        if (className) checkbox.className = className;
         if (onChange) checkbox.addEventListener('change', onChange);
 
         let labelElement = this.label(label);
@@ -97,8 +85,7 @@ export default class Builder {
     }
 
     static switch(checked = false, onChange = null) {
-        let switcher = document.createElement('div');
-        switcher.className = 'switch';
+        let switcher = this.div('switch');
         switcher.dataset.state = checked ? 'on' : 'off';
         switcher.title = checked ? __('Activé', 'options') : __('Désactivé', 'options');
         switcher.addEventListener('click', () => {
@@ -120,31 +107,23 @@ export default class Builder {
     }
 
     static button_submit(text = 'Envoyer', className = 'button button-primary') {
-        let button = document.createElement('button');
+        let button = this.createEl('button', className, text);
         button.type = 'submit';
-        if (className) button.className = className;
-        if (text) button.textContent = text;
         return button;
     }
 
     static button(text = 'Button', className = 'button', onClick = null) {
-        let button = document.createElement('div');
-        if (className) button.className = className;
-        if (text) button.textContent = text;
+        let button = this.createEl('button', className, text);
         if (onClick) button.addEventListener('click', onClick);
         return button;
     }
 
     static div(className = '') {
-        let div = document.createElement('div');
-        if (className) div.className = className;
-        return div;
+        return this.createEl('div', className);
     }
 
     static span(className = '') {
-        let span = document.createElement('span');
-        if (className) span.className = className;
-        return span;
+        return this.createEl('span', className);
     }
 
     static modal(title = '', onOpen = null, onClose = null) {
@@ -294,203 +273,45 @@ export default class Builder {
         };
     }
 
-    static select(label, options, selected = null, onChange = null, openTop = false) {
-        let currentValue = selected;
+    static select(label, options, selected = null, onChange = null, openTop = false, placeholder = 'Sélectionner…') {
 
-        const wrapper = this.createEl('div', 'select-wrapper');
-        const head = this.createEl('div', 'select-head');
-        const labelEl = this.createEl('div', 'select-label', label);
-        const valueEl = this.createEl('div', 'select-value', selected || '');
-        const body = this.createEl('div', 'select-body');
-
-        const isObjectOption = typeof options[0] === 'object';
-
-        const toogle = (enabled) => {
-            if (enabled) {
-                body.style.display = 'block'; // Affiche d'abord pour mesurer
-                // Force un reflow pour que la transition se déclenche
-                void body.offsetHeight;
-                body.classList.add('active');
-                body.style.top = openTop ? '0' : 'auto';
-                body.style.bottom = openTop ? 'auto' : '0';
-            } else {
-                body.classList.remove('active');
-                // Attends la fin de l'animation avant de masquer
-                setTimeout(() => {
-                    if (!body.classList.contains('active')) {
-                        body.style.display = 'none';
-                    }
-                }, 300); // doit correspondre à la durée CSS
-            }
-        };
-
-        options.forEach(option => {
-            const value = isObjectOption ? option.value : option;
-            const label = isObjectOption ? option.label : option;
-
-            const item = this.createEl('div', 'select-item', label);
-            item.dataset.value = value;
-            if (value === selected) item.classList.add('active');
-            body.appendChild(item);
-        });
-
-        if (onChange) {
-            body.addEventListener('click', (e) => {
-                if (e.target.classList.contains('select-item')) {
-                    const value = e.target.dataset.value;
-                    currentValue = value;
-                    valueEl.innerText = e.target.innerText;
-
-                    [...body.children].forEach(child => child.classList.remove('active'));
-                    e.target.classList.add('active');
-                    onChange(value);
-                    toogle(false);
-                }
-            });
-        }
-
-        head.append(labelEl, valueEl);
-        wrapper.append(head, body);
-
-
-        head.addEventListener('click', () => toogle(true));
-
-        document.addEventListener('click', (e) => {
-            if (!wrapper.contains(e.target)) {
-                toogle(false)
-            }
-        });
-
-        return {
-            element: wrapper,
-            toogle: toogle,
-            getValue: () => currentValue,
-            setValue: (value) => {
-                currentValue = value;
-                const items = [...body.children];
-                const targetItem = items.find(item => item.dataset.value === value);
-                valueEl.innerText = targetItem ? targetItem.innerText : '';
-                items.forEach(item => item.classList.remove('active'));
-                if (targetItem) targetItem.classList.add('active');
-            },
-        };
+        return new Select({
+            label: label,
+            options: options,
+            selected: selected,
+            onChange: onChange,
+            multiple: false,
+            placeholder: placeholder,
+        })
     }
 
-    static selectMultiple(label, options, selected = [], onChange = null, openTop = false) {
-        let currentValues = Array.isArray(selected) ? selected : [];
 
-        const wrapper = this.createEl('div', 'select-wrapper');
-        const head = this.createEl('div', 'select-head');
-        const labelEl = this.createEl('div', 'select-label', label);
-        const valueEl = this.createEl('div', 'select-value', currentValues.join(', '));
-        const body = this.createEl('div', 'select-body');
-
-        const isObjectOption = typeof options[0] === 'object';
-
-        const updateDisplay = () => {
-            const selectedItems = [...body.children].filter(item => currentValues.includes(item.dataset.value));
-            valueEl.innerText = selectedItems.map(item => item.innerText).join(', ') || 'Aucun';
-        };
-
-        const toogle = (enabled) => {
-            if (enabled) {
-                body.style.display = 'block';
-                void body.offsetHeight;
-                body.classList.add('active');
-                body.style.top = openTop ? '0' : 'auto';
-                body.style.bottom = openTop ? 'auto' : '0';
-            } else {
-                body.classList.remove('active');
-                setTimeout(() => {
-                    if (!body.classList.contains('active')) {
-                        body.style.display = 'none';
-                    }
-                }, 300);
-            }
-        };
-
-        options.forEach(option => {
-            const value = isObjectOption ? option.value : option;
-            const label = isObjectOption ? option.label : option;
-
-            const item = this.createEl('div', 'select-item', label);
-            item.dataset.value = value;
-            if (currentValues.includes(value)) item.classList.add('active');
-            body.appendChild(item);
-        });
-
-        if (onChange) {
-            body.addEventListener('click', (e) => {
-                if (e.target.classList.contains('select-item')) {
-                    const value = e.target.dataset.value;
-                    const index = currentValues.indexOf(value);
-
-                    if (index > -1) {
-                        currentValues.splice(index, 1);
-                        e.target.classList.remove('active');
-                    } else {
-                        currentValues.push(value);
-                        e.target.classList.add('active');
-                    }
-
-                    updateDisplay();
-                    onChange([...currentValues]);
-                }
-            });
-        }
-
-        head.append(labelEl, valueEl);
-        wrapper.append(head, body);
-
-        head.addEventListener('click', () => toogle(true));
-
-        document.addEventListener('click', (e) => {
-            if (!wrapper.contains(e.target)) {
-                toogle(false);
-            }
-        });
-
-        return {
-            element: wrapper,
-            toogle: toogle,
-            getValue: () => [...currentValues],
-            setValue: (values) => {
-                currentValues = Array.isArray(values) ? values : [];
-                const items = [...body.children];
-                items.forEach(item => {
-                    if (currentValues.includes(item.dataset.value)) {
-                        item.classList.add('active');
-                    } else {
-                        item.classList.remove('active');
-                    }
-                });
-                updateDisplay();
-            },
-        };
+    static selectMultiple(label, options, selected = [], onChange = null, openTop = false, placeholder = 'Aucun') {
+        return new Select({
+            label: label,
+            options: options,
+            selected: selected,
+            onChange: onChange,
+            multiple: true,
+            placeholder: placeholder
+        })
     }
-
 
     static table(head = [], body = [], className = '', headClassName = '', bodyClassName = '') {
-        let table = document.createElement('table');
-        if (className) table.className = className;
+        let table = this.createEl('table', className);
 
         let thead = document.createElement('thead');
         let tbody = document.createElement('tbody');
 
-        if (head.length > 0) {
-            head.forEach(item => {
-                let th = document.createElement('th');
-                th.textContent = item;
-                if (headClassName) th.className = headClassName;
-                thead.appendChild(th);
-            });
-        }
+        if (head.length > 0)
+            head.forEach(item => thead.appendChild(this.createEl('th', headClassName, item)));
+
 
         if (body.length > 0) {
             body.forEach(item => {
-                let tr = document.createElement('tr');
+                let tr = this.createEl('tr');
                 item.forEach(cell => {
-                    let td = document.createElement('td');
+                    let td = this.createEl('td', bodyClassName);
 
                     if (typeof cell === 'object' && cell !== null && 'value' in cell && 'full' in cell) {
                         td.textContent = cell.value;
@@ -500,7 +321,6 @@ export default class Builder {
                         td.textContent = cell;
                     }
 
-                    if (bodyClassName) td.className = bodyClassName;
                     tr.appendChild(td);
                 });
                 tbody.appendChild(tr);
@@ -512,5 +332,4 @@ export default class Builder {
 
         return table;
     }
-
 }

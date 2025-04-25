@@ -43,7 +43,11 @@ if (is_dir(BQ_FRAMEWORK_PATH . '/inc'))
     foreach (glob(BQ_FRAMEWORK_PATH . '/inc/*.php') as $file)
         require_once $file;
 
+Hooks::runAction('kernel.after.inc');
+
 Database::init();
+
+Hooks::runAction('kernel.after.database');
 
 if ($result = Router::dispatch()) {
     if (is_a($result, BugQuest\Framework\Models\Response::class))

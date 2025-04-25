@@ -98,6 +98,7 @@ export class PageListManager {
             el.dataset.depth = depth;
             el.dataset.parentId = parentId ?? '';
             el.dataset.lazySmooth = '';
+            el.dataset.lazyRight = '';
 
             const dragHandle = Builder.span('drag-handle');
             dragHandle.textContent = '≡';

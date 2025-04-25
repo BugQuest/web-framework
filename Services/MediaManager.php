@@ -51,8 +51,8 @@ class MediaManager
             'extension' => pathinfo($file['name'], PATHINFO_EXTENSION),
             'size' => filesize($targetPath),
             'path' => "medias/$name",
-            'exif' => $exif ? json_encode($exif) : null,
-            'meta' => json_encode($meta), // ou autre contenu structuré
+            'exif' => json_encode($exif ?? []),
+            'meta' => json_encode($meta ?? []), // ou autre contenu structuré
         ]);
     }
 
@@ -117,12 +117,12 @@ class MediaManager
             ->get()->toArray();
 
         foreach ($medias as &$media) {
-            $media['exif'] = json_decode($media['exif'], true);
-            $media['meta'] = json_decode($media['meta'], true);
+            $media['exif'] = json_decode($media['exif'] ?? '{}', true);
+            $media['meta'] = json_decode($media['meta'] ?? '{}', true);
         }
 
         return [
-            'items' => $medias,
+            'items' => $medias ?? [],
             'total' => $total,
             'per_page' => $perPage,
             'current_page' => $page,

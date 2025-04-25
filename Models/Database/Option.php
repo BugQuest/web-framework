@@ -54,6 +54,28 @@ class Option extends Model
             case 'media':
                 $this->value = MediaManager::getById((int)$this->value);
                 break;
+            case 'id':
+                try {
+                    $this->value = unserialize($this->value);
+                } catch (\Exception $e) {
+                    return $this;
+                }
+
+                $id = (int)$this->value['id'] ?? null;
+                if (!$id)
+                    return $this;
+
+                $class = $this->value['class'] ?? null;
+
+                if (!$class)
+                    return $this;
+
+                $class = '\\' . ltrim($class, '\\');
+                if (!class_exists($class))
+                    return $this;
+
+                $this->value = $class::find($id);
+                break;
             case 'string':
             default:
                 $this->value = (string)$this->value;
@@ -88,6 +110,34 @@ class Option extends Model
                 break;
             case 'bool':
                 $this->value = (bool)$this->value;
+                break;
+            case 'id':
+                if (!is_array($this->value)) {
+                    $this->value = null;
+                    return $this;
+                }
+                $id = (int)$this->value['id'] ?? null;
+
+                if (!$id) {
+                    $this->value = null;
+                    return $this;
+                }
+
+                $class = $this->value['class'] ?? null;
+                if (!$class) {
+                    $this->value = null;
+                    return $this;
+                }
+
+                $class = '\\' . ltrim($class, '\\');
+                if (!class_exists($class)) {
+                    $this->value = null;
+                    return $this;
+                }
+                $this->value = serialize([
+                    'id' => $id,
+                    'class' => $class
+                ]);
                 break;
             case 'string':
             default:

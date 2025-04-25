@@ -14,14 +14,17 @@ export class SelectBlock extends OptionBlock {
         const label_el = Builder.label(this.label);
         label_el.setAttribute('for', this.key);
 
-        const select = Builder.select(this.label, this.options?.options || [], this.value,
+        const select = Builder.select(
+            this.label,
+            this.options?.options || [],
+            this.value,
             (value) => {
             this.value = value;
             this.notifyChange();
         });
 
         wrapper.appendChild(label_el);
-        wrapper.appendChild(select.element);
+        wrapper.appendChild(select.getElement());
 
         container.appendChild(wrapper);
     }
