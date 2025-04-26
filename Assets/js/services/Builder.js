@@ -170,24 +170,15 @@ export default class Builder {
     }
 
     static h2(content, className = '') {
-        let h2 = document.createElement('h2');
-        if (className) h2.className = className;
-        h2.textContent = content;
-        return h2;
+        return this.createEl('h2', className, content);
     }
 
     static h3(content, className = '') {
-        let h3 = document.createElement('h3');
-        if (className) h3.className = className;
-        h3.textContent = content;
-        return h3;
+        return this.createEl('h3', className, content);
     }
 
     static h4(content, className = '') {
-        let h4 = document.createElement('h4');
-        if (className) h4.className = className;
-        h4.textContent = content;
-        return h4;
+        return this.createEl('h4', className, content);
     }
 
     static img(src, alt = '', className = '') {

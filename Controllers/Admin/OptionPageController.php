@@ -1,8 +1,7 @@
 <?php
 
-namespace BugQuest\Framework\Controllers;
+namespace BugQuest\Framework\Controllers\Admin;
 
-use BugQuest\Framework\Models\Database\Page;
 use BugQuest\Framework\Models\Response;
 use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Services\Admin;

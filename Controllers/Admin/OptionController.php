@@ -5,7 +5,6 @@ namespace BugQuest\Framework\Controllers\Admin;
 
 use BugQuest\Framework\Models\Response;
 use BugQuest\Framework\Services\OptionService;
-use BugQuest\Framework\Services\View;
 
 abstract class OptionController
 {

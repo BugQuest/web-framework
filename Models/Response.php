@@ -249,6 +249,19 @@ readonly class Response
         );
     }
 
+    public static function plaintext(
+        string $content,
+        int    $status = 200,
+        array  $headers = [],
+    ): static
+    {
+        return new static(
+            content: $content,
+            status: $status,
+            headers: array_merge($headers, ['Content-Type' => 'text/plain']),
+        );
+    }
+
     public function send(): void
     {
         http_response_code($this->status);

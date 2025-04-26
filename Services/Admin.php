@@ -3,10 +3,10 @@
 namespace BugQuest\Framework\Services;
 
 use BugQuest\Framework\Controllers\Admin\DebugController;
-use BugQuest\Framework\Controllers\Admin\ImagesController;
 use BugQuest\Framework\Controllers\Admin\MediasController;
 use BugQuest\Framework\Controllers\Admin\PageListController;
-use BugQuest\Framework\Controllers\OptionPageController;
+use BugQuest\Framework\Controllers\Admin\RobotsTxtController;
+use BugQuest\Framework\Controllers\Admin\OptionPageController;
 use BugQuest\Framework\Helpers\StringHelper;
 use BugQuest\Framework\Models\OptionPage;
 use BugQuest\Framework\Models\Route;
@@ -168,19 +168,20 @@ abstract class Admin
             route: self::addPage('Debug - Routes', DebugController::class . '::routes')
         );
 
-//        self::addSubmenu(
-//            parent: 'config',
-//            name: 'Images',
-//            icon: '🖼️',
-//            route: self::addPage('Config - Images', ImagesController::class . '::index')
-//        );
-
         //add page
         self::addSubmenu(
             parent: 'pages',
             name: 'New Page',
             icon: '🛠️',
             url: '/admin/page/',
+        );
+
+        //robots.txt
+        self::addSubmenu(
+            parent: 'config',
+            name: 'Robots.txt',
+            icon: '🤖',
+            route: self::addPage('Config - Robots.txt', RobotsTxtController::class . '::admin')
         );
     }
 }

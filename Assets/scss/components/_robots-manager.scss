@@ -1,0 +1,120 @@
+#robots-manager {
+  background: #101820;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.15);
+  color: #e0e8f0;
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  min-height: 400px;
+
+  .robot-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .robot-group {
+    background: #16212d;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    position: relative;
+    transition: background 0.3s ease, border-color 0.3s ease;
+
+    &:hover {
+      background: #1d2a39;
+      border-color: rgba(0, 255, 255, 0.4);
+    }
+
+    .robot-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #00ffe0;
+      text-shadow: 0 0 5px rgba(0, 255, 255, 0.4);
+    }
+
+    .robot-rules {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .robot-rule {
+      background: #0e141b;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.2s ease, transform 0.2s ease;
+      position: relative;
+
+      &:hover {
+        background: #192430;
+        transform: translateX(2px);
+      }
+
+      span {
+        flex: 1;
+        font-size: 1rem;
+        word-break: break-word;
+      }
+
+      .robot-edit,
+      .robot-delete {
+        cursor: pointer;
+        padding: 0.4rem 0.6rem;
+        margin-left: 0.5rem;
+        font-size: 1.2rem;
+        border-radius: 0.4rem;
+        transition: background 0.2s ease, color 0.2s ease;
+
+        &:hover {
+          background: rgba(0, 255, 255, 0.1);
+        }
+      }
+
+      .robot-edit {
+        color: #00d1ff;
+
+        &:hover {
+          color: #00ffe0;
+        }
+      }
+
+      .robot-delete {
+        color: #ff4c4c;
+
+        &:hover {
+          color: #ff8080;
+        }
+      }
+    }
+  }
+
+  .robot-footer {
+    margin-top: 2rem;
+    text-align: center;
+  }
+
+  .robot-add {
+    background: #00ffe0;
+    color: #101820;
+    font-weight: bold;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background 0.3s ease, transform 0.2s ease;
+
+    &:hover {
+      background: #00d1ff;
+      transform: scale(1.05);
+    }
+  }
+}

@@ -7,6 +7,7 @@ use BugQuest\Framework\Controllers\Admin\MediasController;
 use BugQuest\Framework\Controllers\Admin\OptionController;
 use BugQuest\Framework\Controllers\Admin\PageBuilderController;
 use BugQuest\Framework\Controllers\Admin\PageListController;
+use BugQuest\Framework\Controllers\Admin\RobotsTxtController;
 use BugQuest\Framework\Controllers\AssetsController;
 use BugQuest\Framework\Controllers\AuthController;
 use BugQuest\Framework\Debug;
@@ -14,6 +15,13 @@ use BugQuest\Framework\Middleware\AdminAuthMiddleware;
 use BugQuest\Framework\Middleware\ApiAdminAuthMiddleware;
 use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Models\RouteGroup;
+
+new Route(
+    name: 'robots.txt',
+    _slug: '/robots.txt',
+    _callback: RobotsTxtController::class . '::index',
+    _methods: ['GET']
+)->register();
 
 new RouteGroup(
     name: 'admin',
@@ -98,7 +106,7 @@ new RouteGroup(
             _callback: OptionController::class . '::delete',
             _methods: ['DELETE']
         ),
-        /*
+        /**
          * Medias
          */
         new Route(
@@ -143,7 +151,7 @@ new RouteGroup(
             _callback: MediasController::class . '::sizes',
             _methods: ['GET']
         ),
-        /*
+        /**
          * Medias Tags
          */
         new Route(
@@ -170,7 +178,7 @@ new RouteGroup(
             _callback: MediasController::class . '::setTags',
             _methods: ['POST']
         ),
-        /*
+        /**
          * Locale
          */
         new Route(
@@ -179,7 +187,7 @@ new RouteGroup(
             _callback: LocaleController::class . '::getDomain',
             _methods: ['GET']
         ),
-        /*
+        /**
          * Page
          */
         new Route(
@@ -223,7 +231,34 @@ new RouteGroup(
             _slug: '/page/block/render/{type:slug}',
             _callback: PageBuilderController::class . '::renderBlock',
             _methods: ['POST']
-        )
+        ),
+        /**
+         * Robots.txt
+         */
+        new Route(
+            name: 'robots.list',
+            _slug: '/robots/list',
+            _callback: RobotsTxtController::class . '::list',
+            _methods: ['GET']
+        ),
+        new Route(
+            name: 'robots.add',
+            _slug: '/robots/add',
+            _callback: RobotsTxtController::class . '::add',
+            _methods: ['POST']
+        ),
+        new Route(
+            name: 'robots.edit',
+            _slug: '/robots/edit',
+            _callback: RobotsTxtController::class . '::edit',
+            _methods: ['POST']
+        ),
+        new Route(
+            name: 'robots.delete',
+            _slug: '/robots/delete',
+            _callback: RobotsTxtController::class . '::delete',
+            _methods: ['POST']
+        ),
     ],
     _middlewares: [
         ApiAdminAuthMiddleware::class
