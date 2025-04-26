@@ -1,23 +1,25 @@
 #robots-manager {
   background: #101820;
-  padding: 2rem;
+  padding: 1rem;
   border-radius: 1rem;
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.15);
   color: #e0e8f0;
   font-family: 'Segoe UI', 'Roboto', sans-serif;
   min-height: 400px;
+  max-width: 800px;
+  margin: auto;
 
   .robot-list {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1rem;
   }
 
   .robot-group {
     background: #16212d;
     border: 1px solid rgba(0, 255, 255, 0.2);
     border-radius: 0.75rem;
-    padding: 1rem;
+    padding: .5rem 1rem;
     position: relative;
     transition: background 0.3s ease, border-color 0.3s ease;
 
@@ -27,7 +29,7 @@
     }
 
     .robot-title {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 600;
       margin-bottom: 1rem;
       color: #00ffe0;
@@ -45,13 +47,14 @@
 
     .robot-rule {
       background: #0e141b;
-      padding: 0.75rem 1rem;
+      padding: 0.5rem 1rem;
       border-radius: 0.5rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       transition: background 0.2s ease, transform 0.2s ease;
       position: relative;
+      font-size: 0.8rem;
 
       &:hover {
         background: #192430;
@@ -60,7 +63,6 @@
 
       span {
         flex: 1;
-        font-size: 1rem;
         word-break: break-word;
       }
 
@@ -97,7 +99,7 @@
   }
 
   .robot-footer {
-    margin-top: 2rem;
+    margin-top: 1rem;
     text-align: center;
   }
 

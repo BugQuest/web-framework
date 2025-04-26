@@ -42,67 +42,40 @@ class RobotsTxtController
         }
     }
 
-    public static function add(): Response
+    public static function save(): Response
     {
         try {
-            $data = Payload::fromRawInput()->expectObject([
-                'user_agent' => ['string', '*'],
+            $data = Payload::fromRawInput()->expectArrayOf([
+                'user_agent' => 'string',
                 'directive' => 'string',
-                'value' => ['string', ''],
+                'value' => 'string',
             ]);
 
-            RobotsTxtService::load();
 
-            if (!RobotsTxtService::addEntry($data['user_agent'], $data['directive'], $data['value']))
-                throw new \Exception('Invalid data.');
+            RobotsTxtService::clear(); // On réinitialise tout
+
+            foreach ($data as $entry) {
+                if (!is_array($entry) ||
+                    !isset($entry['user_agent'], $entry['directive'], $entry['value'])) {
+                    throw new \Exception('Invalid entry format.');
+                }
+
+                $userAgent = trim($entry['user_agent']);
+                $directive = trim($entry['directive']);
+                $value = trim($entry['value']);
+
+                if ($userAgent === '')
+                    $userAgent = '*';
+
+                if (!RobotsTxtService::isValidDirective($directive))
+                    throw new \Exception('Invalid directive: ' . htmlspecialchars($directive));
+
+                RobotsTxtService::addEntry($userAgent, $directive, $value);
+            }
 
             RobotsTxtService::save();
-
-            return Response::jsonSuccess('Entry added successfully.');
-        } catch (\Exception $e) {
-            return Response::jsonError($e->getMessage());
-        }
-    }
-
-    public static function edit(): Response
-    {
-        try {
-            $data = Payload::fromRawInput()->expectObject([
-                'user_agent' => ['string', '*'],
-                'index' => 'int',
-                'directive' => 'string',
-                'value' => ['string', ''],
-            ]);
-
-            RobotsTxtService::load();
-
-            if (!RobotsTxtService::editEntry($data['user_agent'], $data['index'], $data['directive'], $data['value']))
-                throw new \Exception('Invalid data.');
-
-            RobotsTxtService::save('Entry updated successfully.');
 
             return Response::jsonSuccess();
-        } catch (\Exception $e) {
-            return Response::jsonError($e->getMessage());
-        }
-    }
-
-    public static function delete(): Response
-    {
-        try {
-            $data = Payload::fromRawInput()->expectObject([
-                'user_agent' => ['string', '*'],
-                'index' => 'int',
-            ]);
-
-            RobotsTxtService::load();
-
-            if (!RobotsTxtService::deleteEntry($data['user_agent'], $data['index']))
-                throw new \Exception('Invalid data.');
-
-            RobotsTxtService::save();
-
-            return Response::jsonSuccess('Entry deleted successfully.');
         } catch (\Exception $e) {
             return Response::jsonError($e->getMessage());
         }

@@ -242,21 +242,9 @@ new RouteGroup(
             _methods: ['GET']
         ),
         new Route(
-            name: 'robots.add',
-            _slug: '/robots/add',
-            _callback: RobotsTxtController::class . '::add',
-            _methods: ['POST']
-        ),
-        new Route(
-            name: 'robots.edit',
-            _slug: '/robots/edit',
-            _callback: RobotsTxtController::class . '::edit',
-            _methods: ['POST']
-        ),
-        new Route(
-            name: 'robots.delete',
-            _slug: '/robots/delete',
-            _callback: RobotsTxtController::class . '::delete',
+            name: 'robots.save',
+            _slug: '/robots/save',
+            _callback: RobotsTxtController::class . '::save',
             _methods: ['POST']
         ),
     ],

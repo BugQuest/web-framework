@@ -210,8 +210,10 @@ export default class Builder {
                   onSearch = null,
                   onClickItem = null,
                   searchMinLength = 2,
-                  openBottom = false) {
+                  openBottom = false,
+                  className = '') {
         let element = this.div('search-container');
+        if (className) element.classList.add(className);
         let input = this.input_text(placeholder);
         input.type = 'search';
         let results = this.div('search-results ' + (openBottom ? ' open-bottom' : 'open-top'));
@@ -259,6 +261,13 @@ export default class Builder {
                 results.appendChild(tagEl);
                 if (!results.classList.contains('active'))
                     results.classList.add('active');
+            },
+            getValue: () => {
+                return input.value;
+            },
+            setValue: (value) => {
+                input.value = value;
+                results.innerHTML = '';
             },
             element
         };
@@ -323,4 +332,33 @@ export default class Builder {
 
         return table;
     }
+
+    static input_search_list(label, options = [], className = '') {
+        const wrapper = this.div('input-wrapper');
+
+        const labelEl = this.label(label);
+        wrapper.appendChild(labelEl);
+
+        const input = this.input_text('User-agent: *', '', className);
+        wrapper.appendChild(input);
+
+        const datalist = document.createElement('datalist');
+        datalist.id = 'list-' + Math.random().toString(36).substr(2, 9);
+        input.setAttribute('list', datalist.id);
+        wrapper.appendChild(datalist);
+
+        input.setOptions = (opts) => {
+            datalist.innerHTML = '';
+            opts.forEach(option => {
+                const opt = document.createElement('option');
+                opt.value = option;
+                datalist.appendChild(opt);
+            });
+        };
+
+        input.getElement = () => wrapper;
+
+        return input;
+    }
+
 }
