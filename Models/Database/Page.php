@@ -53,6 +53,11 @@ class Page extends Model
         return $this->hasMany(Page::class, 'parent_id');
     }
 
+    public function seo()
+    {
+        return $this->hasOne(PageSeo::class);
+    }
+
     /**
      * Recalculates slug from parent recursively: /parent-slug/child-slug
      *
