@@ -311,7 +311,35 @@ class Route
         exit;
     }
 
+    public function getCacheKey(): ?string
+    {
+        return $this->_cache_key;
+    }
 
+    public function getCacheGroup(): string
+    {
+        return $this->_cache_group;
+    }
+
+    public function getCacheTTL(): int
+    {
+        return $this->_cache_ttl;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'slug' => $this->_slug,
+            'callback' => $this->_callback,
+            'methods' => $this->_methods,
+            'middlewares' => $this->_middlewares,
+            'group' => $this->group?->name,
+            'cache_key' => $this->_cache_key,
+            'cache_group' => $this->_cache_group,
+            'cache_ttl' => $this->_cache_ttl,
+        ];
+    }
 
     //===============================================*
     // * Static methods for custom patterns
@@ -359,18 +387,5 @@ class Route
         self::$customPatterns[$type] = $pattern;
     }
 
-    public function getCacheKey(): ?string
-    {
-        return $this->_cache_key;
-    }
 
-    public function getCacheGroup(): string
-    {
-        return $this->_cache_group;
-    }
-
-    public function getCacheTTL(): int
-    {
-        return $this->_cache_ttl;
-    }
 }

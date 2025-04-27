@@ -1,12 +1,12 @@
 <?php
 
-namespace BugQuest\Framework\Middleware;
+namespace BugQuest\Framework\Middlewares;
 
 use BugQuest\Framework\Models\Database\User;
-use BugQuest\Framework\Router;
+use BugQuest\Framework\Models\Response;
 use BugQuest\Framework\Services\Auth;
 
-class AdminAuthMiddleware
+class PlainAdminAuthMiddleware
 {
     public function handle(callable $next)
     {
@@ -14,12 +14,12 @@ class AdminAuthMiddleware
             session_start();
 
         if (!isset($_SESSION['user_id']))
-            Router::redirect('auth.login');
+            return Response::unauthorized();
 
         $user = User::find($_SESSION['user_id']);
 
         if (!$user || !$user->isAdmin())
-            Router::redirect('auth.logout');
+            return Response::unauthorized();
 
         // On injecte l'utilisateur dans une helper statique ou singleton si tu veux y accéder ailleurs
         Auth::setUser($user);

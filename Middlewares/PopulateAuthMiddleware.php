@@ -1,6 +1,6 @@
 <?php
 
-namespace BugQuest\Framework\Middleware;
+namespace BugQuest\Framework\Middlewares;
 
 use BugQuest\Framework\Models\Database\User;
 use BugQuest\Framework\Models\Response;

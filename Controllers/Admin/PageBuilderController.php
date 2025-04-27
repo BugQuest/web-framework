@@ -65,7 +65,7 @@ class PageBuilderController
     {
         try {
             $payload = Payload::fromRawInput()->expectObject([
-                'title' => ['string'],
+                'title' => 'string',
                 'slug' => ['string', null],
                 'html' => ['string', ''],
                 'builder_data' => ['array', []],

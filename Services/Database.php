@@ -2,7 +2,6 @@
 
 namespace BugQuest\Framework\Services;
 
-use BugQuest\Framework\Debug;
 use BugQuest\Framework\Models\Database\Meta;
 use BugQuest\Framework\Router;
 use Illuminate\Container\Container;
@@ -33,9 +32,13 @@ class Database
         $manager->setAsGlobal();
         $manager->bootEloquent();
 
+        $container = new Container();
+        Facade::setFacadeApplication($container);
+        $container->instance('db', $manager->getDatabaseManager());
+
         $route_test = Router::test();
 
-        if (!self::isInstalled() && !str_starts_with($route_test, 'framework.assets')) {
+        if (!self::isInstalled() && !str_starts_with($route_test ?? '', 'framework.assets')) {
             $route = new Route(
                 name: 'install',
                 _slug: '/install',
@@ -47,9 +50,6 @@ class Database
                 $route->redirect();
         }
 
-        $container = new Container();
-        Facade::setFacadeApplication($container);
-        $container->instance('db', $manager->getDatabaseManager());
         if (env('DEBUG_SQL', false))
             DB::connection()->enableQueryLog();
         else

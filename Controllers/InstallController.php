@@ -8,6 +8,7 @@ use BugQuest\Framework\Models\Response;
 use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Services\Database;
 use BugQuest\Framework\Services\MetaService;
+use BugQuest\Framework\Services\MigrationManager;
 use BugQuest\Framework\Services\View;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -57,120 +58,7 @@ class InstallController
 //                $error = 'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.';
 
             if (!$error) {
-                // Création des tables
-                Manager::schema()->create('users', function (Blueprint $table) {
-                    $table->id();
-                    $table->string('username')->unique();
-                    $table->string('email')->unique();
-                    $table->string('password');
-                    $table->string('role');
-                    $table->timestamps();
-                });
-
-                Manager::schema()->create('meta', function (Blueprint $table) {
-                    $table->string('key')->primary();
-                    $table->text('value')->nullable();
-                    $table->string('type', 16);
-                    $table->timestamps();
-                });
-
-                Manager::schema()->create('i18n_missing', function (Blueprint $table) {
-                    $table->id();
-                    $table->string('domain', 64);
-                    $table->string('locale', 8);
-                    $table->string('keyname', 255);
-                    $table->timestamps();
-
-                    $table->unique(['domain', 'locale', 'keyname'], 'i18n_missing_unique');
-                });
-
-                Manager::schema()->create('medias', function (Blueprint $table) {
-                    $table->id();
-
-                    $table->string('filename'); // Nom final stocké sur le disque
-                    $table->string('original_name'); // Nom original (upload)
-                    $table->string('mime_type');
-                    $table->string('extension', 10)->nullable();
-                    $table->bigInteger('size')->nullable(); // En octets
-                    $table->string('path')->nullable(); // Chemin absolu ou relatif
-                    $table->string('url')->nullable(); // URL d'accès public
-                    $table->string('slug')->nullable(); // Pour une gestion plus lisible côté admin
-                    $table->json('exif')->nullable(); // Données EXIF (photo, orientation...)
-                    $table->json('meta')->nullable(); // Données supplémentaires (auteur, description…)
-
-                    $table->timestamps();
-                });
-
-                Manager::schema()->create('media_tags', function (Blueprint $table) {
-                    $table->id();
-                    $table->string('name');
-                    $table->string('slug')->unique();
-                    $table->timestamps();
-                });
-
-                Manager::schema()->create('media_tag_media', function (Blueprint $table) {
-                    $table->unsignedBigInteger('media_id');
-                    $table->unsignedBigInteger('tag_id');
-
-                    $table->foreign('media_id')->references('id')->on('medias')->onDelete('cascade');
-                    $table->foreign('tag_id')->references('id')->on('media_tags')->onDelete('cascade');
-
-                    $table->primary(['media_id', 'tag_id']);
-                });;
-
-                Manager::schema()->create('options', function (Blueprint $table) {
-                    $table->id();
-                    $table->string('group', 64);
-                    $table->string('key', 128);
-                    $table->text('value')->nullable();
-                    $table->string('type', 16);
-                    $table->timestamps();
-
-                    $table->unique(['group', 'key']);
-                });
-
-                //page
-                Manager::schema()->create('pages', function (Blueprint $table) {
-                    $table->id();
-                    $table->unsignedBigInteger('parent_id')->nullable();
-                    $table->string('title');
-                    $table->string('slug')->unique();
-                    $table->text('html')->nullable();
-                    $table->text('css')->nullable();
-                    $table->json('builder_data')->nullable();
-                    $table->enum('status', ['draft', 'private', 'published', 'archived'])->default('draft');
-                    $table->integer('order')->default(0);
-                    $table->timestamps();
-
-                    $table->foreign('parent_id')->references('id')->on('pages')->onDelete('set null');
-                });
-
-                //page_seo
-                Manager::schema()->create('pages', function (Blueprint $table) {
-                    $table->id();
-                    $table->foreignId('page_id')->constrained('pages')->onDelete('cascade');
-                    $table->string('meta_description', 512)->nullable();
-                    $table->string('meta_keywords', 512)->nullable();
-                    $table->string('og_title', 255)->nullable();
-                    $table->string('og_description', 512)->nullable();
-                    $table->string('og_image', 512)->nullable();
-                    $table->string('og_type', 50)->nullable()->default('website');
-                    $table->string('twitter_card', 50)->nullable()->default('summary');
-                    $table->string('twitter_title', 255)->nullable();
-                    $table->string('twitter_description', 512)->nullable();
-                    $table->string('twitter_image', 512)->nullable();
-                    $table->string('robots_index', 10)->default('index');
-                    $table->string('robots_follow', 10)->default('follow');
-                    $table->string('canonical_url', 512)->nullable();
-                    $table->text('structured_data')->nullable();
-                    $table->string('hreflang', 10)->nullable();
-                    $table->json('pagination_rel')->nullable();
-                    $table->json('custom_head_tags')->nullable();
-                    $table->float('sitemap_priority')->nullable();
-                    $table->string('sitemap_changefreq', 20)->nullable();
-                    $table->string('redirect_to', 512)->nullable();
-                    $table->timestamps();
-                });
+                MigrationManager::migrateAll();
 
                 // Hash + insertion dans la table users
                 $user = new User();

@@ -39,8 +39,9 @@ export default class PagePicker {
                 'Rechercher une page',
                 this.onSearch,
                 this.onSearchClickItem,
-                4,
-                true
+                2,
+                true,
+                'fullw'
             )
             form_header.appendChild(this.search.element);
 

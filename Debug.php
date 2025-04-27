@@ -65,7 +65,7 @@ class Debug
         ];
 
         if ($route = Router::getCurrentRoute()) {
-            self::$_logs['Route'] = $route;
+            self::$_logs['Route'] = $route->toArray();
 
             if ($route->name == 'page') {
                 $page = PageService::getCurrent();

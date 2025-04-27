@@ -323,7 +323,7 @@ export default class PageBuilder {
                 this.page.status,
                 (value) => {
                     this.page.status = value;
-                    if (!this.page.id) return;
+                    if (this.page.id)
                     fetch('/admin/api/page/status/' + this.page.id + '/' + value, {
                         method: 'POST',
                     })
@@ -332,18 +332,20 @@ export default class PageBuilder {
                                 Toast.success('Status updated successfully');
                             else
                                 Toast.error('Failed to update status');
-                            this.updateStatus();
-                            this.statusModal.close();
+
+
                         })
                         .catch(err => {
                             console.error(err);
                             Toast.error('An error occurred while updating status');
                             this.statusModal.close();
                         });
+
+                    this.updateStatus();
+                    this.statusModal.close();
                 });
 
-            wrapper.appendChild(this.selectStatus.element);
-
+            wrapper.appendChild(this.selectStatus.getElement());
         }
         this.selectStatus.setValue(this.page.status);
         this.statusModal.open();

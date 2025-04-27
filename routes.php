@@ -11,10 +11,12 @@ use BugQuest\Framework\Controllers\Admin\RobotsTxtController;
 use BugQuest\Framework\Controllers\AssetsController;
 use BugQuest\Framework\Controllers\AuthController;
 use BugQuest\Framework\Debug;
-use BugQuest\Framework\Middleware\AdminAuthMiddleware;
-use BugQuest\Framework\Middleware\ApiAdminAuthMiddleware;
+use BugQuest\Framework\Middlewares\AdminAuthMiddleware;
+use BugQuest\Framework\Middlewares\ApiAdminAuthMiddleware;
 use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Models\RouteGroup;
+use BugQuest\Framework\Router;
+use BugQuest\Framework\Services\MigrationManager;
 
 new Route(
     name: 'robots.txt',
@@ -38,6 +40,16 @@ new RouteGroup(
             _slug: '/page/{id:int?}',
             _callback: PageBuilderController::class . '::edit',
             _methods: ['GET'],
+        ),
+
+        new Route(
+            name: 'migrate',
+            _slug: '/migrate',
+            _callback: function () {
+                MigrationManager::migrateAll();
+                Router::redirect('admin.dashboard');
+            },
+            _methods: ['POST'],
         ),
     ],
     _middlewares: [
