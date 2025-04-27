@@ -11,6 +11,7 @@ class CreatePageSeoTable extends Migration
         Manager::schema()->create('page_seo', function (Blueprint $table) {
             $table->id();
             $table->foreignId('page_id')->constrained('pages')->onDelete('cascade');
+            $table->string('meta_title', 255)->nullable();
             $table->string('meta_description', 512)->nullable();
             $table->string('meta_keywords', 512)->nullable();
             $table->string('og_title', 255)->nullable();

@@ -7,6 +7,7 @@ use BugQuest\Framework\Controllers\Admin\MediasController;
 use BugQuest\Framework\Controllers\Admin\OptionController;
 use BugQuest\Framework\Controllers\Admin\PageBuilderController;
 use BugQuest\Framework\Controllers\Admin\PageListController;
+use BugQuest\Framework\Controllers\Admin\PageSeoController;
 use BugQuest\Framework\Controllers\Admin\RobotsTxtController;
 use BugQuest\Framework\Controllers\AssetsController;
 use BugQuest\Framework\Controllers\AuthController;
@@ -41,7 +42,12 @@ new RouteGroup(
             _callback: PageBuilderController::class . '::edit',
             _methods: ['GET'],
         ),
-
+        new Route(
+            name: 'page.edit',
+            _slug: '/page/{id:int?}/seo',
+            _callback: PageSeoController::class . '::index',
+            _methods: ['GET'],
+        ),
         new Route(
             name: 'migrate',
             _slug: '/migrate',

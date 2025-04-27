@@ -1,5 +1,6 @@
 import {__} from '@framework/js/services/Translator.js';
 import Select from '@framework/js/services/Select.js';
+import Keywords from '@framework/js/services/Keywords.js';
 
 export default class Builder {
 
@@ -42,6 +43,7 @@ export default class Builder {
 
     static textarea(placeholder = '', value = '', className = '') {
         let textarea = this.createEl('textarea', className);
+        if(placeholder) textarea.placeholder = placeholder;
         if (value) textarea.value = value;
         return textarea;
     }
@@ -273,7 +275,7 @@ export default class Builder {
         };
     }
 
-    static select(label, options, selected = null, onChange = null, bottom = false, placeholder = '') {
+    static select(label, options, selected = null, onChange = null, bottom = false, placeholder = '', className = '') {
 
         return new Select({
             label: label,
@@ -283,11 +285,12 @@ export default class Builder {
             multiple: false,
             placeholder: placeholder,
             bottom: bottom,
+            className: className,
         })
     }
 
 
-    static selectMultiple(label, options, selected = [], onChange = null, bottom = false, placeholder = '') {
+    static selectMultiple(label, options, selected = [], onChange = null, bottom = false, placeholder = '', className = '') {
         return new Select({
             label: label,
             options: options,
@@ -296,6 +299,7 @@ export default class Builder {
             multiple: true,
             placeholder: placeholder,
             bottom: bottom,
+            className: className,
         })
     }
 
@@ -363,4 +367,13 @@ export default class Builder {
         return input;
     }
 
+    static keywords(label, placeholder = 'Ajouter un mot clé...', initial = [], onChange = null, className = '') {
+        return new Keywords({
+            label: label,
+            placeholder: placeholder,
+            initial: initial,
+            onChange: onChange,
+            className: className,
+        });
+    }
 }

@@ -9,6 +9,7 @@ export default class Select {
                     bottom = false,
                     placeholder = 'Sélectionner…',
                     multiple = false,
+                    className = '',
                 }) {
         this.label = label;
         this.options = options;
@@ -16,6 +17,7 @@ export default class Select {
         this.bottom = bottom;
         this.placeholder = placeholder;
         this.multiple = multiple;
+        this.className = className;
         this.isObjectOption = typeof options[0] === 'object';
         this.validValues = options.map(opt => this.isObjectOption ? opt.value : opt);
 
@@ -30,6 +32,7 @@ export default class Select {
 
     build() {
         this.wrapper = Builder.div('select-wrapper');
+        if (this.className) this.wrapper.classList.add(this.className);
         this.wrapper.setAttribute('role', 'listbox');
         this.wrapper.tabIndex = 0;
 

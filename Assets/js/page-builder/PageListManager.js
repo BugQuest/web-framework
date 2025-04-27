@@ -232,21 +232,27 @@ export class PageListManager {
 
             const actions = Builder.div('page-actions');
 
+            const editSeoBtn = Builder.button('🔍✨ Seo', 'icon-button', () => {
+                window.location.href = `/admin/page/${page.id}/seo`;
+            });
+            editSeoBtn.dataset.tooltip = 'Editer le SEO';
+
             const editBtn = Builder.button('✏️', 'icon-button', () => {
                 window.location.href = `/admin/page/${page.id}`;
             });
-            editBtn.tooltip = 'Edit';
+            editBtn.dataset.tooltip = 'Editer la page';
 
             const viewBtn = Builder.button('👁️', 'icon-button', () => {
                 window.open(`/${page.slug}`, '_blank');
             });
-            viewBtn.tooltip = 'View';
+            viewBtn.dataset.tooltip = 'Voir la page';
 
             const deleteBtn = Builder.button('🗑️', 'icon-button', () => {
                 console.log('@todo delete');
             });
-            viewBtn.tooltip = 'View';
+            viewBtn.dataset.tooltip = 'Supprimer la page';
 
+            actions.appendChild(editSeoBtn);
             actions.appendChild(viewBtn);
             actions.appendChild(editBtn);
             actions.appendChild(deleteBtn);
@@ -438,9 +444,9 @@ export class PageListManager {
                         });
                 });
 
-            wrapper.appendChild(this.selectStatus.element);
-
+            wrapper.appendChild(this.selectStatus.getElement());
         }
+
         this.selectStatus.setValue(page.status);
         this.statusModal.open();
     }

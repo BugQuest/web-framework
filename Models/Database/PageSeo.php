@@ -10,12 +10,24 @@ class PageSeo extends Model
 
     protected $fillable = [
         'page_id',
-        'meta_description', 'meta_keywords',
-        'og_title', 'og_description', 'og_image', 'og_type',
-        'twitter_card', 'twitter_title', 'twitter_description', 'twitter_image',
+        'meta_description',
+        'meta_keywords',
+        'og_title',
+        'og_description',
+        'og_image',
+        'og_type',
+        'twitter_card',
+        'twitter_title',
+        'twitter_description',
+        'twitter_image',
         'robots_index', 'robots_follow', 'canonical_url',
-        'structured_data', 'hreflang', 'pagination_rel', 'custom_head_tags',
-        'sitemap_priority', 'sitemap_changefreq', 'redirect_to',
+        'structured_data',
+        'hreflang',
+        'pagination_rel',
+        'custom_head_tags',
+        'sitemap_priority',
+        'sitemap_changefreq',
+        'redirect_to',
     ];
 
     protected $casts = [

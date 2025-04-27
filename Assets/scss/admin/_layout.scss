@@ -84,24 +84,40 @@
         align-items: center;
         justify-content: space-between;
         margin: 1rem 0;
+        gap: 1rem;
 
         label {
           margin: 0;
           padding: 0;
         }
+
+        textarea {
+          resize: none;
+          min-height: 200px;
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 5px;
+          padding: 0.5rem;
+          color: #fff;
+
+          &:focus{
+            outline: none;
+            border-color: #0ff;
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+          }
+        }
       }
     }
 
     .form-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1rem;
+      margin: 1rem;
 
       .form-title {
+        display: block;
         font-size: 1.5rem;
         font-weight: bold;
         color: #0ff;
+        text-align: center;
       }
 
       .form-subtitle {
@@ -230,6 +246,10 @@
   }
 }
 
+.flex-1 {
+  flex: 1;
+}
+
 .wrapper {
   max-width: 800px;
 }
@@ -264,10 +284,10 @@
 .glow-stick {
   /* Just simple glow line block 100% */
   display: block;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
-    background-size: 200% 100%;
-    background-position: 0% 0%;
-    animation: glow 1.5s ease-in-out infinite;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+  background-size: 200% 100%;
+  background-position: 0% 0%;
+  animation: glow 1.5s ease-in-out infinite;
 }

@@ -1,0 +1,10 @@
+{% extends '@framework/admin/layout.twig' %}
+
+{% block title %}Page Seo{% endblock %}
+
+{% block content %}
+    <div class="container">
+    <h1 class="title" data-lazy-smooth data-lazy-right>SEO - [{{ page.id }}] {{ page.title }}</h1>
+    <div class="__page-seo" data-page="{{ page_encoded }}"></div>
+    </div>
+{% endblock %}
