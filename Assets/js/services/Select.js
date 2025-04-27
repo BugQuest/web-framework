@@ -6,14 +6,14 @@ export default class Select {
                     options,
                     selected = null,
                     onChange = null,
-                    openTop = false,
+                    bottom = false,
                     placeholder = 'Sélectionner…',
                     multiple = false,
                 }) {
         this.label = label;
         this.options = options;
         this.onChange = onChange;
-        this.openTop = openTop;
+        this.bottom = bottom;
         this.placeholder = placeholder;
         this.multiple = multiple;
         this.isObjectOption = typeof options[0] === 'object';
@@ -22,6 +22,8 @@ export default class Select {
         this.currentValue = multiple
             ? Array.isArray(selected) ? selected.filter(v => this.validValues.includes(v)) : []
             : this.validValues.includes(selected) ? selected : null;
+
+        this.clickHandler = this.handleClick.bind(this);
 
         this.build();
     }
@@ -32,7 +34,8 @@ export default class Select {
         this.wrapper.tabIndex = 0;
 
         this.head = Builder.div('select-head');
-        this.labelEl = Builder.div('select-label', this.label);
+        this.labelEl = Builder.div('select-label');
+        this.labelEl.textContent = this.label;
         this.valueEl = Builder.div('select-value');
         this.body = Builder.div('select-body');
 
@@ -48,6 +51,8 @@ export default class Select {
             if (e.key === 'Escape') this.toggle(false);
         });
 
+        this.body.addEventListener('click', this.clickHandler);
+
         this.closeHandler = (e) => {
             if (!this.wrapper.contains(e.target)) this.toggle(false);
         };
@@ -55,6 +60,9 @@ export default class Select {
     }
 
     renderOptions() {
+        this.body.innerHTML = '';
+        const fragment = document.createDocumentFragment();
+
         this.options.forEach(option => {
             const value = this.isObjectOption ? option.value : option;
             const label = this.isObjectOption ? option.label : option;
@@ -68,34 +76,36 @@ export default class Select {
                 item.classList.add('active');
             }
 
-            this.body.appendChild(item);
+            fragment.appendChild(item);
         });
 
-        this.body.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('select-item')) return;
-            const value = e.target.dataset.value;
-            if (!this.validValues.includes(value)) return;
+        this.body.appendChild(fragment);
+    }
 
-            if (this.multiple) {
-                const index = this.currentValue.indexOf(value);
-                if (index >= 0) {
-                    this.currentValue.splice(index, 1);
-                    e.target.classList.remove('active');
-                } else {
-                    this.currentValue.push(value);
-                    e.target.classList.add('active');
-                }
+    handleClick(e) {
+        if (!e.target.classList.contains('select-item')) return;
+        const value = e.target.dataset.value;
+        if (!this.validValues.includes(value)) return;
+
+        if (this.multiple) {
+            const index = this.currentValue.indexOf(value);
+            if (index >= 0) {
+                this.currentValue.splice(index, 1);
+                e.target.classList.remove('active');
             } else {
-                this.currentValue = value;
-                [...this.body.children].forEach(item => {
-                    item.classList.toggle('active', item.dataset.value === value);
-                });
-                this.toggle(false);
+                this.currentValue.push(value);
+                e.target.classList.add('active');
             }
+        } else {
+            this.currentValue = value;
+            [...this.body.children].forEach(item => {
+                item.classList.toggle('active', item.dataset.value === value);
+            });
+            this.toggle(false);
+        }
 
-            this.updateDisplay();
-            if (this.onChange) this.onChange(this.getValue());
-        });
+        this.updateDisplay();
+        if (this.onChange) this.onChange(this.getValue());
     }
 
     toggle(enabled) {
@@ -103,8 +113,8 @@ export default class Select {
             this.body.style.display = 'block';
             void this.body.offsetHeight;
             this.body.classList.add('active');
-            this.body.style.top = this.openTop ? '0' : 'auto';
-            this.body.style.bottom = this.openTop ? 'auto' : '0';
+            this.body.style.top = this.bottom ? '100%' : 'auto';
+            this.body.style.bottom = this.bottom ? 'auto' : '100%';
         } else {
             this.body.classList.remove('active');
             setTimeout(() => {
@@ -152,6 +162,25 @@ export default class Select {
         this.updateDisplay();
     }
 
+    setOptions(newOptions, selected = null) {
+        this.options = newOptions;
+        this.isObjectOption = typeof this.options[0] === 'object';
+        this.validValues = this.options.map(opt => this.isObjectOption ? opt.value : opt);
+
+        this.renderOptions();
+
+        if (selected !== null) {
+            this.setValue(selected);
+        } else {
+            if (this.multiple) {
+                this.currentValue = [];
+            } else {
+                this.currentValue = null;
+            }
+            this.updateDisplay();
+        }
+    }
+
     getValue() {
         return this.multiple
             ? [...this.currentValue]
@@ -164,5 +193,6 @@ export default class Select {
 
     destroy() {
         document.removeEventListener('click', this.closeHandler);
+        this.body.removeEventListener('click', this.clickHandler);
     }
 }

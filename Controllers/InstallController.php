@@ -2,17 +2,11 @@
 
 namespace BugQuest\Framework\Controllers;
 
-use BugQuest\Framework\Models\Database\Meta;
 use BugQuest\Framework\Models\Database\User;
 use BugQuest\Framework\Models\Response;
-use BugQuest\Framework\Models\Route;
 use BugQuest\Framework\Services\Database;
 use BugQuest\Framework\Services\MetaService;
 use BugQuest\Framework\Services\MigrationManager;
-use BugQuest\Framework\Services\View;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Capsule\Manager;
 use BugQuest\Framework\Router;
 
 class InstallController

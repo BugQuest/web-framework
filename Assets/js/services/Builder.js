@@ -273,7 +273,7 @@ export default class Builder {
         };
     }
 
-    static select(label, options, selected = null, onChange = null, openTop = false, placeholder = 'Sélectionner…') {
+    static select(label, options, selected = null, onChange = null, bottom = false, placeholder = '') {
 
         return new Select({
             label: label,
@@ -282,18 +282,20 @@ export default class Builder {
             onChange: onChange,
             multiple: false,
             placeholder: placeholder,
+            bottom: bottom,
         })
     }
 
 
-    static selectMultiple(label, options, selected = [], onChange = null, openTop = false, placeholder = 'Aucun') {
+    static selectMultiple(label, options, selected = [], onChange = null, bottom = false, placeholder = '') {
         return new Select({
             label: label,
             options: options,
             selected: selected,
             onChange: onChange,
             multiple: true,
-            placeholder: placeholder
+            placeholder: placeholder,
+            bottom: bottom,
         })
     }
 

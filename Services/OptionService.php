@@ -98,6 +98,7 @@ class OptionService
             self::$_cache[$group] = [];
 
         $option = Option::where('group', $group)->where('key', $key)->first();
+        /** @var Option $option */
         if ($option) {
             $option->parseValue();
             self::$_cache[$group][$option->key] = $option->value;

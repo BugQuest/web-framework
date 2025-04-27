@@ -10,6 +10,13 @@ export class PageListManager {
         this.perPage = 100;
         this.currentParentTarget = null;
         this.pages = [];
+        this.homepage = null;
+        this.filters = {};
+        this.selectedFilters = {
+            status: [],
+            search: '',
+        };
+        this.debounceSearchTimer = null;
 
         this.container = Builder.div('page-list-container');
         this.element.appendChild(this.container);
@@ -18,6 +25,63 @@ export class PageListManager {
         this.element.appendChild(this.pagination);
 
         this.actionsContainer = Builder.div('page-list-actions');
+        this.filter_status = Builder.selectMultiple(
+            'Status',
+            [
+                {value: 'draft', label: 'Draft'},
+                {value: 'published', label: 'Published'},
+                {value: 'private', label: 'Private'},
+                {value: 'archived', label: 'Archived'},
+            ],
+            null,
+            (values) => {
+                this.selectedFilters.status = values;
+                this.load(1);
+            },
+            true,
+            '',
+        );
+        const search_wrapper = Builder.div('search-wrapper');
+        const progress = Builder.div('progress');
+        this.search = Builder.input_search('Search', '',
+            (value) => {
+                // Reset animation de la barre
+                progress.style.transition = 'none';
+                progress.style.width = '0';
+
+                // Lancer animation
+                requestAnimationFrame(() => {
+                    progress.style.transition = `width 1000ms linear`;
+                    progress.style.width = '100%';
+                });
+
+                this.debounce(() => {
+                    this.selectedFilters.search = value;
+                    this.load(1);
+                }, 1000);
+            },
+            () => {
+                // Reset animation de la barre
+                progress.style.transition = 'none';
+                progress.style.width = '0';
+
+                // Lancer animation
+                requestAnimationFrame(() => {
+                    progress.style.transition = `width 1000ms linear`;
+                    progress.style.width = '100%';
+                });
+
+                this.debounce(() => {
+                    this.selectedFilters.search = '';
+                    this.load(1);
+                }, 1000);
+            },
+            1
+        );
+        this.actionsContainer.appendChild(this.filter_status.getElement());
+        this.actionsContainer.appendChild(search_wrapper);
+        search_wrapper.appendChild(progress);
+        search_wrapper.appendChild(this.search);
         this.element.insertBefore(this.actionsContainer, this.container);
 
         this.draggedItem = null;
@@ -32,7 +96,12 @@ export class PageListManager {
     }
 
     async load(page = 1) {
-        const payload = {page, per_page: this.perPage};
+        const payload = {
+            page,
+            per_page: this.perPage,
+            status: this.selectedFilters.status,
+            search: this.selectedFilters.search
+        };
 
         if (page == -1)
             page = this.currentPage;
@@ -47,8 +116,11 @@ export class PageListManager {
         this.pages = data.pages;
         this.currentPage = data.current_page;
         this.lastPage = data.last_page;
+        this.homepage = data.homepage;
+        this.filters = data.filters;
 
         const hierarchy = this.buildHierarchy();
+        this.updateFilters();
         this.renderList(hierarchy);
         this.renderPagination();
         LazySmooth.process();
@@ -89,6 +161,30 @@ export class PageListManager {
         this.renderRecursive(pages, 0, null);
     }
 
+    renderPagination() {
+        this.pagination.innerHTML = '';
+
+        for (let i = 1; i <= this.lastPage; i++) {
+            const btn = document.createElement('button');
+            btn.dataset.lazySmooth = '';
+            btn.textContent = i;
+            btn.disabled = i === this.currentPage;
+            btn.addEventListener('click', () => this.load(i));
+            this.pagination.appendChild(btn);
+        }
+    }
+
+    updateFilters() {
+        //ex, filters.status.published = 12
+        const status = this.filters?.status || {};
+        //create array of objects with value and label, value is the key and label is the key with (value)
+        const statusOptions = Object.keys(status).map(key => ({
+            value: key,
+            label: `${key} (${status[key]})`
+        }));
+        this.filter_status.setOptions(statusOptions, this.selectedFilters.status);
+    }
+
     renderRecursive(pages, depth, parentId) {
         pages.forEach((page, index) => {
             const el = Builder.div('page-item');
@@ -109,7 +205,13 @@ export class PageListManager {
             el.addEventListener('drop', e => this.onDrop(e, el));
 
             const title = Builder.span('page-title');
-            title.textContent = page.title || `Page #${page.id}`;
+            if (page.id === this.homepage) {
+                const homeIcon = Builder.span('home-icon');
+                homeIcon.textContent = '🏠';
+                title.appendChild(homeIcon);
+            }
+
+            title.append(Builder.createEl('span', '', page.title || `Page #${page.id}`));
 
             const status = Builder.span('page-status');
             status.textContent = page.status;
@@ -158,7 +260,6 @@ export class PageListManager {
 
             if (page.children && page.children.length > 0)
                 this.renderRecursive(page.children, depth + 1, page.id);
-
         });
     }
 
@@ -279,19 +380,6 @@ export class PageListManager {
         });
     }
 
-    renderPagination() {
-        this.pagination.innerHTML = '';
-
-        for (let i = 1; i <= this.lastPage; i++) {
-            const btn = document.createElement('button');
-            btn.dataset.lazySmooth = '';
-            btn.textContent = i;
-            btn.disabled = i === this.currentPage;
-            btn.addEventListener('click', () => this.load(i));
-            this.pagination.appendChild(btn);
-        }
-    }
-
     events() {
         this.element.addEventListener('click', (e) => {
             if (e.target.classList.contains('page-status')) {
@@ -301,7 +389,7 @@ export class PageListManager {
                     const page_id = page_el.dataset.id;
                     if (!page_id) return;
                     const page = this.findPage(page_id);
-                    if(!page) return;
+                    if (!page) return;
                     this.onStatusClick(page);
                 } catch (e) {
                 }
@@ -355,5 +443,10 @@ export class PageListManager {
         }
         this.selectStatus.setValue(page.status);
         this.statusModal.open();
+    }
+
+    debounce(callback, delay) {
+        if (this.debounceSearchTimer) clearTimeout(this.debounceSearchTimer);
+        this.debounceSearchTimer = setTimeout(callback, delay);
     }
 }

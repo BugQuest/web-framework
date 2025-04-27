@@ -49,7 +49,6 @@ export class StringBlock extends OptionBlock {
     }
 
     debounce(callback, delay) {
-        console.log('Debouncing...');
         if (this.debounceTimer) clearTimeout(this.debounceTimer);
         this.debounceTimer = setTimeout(callback, delay);
     }
