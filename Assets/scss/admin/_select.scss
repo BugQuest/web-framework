@@ -6,6 +6,10 @@
   user-select: none;
   color: #00f5ff;
 
+  .teleport-select-body {
+    z-index: 9999;
+  }
+
   .select-head {
     position: relative;
     display: flex;
@@ -41,50 +45,50 @@
       text-overflow: ellipsis;
     }
   }
+}
 
-  .select-body {
-    position: absolute;
-    left: 0;
-    right: 0;
-    background: #000;
-    border: 2px solid #00f5ff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px #00f5ff66;
-    margin-top: 6px;
-    z-index: 2001;
-    overflow: hidden;
-    display: none;
-    max-height: 0;
-    opacity: 0;
-    transition: max-height 0.3s ease, opacity 0.3s ease;
+.select-body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: #000;
+  border: 2px solid #00f5ff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px #00f5ff66;
+  margin-top: 6px;
+  z-index: 2001;
+  overflow: hidden;
+  display: none;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
 
-    &.active {
-      display: block;
-      max-height: 300px;
-      opacity: 1;
+  &.active {
+    display: block;
+    max-height: 300px;
+    opacity: 1;
+  }
+
+  .select-item {
+    padding: 10px 14px;
+    color: #00f5ff;
+    background: transparent;
+    border-bottom: 1px solid #00f5ff22;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+
+    &:hover {
+      background-color: #00f5ff22;
     }
 
-    .select-item {
-      padding: 10px 14px;
-      color: #00f5ff;
-      background: transparent;
-      border-bottom: 1px solid #00f5ff22;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
+    &.active {
+      background-color: #00f5ff;
+      color: #000;
+      font-weight: bold;
+    }
 
-      &:hover {
-        background-color: #00f5ff22;
-      }
-
-      &.active {
-        background-color: #00f5ff;
-        color: #000;
-        font-weight: bold;
-      }
-
-      &:last-child {
-        border-bottom: none;
-      }
+    &:last-child {
+      border-bottom: none;
     }
   }
 }

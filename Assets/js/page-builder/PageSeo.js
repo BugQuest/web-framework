@@ -2,6 +2,7 @@ import {Toast} from "@framework/js/services/Toast";
 import Builder from '@framework/js/services/Builder';
 import {LazySmooth} from '@framework/js/services/LazySmooth';
 import {MediaBlock} from '@framework/js/options/MediaBlock';
+import StructuredDataEditor from '@framework/js/services/StructuredDataEditor';
 
 export default class PageSeo {
     constructor(element) {
@@ -28,6 +29,12 @@ export default class PageSeo {
         const accordeon_twitter = Builder.accordion('Twitter / X');
         this.element.appendChild(accordeon_twitter.accordeon);
         this.renderTwitterX(accordeon_twitter.accordeon_content);
+
+        //structured data
+        const accordeon_structured_data = Builder.accordion('Structured Data');
+        this.element.appendChild(accordeon_structured_data.accordeon);
+
+        const structured_data_editor = new StructuredDataEditor(accordeon_structured_data.accordeon_content);
     }
 
     renderMeta(container) {

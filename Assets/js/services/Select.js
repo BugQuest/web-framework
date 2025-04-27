@@ -113,18 +113,41 @@ export default class Select {
 
     toggle(enabled) {
         if (enabled) {
-            this.body.style.display = 'block';
-            void this.body.offsetHeight;
-            this.body.classList.add('active');
-            this.body.style.top = this.bottom ? '100%' : 'auto';
-            this.body.style.bottom = this.bottom ? 'auto' : '100%';
+            if (!this.bodyTeleport) {
+                this.bodyTeleport = this.body.cloneNode(true);
+                this.bodyTeleport.classList.add('teleport-select-body');
+                document.body.appendChild(this.bodyTeleport);
+
+                const rect = this.wrapper.getBoundingClientRect();
+                this.bodyTeleport.style.position = 'absolute';
+                this.bodyTeleport.style.top = `${rect.bottom + window.scrollY + 6}px`;
+                this.bodyTeleport.style.left = `${rect.left + window.scrollX}px`;
+                this.bodyTeleport.style.width = `${rect.width}px`;
+
+                this.bodyTeleport.addEventListener('click', this.clickHandler);
+
+                // Nouveaux listeners pour fermer au scroll / resize
+                this.scrollHandler = () => this.toggle(false);
+                this.resizeHandler = () => this.toggle(false);
+                window.addEventListener('scroll', this.scrollHandler, { passive: true });
+                window.addEventListener('resize', this.resizeHandler);
+            }
+            this.bodyTeleport.classList.add('active');
         } else {
-            this.body.classList.remove('active');
-            setTimeout(() => {
-                if (!this.body.classList.contains('active')) {
-                    this.body.style.display = 'none';
-                }
-            }, 300);
+            if (this.bodyTeleport) {
+                this.bodyTeleport.classList.remove('active');
+                setTimeout(() => {
+                    if (this.bodyTeleport && !this.bodyTeleport.classList.contains('active')) {
+                        this.bodyTeleport.removeEventListener('click', this.clickHandler);
+                        document.body.removeChild(this.bodyTeleport);
+                        this.bodyTeleport = null;
+
+                        // Nettoyer les listeners
+                        window.removeEventListener('scroll', this.scrollHandler);
+                        window.removeEventListener('resize', this.resizeHandler);
+                    }
+                }, 300);
+            }
         }
     }
 
@@ -197,5 +220,12 @@ export default class Select {
     destroy() {
         document.removeEventListener('click', this.closeHandler);
         this.body.removeEventListener('click', this.clickHandler);
+        if (this.bodyTeleport) {
+            this.bodyTeleport.removeEventListener('click', this.clickHandler);
+            document.body.removeChild(this.bodyTeleport);
+        }
+        if (this.scrollHandler) window.removeEventListener('scroll', this.scrollHandler);
+        if (this.resizeHandler) window.removeEventListener('resize', this.resizeHandler);
     }
+
 }

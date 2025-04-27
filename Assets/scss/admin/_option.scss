@@ -564,3 +564,53 @@
   }
 }
 
+.structured-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background: #0f172a;
+  border-radius: 6px;
+  border: 1px solid #0ff3;
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+      font-size: 0.9rem;
+      color: var(--color-primary, cyan);
+      margin-bottom: 0.25rem;
+      font-weight: bold;
+    }
+
+    textarea {
+      display: block;
+      background: #0f172a;
+      border: 1px solid #0ff3;
+      border-radius: 4px;
+      padding: 0.5rem;
+      color: white;
+      font-size: 1rem;
+      width: 100%;
+      resize: vertical;
+      min-height: 200px;
+      max-height: 400px;
+      overflow: auto;
+      transition: background 0.2s, border-color 0.2s;
+      box-sizing: border-box;
+    }
+
+    input,
+    select {
+      background: #0f172a;
+      border: 1px solid #0ff3;
+      border-radius: 4px;
+      padding: 0.5rem;
+      color: white;
+      font-size: 1rem;
+      width: 100%;
+    }
+  }
+}
