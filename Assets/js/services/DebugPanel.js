@@ -26,6 +26,9 @@ export class DebugPanel {
                 this.panel.classList.toggle('active');
                 localStorage.setItem('debugPanelActive', this.panel.classList.contains('active'));
             }
+            // Reset position via touche *
+            if (e.which === 42)
+                this.resetPosition();
         });
 
         // Bouton de fermeture
@@ -46,6 +49,7 @@ export class DebugPanel {
 
         this.kvSection = Builder.div('kv-section');
         this.kvWrap = Builder.div('wrap');
+        this.kvSection.appendChild(this.kvWrap);
         this.panel.appendChild(this.kvSection);
         this.kvValues = {}; // pour stocker les refs HTML des valeurs
 
@@ -65,8 +69,17 @@ export class DebugPanel {
     static onDrag(e) {
         if (!this.isDragging) return;
 
-        const x = e.clientX - this.offset.x;
-        const y = e.clientY - this.offset.y;
+        const panelWidth = this.panel.offsetWidth;
+        const panelHeight = this.panel.offsetHeight;
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        let x = e.clientX - this.offset.x;
+        let y = e.clientY - this.offset.y;
+
+        // Clamp pour empêcher de sortir de l'écran
+        x = Math.max(0, Math.min(x, windowWidth - panelWidth));
+        y = Math.max(0, Math.min(y, windowHeight - panelHeight));
 
         this.panel.style.left = `${x}px`;
         this.panel.style.top = `${y}px`;
@@ -131,7 +144,7 @@ export class DebugPanel {
                         : `${time.toFixed(2)} ms`;
 
                     return [
-                        { value: row.query, full: row.query }, // pour title
+                        {value: row.query, full: row.query}, // pour title
                         row.bindings.map(b => `"${b}"`).join(', '),
                         displayTime
                     ];
@@ -208,12 +221,36 @@ export class DebugPanel {
             });
     }
 
+    //set Pannel center of the screen
+    static resetPosition() {
+        localStorage.removeItem('debugPanelPosition');
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const panelWidth = this.panel.offsetWidth;
+        const panelHeight = this.panel.offsetHeight;
+        const x = (width - panelWidth) / 2;
+        const y = (height - panelHeight) / 2;
+        this.panel.style.left = `${x}px`;
+        this.panel.style.top = `${y}px`;
+        this.panel.style.bottom = 'auto';
+        this.panel.style.right = 'auto';
+        this.panel.style.transition = 'none';
+        this.panel.classList.remove('dragging');
+        this.panel.style.transition = '';
+        this.panel.classList.add('active');
+        localStorage.setItem('debugPanelActive', true);
+        localStorage.setItem('debugPanelPosition', JSON.stringify({x, y}));
+        this.panel.classList.add('active');
+        this.restoreFromStorage();
+    }
+
     static updateValue(key, value) {
-        if (!this.kvValues) return;
+        if (typeof value === 'object')
+            value = JSON.stringify(value, null, "\t");
 
         if (!this.kvValues[key]) {
             const line = Builder.div('debug-line');
-            line.innerHTML = `<strong>${key}</strong>: <span class="debug-value">${value}</span>`;
+            line.innerHTML = `<strong>${key}</strong>: <pre class="debug-value">${value}</pre>`;
             this.kvWrap.appendChild(line);
             this.kvValues[key] = line.querySelector('.debug-value');
         } else {

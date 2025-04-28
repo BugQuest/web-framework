@@ -1,4 +1,5 @@
 import Builder from '@framework/js/services/Builder.js';
+import {MediaBlock} from '@framework/js/options/MediaBlock';
 
 export default class OpenGraphEditor {
     constructor(container) {
@@ -37,6 +38,8 @@ export default class OpenGraphEditor {
             'og:audio:type': ''
         };
 
+        this.inputs = {};
+
         this.init();
     }
 
@@ -67,16 +70,39 @@ export default class OpenGraphEditor {
 
         for (const key in fields) {
             const fieldWrapper = Builder.div('input-wrapper');
-            const label = Builder.label(key);
-            const input = Builder.input_text('', fields[key]);
 
-            input.addEventListener('input', (e) => {
-                fields[key] = e.target.value;
-                this.updatePreview();
-            });
+            //if contain image
+            if (key.includes('image')) {
+                const image = new MediaBlock(
+                    'image',
+                    key,
+                    fields[key],
+                    {
+                        description: key,
+                        mimeTypes: ['image/jpeg', 'image/png', 'image/gif']
+                    },
+                    (option) => {
+                        image.getResizedMedia('twitter', (url) => {
+                            fields[key] = url;
+                            this.updatePreview();
+                            this.doChange();
+                        });
+                    },
+                );
+                image.render(fieldWrapper);
+            } else {
+                const label = Builder.label(key);
+                const input = Builder.input_text('', fields[key]);
+                input.addEventListener('input', (e) => {
+                    fields[key] = e.target.value;
+                    this.doChange();
+                    this.updatePreview();
+                });
+                this.inputs[key] = input;
+                fieldWrapper.appendChild(label);
+                fieldWrapper.appendChild(input);
+            }
 
-            fieldWrapper.appendChild(label);
-            fieldWrapper.appendChild(input);
             section.accordeon_content.appendChild(fieldWrapper);
         }
 
@@ -133,6 +159,15 @@ export default class OpenGraphEditor {
 
     getOpenGraphHtml() {
         return this.previewContainer.textContent;
+    }
+
+    onChange(callback) {
+        this.changeCallback = callback;
+    }
+
+    doChange() {
+        if (this.changeCallback)
+            this.changeCallback(this.getData());
     }
 
     getData() {

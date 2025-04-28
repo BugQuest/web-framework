@@ -231,6 +231,7 @@ class Image
                 'thumbnail' => ['width' => 150, 'height' => 150, 'crop' => true],
                 'medium' => ['width' => 300, 'height' => 300, 'crop' => false],
                 'large' => ['width' => 1024, 'height' => 1024, 'crop' => false],
+                'twitter' => ['width' => 1200, 'height' => 675, 'crop' => true],
             ]);
         }
     }

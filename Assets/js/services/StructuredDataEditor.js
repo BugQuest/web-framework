@@ -1,4 +1,6 @@
 import Builder from '@framework/js/services/Builder.js';
+import {MediaBlock} from '@framework/js/options/MediaBlock';
+import {LazySmooth} from '@framework/js/services/LazySmooth.js';
 
 export default class StructuredDataEditor {
     constructor(container) {
@@ -92,22 +94,46 @@ export default class StructuredDataEditor {
     renderForm() {
         this.formContainer.innerHTML = '';
 
+        // Réinitialiser les inputs
+        this.inputs = {};
+
         for (const key in this.currentData) {
             if (key.startsWith('@')) continue;
 
             const wrapper = Builder.div('input-wrapper');
             const label = Builder.label(key);
 
-            const input = Builder.input_text('', this.currentData[key]);
-            input.addEventListener('input', (e) => {
-                this.currentData[key] = e.target.value;
-                this.updatePreview();
-            });
+            if(key === 'image') {
+                const imageInput = new MediaBlock(
+                    'image',
+                    key,
+                    this.currentData[key],
+                    {
+                        description: this.fieldDescriptions[key],
+                        mimeTypes: ['image/jpeg', 'image/png', 'image/gif']
+                    },
+                    (option) => {
+                        imageInput.getResizedMedia('twitter', (url) => {
+                            this.currentData[key] = url;
+                            this.updatePreview();
+                            this.doChange();
+                        });
+                    },
+                );
+                imageInput.render(wrapper);
+            }
+            else {
+                const input = Builder.input_text('', this.currentData[key]);
+                input.addEventListener('input', (e) => {
+                    this.currentData[key] = e.target.value;
+                    this.doChange();
+                    this.updatePreview();
+                });
 
-            this.inputs[key] = input;
-
-            wrapper.appendChild(label);
-            wrapper.appendChild(input);
+                this.inputs[key] = input;
+                wrapper.appendChild(label);
+                wrapper.appendChild(input);
+            }
 
             // Ajout de l'explication si disponible
             if (this.fieldDescriptions[key]) {
@@ -118,6 +144,8 @@ export default class StructuredDataEditor {
 
             this.formContainer.appendChild(wrapper);
         }
+
+        LazySmooth.process();
     }
 
     updatePreview() {
@@ -140,6 +168,15 @@ export default class StructuredDataEditor {
 
     getStructuredData() {
         return this.preview.value;
+    }
+
+    onChange(callback) {
+        this.changeCallback = callback;
+    }
+
+    doChange() {
+        if(this.changeCallback)
+            this.changeCallback(this.getData());
     }
 
     getData() {
