@@ -43,7 +43,7 @@ export default class Builder {
 
     static textarea(placeholder = '', value = '', className = '') {
         let textarea = this.createEl('textarea', className);
-        if(placeholder) textarea.placeholder = placeholder;
+        if (placeholder) textarea.placeholder = placeholder;
         if (value) textarea.value = value;
         return textarea;
     }
@@ -375,5 +375,9 @@ export default class Builder {
             onChange: onChange,
             className: className,
         });
+    }
+
+    static pre(className = '') {
+        return this.createEl('pre', className);
     }
 }

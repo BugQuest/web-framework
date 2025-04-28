@@ -3,6 +3,7 @@ import Builder from '@framework/js/services/Builder';
 import {LazySmooth} from '@framework/js/services/LazySmooth';
 import {MediaBlock} from '@framework/js/options/MediaBlock';
 import StructuredDataEditor from '@framework/js/services/StructuredDataEditor';
+import OpenGraphEditor from '@framework/js/services/OpenGraphEditor';
 
 export default class PageSeo {
     constructor(element) {
@@ -23,7 +24,8 @@ export default class PageSeo {
         //og
         const accordeon_og = Builder.accordion('Open Graph');
         this.element.appendChild(accordeon_og.accordeon);
-        this.renderOg(accordeon_og.accordeon_content);
+        const og_editor = new OpenGraphEditor(accordeon_og.accordeon_content);
+        // this.renderOg(accordeon_og.accordeon_content);
 
         //twitter / x
         const accordeon_twitter = Builder.accordion('Twitter / X');
@@ -118,6 +120,7 @@ export default class PageSeo {
             [
                 {value: 'website', label: 'Website'},
                 {value: 'article', label: 'Article'},
+                {value: 'profile', label: 'Profile'},
             ],
             this.page?.seo?.og_type,
             (value) => {
