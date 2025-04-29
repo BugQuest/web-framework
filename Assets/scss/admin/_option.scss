@@ -597,40 +597,66 @@
     box-sizing: border-box;
 
     .input-wrapper {
+      position: relative;
+      padding: 0.5rem;
+      background: #172238;
+      border-radius: 6px;
+      border: 1px dashed #0ff4;
+      margin-bottom: 1rem;
+    }
+
+    .key-input {
+      font-weight: bold;
+      text-transform: none;
+    }
+
+    .field-actions {
       display: flex;
-      flex-direction: column;
       gap: 0.5rem;
-      width: 100%;
+      margin-top: 0.5rem;
 
-      .input-help {
+      button {
+        flex: none;
         font-size: 0.8rem;
-        color: #00f5ff;
-        opacity: 0.7;
-        margin-top: 0.25rem;
-      }
-
-      label {
-        font-size: 0.9rem;
-        color: var(--color-primary, cyan);
-        margin-bottom: 0.25rem;
-        font-weight: bold;
-      }
-
-      input {
-        background: #0f172a;
-        border: 1px solid #0ff3;
+        background: #0ff1;
+        border: 1px solid cyan;
+        padding: 0.25rem 0.5rem;
         border-radius: 4px;
-        padding: 0.5rem;
+        cursor: pointer;
         color: white;
-        font-size: 1rem;
-        width: 100%;
-        box-sizing: border-box; // <<< AJOUT ici important
         transition: background 0.2s, border-color 0.2s;
 
         &:hover {
-          background: #0ff1;
-          border-color: cyan;
-          color: cyan;
+          background: cyan;
+          color: #0f172a;
+        }
+      }
+    }
+
+    .sub-container {
+      margin-left: 1rem;
+      padding-left: 1rem;
+      border-left: 2px solid #0ff3;
+      margin-top: 0.5rem;
+    }
+
+    .subform-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      button {
+        background: #0f0a;
+        border: 1px solid #0ff4;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+        border-radius: 4px;
+        cursor: pointer;
+        color: cyan;
+        transition: background 0.2s, border-color 0.2s;
+
+        &:hover {
+          background: cyan;
+          color: #0f172a;
         }
       }
     }

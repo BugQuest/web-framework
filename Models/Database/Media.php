@@ -31,20 +31,20 @@ class Media extends Model
         return pathinfo($this->filename, PATHINFO_FILENAME);
     }
 
-    public function imageUrl(string $size = 'original', bool $absolute = false): ?string
+    public function imageUrl(string $size = 'original', bool $absolute = false, string $compression_method = 'auto'): ?string
     {
         if (!in_array($this->mime_type, ['image/jpeg', 'image/png', 'image/gif']))
             throw new \Exception('⚠️ Le fichier n\'est pas une image.');
 
-        return Image::getImageUrl($this, $size, $absolute);
+        return Image::getImageUrl($this, $size, $absolute, $compression_method);
     }
 
-    public function imageHtml(string $size = 'original', ?string $alt = '', array $attributes = []): ?string
+    public function imageHtml(string $size = 'original', ?string $alt = '', array $attributes = [], string $compression_method = 'auto'): ?string
     {
         if (!in_array($this->mime_type, ['image/jpeg', 'image/png', 'image/gif']))
             throw new \Exception('⚠️ Le fichier n\'est pas une image.');
 
-        return Image::getImageHtml($this, $size, $alt, $attributes);
+        return Image::getImageHtml($this, $size, $alt, $attributes, $compression_method);
     }
 
     /**

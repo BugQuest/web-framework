@@ -159,9 +159,9 @@ new RouteGroup(
         ),
         new Route(
             name: 'medias.resize',
-            _slug: '/medias/resize/{id:int}/{size:slug}',
+            _slug: '/medias/resize/{id:int}',
             _callback: MediasController::class . '::resize',
-            _methods: ['GET']
+            _methods: ['POST']
         ),
         new Route(
             name: 'medias.sizes',

@@ -252,14 +252,16 @@ export default class PageSeo {
 
         const twitter_image = new MediaBlock(
             'twitter_image',
-            'Twitter image',
-            this.page?.seo?.twitter_image,
+            'Image',
+            this.page?.seo?.twitter?.image || null,
             {
                 description: 'Image to use for Twitter',
-                mimeTypes: ['image/jpeg', 'image/png', 'image/gif']
+                mimeTypes: ['image/jpeg', 'image/png', 'image/gif'],
+                size: 'twitter',
+                compression_method: 'none'
             },
             (option) => {
-                this.editSubValue('twitter', 'image', option.value);
+                this.editSubValue('twitter', 'image', option.getValue());
             },
         );
         twitter_image.render(twitter_form_group_title);

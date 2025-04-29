@@ -39,4 +39,8 @@ export class OptionBlock {
         else
             throw new Error('onChange is not assigned or is not a function');
     }
+
+    getValue() {
+        return this.value;
+    }
 }

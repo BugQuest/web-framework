@@ -8,6 +8,7 @@ use BugQuest\Framework\Models\Response;
 use BugQuest\Framework\Services\Assets;
 use BugQuest\Framework\Services\Image;
 use BugQuest\Framework\Services\MediaManager;
+use BugQuest\Framework\Services\Payload;
 use BugQuest\Framework\Services\View;
 use mysql_xdevapi\SqlStatementResult;
 
@@ -167,14 +168,24 @@ abstract class MediasController
         }
     }
 
-    public static function resize(int $id, string $size): Response
+    public static function resize(int $id): Response
     {
+        $payload = Payload::fromRawInput()->expectObject(
+            [
+                'compression_method' => ['string', 'auto'],
+                'size' => ['string', 'original'],
+            ]
+        );
+
+        $compression_method = $payload['compression_method'] ?? 'auto';
+        $size = $payload['size'] ?? 'original';
+
         $media = MediaManager::getById($id);
         if (!$media)
             return Response::json404('Media not found');
 
         try {
-            return Response::json(['url' => $media->imageUrl($size)]);
+            return Response::json(['url' => $media->imageUrl($size, false, $compression_method)]);
         } catch (\Exception $e) {
             return Response::jsonServerError($e->getMessage());
         }

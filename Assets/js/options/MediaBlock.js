@@ -9,8 +9,13 @@ export class MediaBlock extends OptionBlock {
         this.type = 'media';
         this.mimeTypes = options.mimeTypes || [];
         this.media = null;
+        if (typeof value === 'object' && value !== null && "id" in value) {
+            this.media = value;
+            this.value = value.id;
+        }
         this.sizes = options.sizes || [];
-        this.size = null;
+        this.size = options.size || 'original';
+        this.compression_method = options.compression_method || 'auto';
         this.resized = {};
     }
 
@@ -25,30 +30,22 @@ export class MediaBlock extends OptionBlock {
                 null,
                 (size) => {
                     this.size = size;
+                    this.updatePreview()
                 });
             wrapper.appendChild(select_size.getElement());
         }
 
-        const preview = Builder.div('media-preview');
-
-        preview.textContent = this.value?.filename || __('aucun média sélectionné', 'options');
-        preview.dataset.tooltip = __('Cliquez pour changer le média', 'options');
-        preview.addEventListener('click', () => {
+        this.preview = Builder.div('media-preview');
+        this.preview.dataset.tooltip = __('Cliquez pour changer le média', 'options');
+        this.preview.addEventListener('click', () => {
             MediaPicker.open(this.mimeTypes, (media) => {
                 this.media = media;
                 this.value = media.id;
-                preview.innerHTML = '';
-                preview.appendChild(this.getPreview(media));
-                this.notifyChange();
+                this.updatePreview();
             });
         });
 
-        if (this.value) {
-            preview.appendChild(this.getPreview(this.value));
-            this.value = this.value.id;
-        }
-
-        wrapper.appendChild(preview);
+        wrapper.appendChild(this.preview);
 
         // Label
         if (this.label)
@@ -56,32 +53,38 @@ export class MediaBlock extends OptionBlock {
 
         container.appendChild(wrapper);
 
-        this.reset = () => {
-            preview.innerHTML = '';
-            preview.textContent = __('aucun média sélectionné', 'options');
-            preview.dataset.tooltip = __('Cliquez pour changer le média', 'options');
-            this.value = null;
-        };
+        this.updatePreview(true);
+    }
 
-        this.setValue = (value) => {
-            if (typeof value !== 'object') {
-                this.reset();
-                return;
-            }
+    reset() {
+        this.media = null;
+        this.value = null;
+        this.updatePreview(true);
+    }
 
-            this.value = value;
-            preview.innerHTML = '';
-            preview.appendChild(this.getPreview(value));
-            preview.textContent = '';
-            preview.dataset.tooltip = __('Cliquez pour changer le média', 'options');
-        }
+    setMedia(media) {
+        this.media = media;
+        this.value = media.id;
+        this.updatePreview(true);
+    }
+
+    getMediaUrl() {
+        let cache_key = `${this.media.id}-${this.size}`;
+        if (this.compression_method)
+            cache_key += `-${this.compression_method}`;
+
+        return this.resized[cache_key] || this.media?.url || null;
+    }
+
+    setSize(size) {
+        this.size = size;
     }
 
     getMedia() {
         return this.media;
     }
 
-    getResizedMedia(size, responseCallback) {
+    getResizedMedia(responseCallback) {
 
         if (!this.media) {
             responseCallback(null);
@@ -93,20 +96,37 @@ export class MediaBlock extends OptionBlock {
             return;
         }
 
-        if (this.resized[size]) {
-            responseCallback(this.resized[size]);
+        let cache_key = `${this.media.id}-${this.size}`;
+        if (this.compression_method)
+            cache_key += `-${this.compression_method}`;
+
+        if (this.size === 'original')
+            this.resized[cache_key] = '/' + this.media.url;
+
+        if (this.resized[cache_key]) {
+            responseCallback(this.resized[cache_key]);
             return;
         }
 
-        if (size && size !== 'original') {
+        if (this.size && this.size !== 'original') {
             try {
-                fetch(`/admin/api/medias/resize/${this.media.id}/${size}`)
+                fetch(`/admin/api/medias/resize/${this.media.id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        compression_method: this.compression_method,
+                        size: this.size,
+                    })
+                })
                     .then(res => {
                         if (!res.ok) throw new Error('Erreur HTTP');
                         return res.json();
                     })
                     .then(data => {
-                        responseCallback(data.url || url);
+                        this.resized[cache_key] = data.url || '/' + this.media.url;
+                        responseCallback(this.resized[cache_key]);
 
                     })
             } catch (e) {
@@ -116,10 +136,19 @@ export class MediaBlock extends OptionBlock {
         }
     }
 
-    getPreview(media) {
+    updatePreview(init = false) {
+        this.preview.innerHTML = '';
+
+        this.preview.textContent = this.media?.filename || __('aucun média sélectionné', 'options');
+
+        if (!this.media) {
+            if (!init) this.notifyChange();
+            return;
+        }
+
         let className = 'media-current';
 
-        switch (media?.mime_type) {
+        switch (this.media?.mime_type) {
             case 'image/gif':
                 className += ' gif';
                 break;
@@ -137,13 +166,23 @@ export class MediaBlock extends OptionBlock {
         }
 
         //return img if media is an image, else return icon (media.mime_type)
-        if (media?.mime_type?.startsWith('image/')) {
-            return Builder.img('/' + media.path, media.filename, className);
+        if (['image/jpeg', 'image/jpg', 'image/png'].includes(this.media?.mime_type)) {
+            this.getResizedMedia((url) => {
+                this.preview.appendChild(Builder.img(url, this.media.filename, className));
+                if (!this.init)
+                    this.notifyChange();
+            })
+        } else if (['image/svg+xml', 'image/svg'].includes(this.media?.mime_type)) {
+            this.preview.appendChild(Builder.img('/' + this.media.url, this.media.filename, className));
+            if (!this.init)
+                this.notifyChange();
         } else {
-            const icon = this.getIconForMime(media.mime_type);
+            const icon = this.getIconForMime(this.media.mime_type);
             let span = Builder.span(className);
             span.textContent = icon;
-            return span;
+            this.preview.appendChild(span);
+            if (!this.init)
+                this.notifyChange();
         }
     }
 

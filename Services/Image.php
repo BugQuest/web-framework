@@ -8,10 +8,12 @@ class Image
 {
     private static array $_sizes = [];
 
+    private static string $_compression_method = 'auto';
+
     /**
      * @throws \Exception
      */
-    public static function getImageUrl(Media|string|int|null $media, string $size = 'original', bool $absolute = false): ?string
+    public static function getImageUrl(Media|string|int|null $media, string $size = 'original', bool $absolute = false, string $compression_method = 'auto'): ?string
     {
         if (!extension_loaded('imagick'))
             throw new \Exception('⚠️ L’extension Imagick est requise pour le traitement des images.');
@@ -27,6 +29,9 @@ class Image
             if (!isset(self::$_sizes[$size]))
                 throw new \Exception("Taille d'image inconnue : $size");
 
+        self::$_compression_method = $compression_method;
+        if (self::$_compression_method === '' || self::$_compression_method === null)
+            self::$_compression_method = 'auto';
 
         try {
             $media = self::resolveMedia($media);
@@ -49,10 +54,10 @@ class Image
         }
     }
 
-    public static function getImageHtml(Media|string|int|null $media, string $size = 'original', ?string $alt = '', array $attributes = []): ?string
+    public static function getImageHtml(Media|string|int|null $media, string $size = 'original', ?string $alt = '', array $attributes = [], string $compression_method = 'auto'): ?string
     {
         try {
-            $url = self::getImageUrl($media, $size);
+            $url = self::getImageUrl($media, $size, false, $compression_method);
             $attrString = '';
             foreach ($attributes as $k => $v)
                 $attrString .= " $k=\"" . htmlspecialchars($v, ENT_QUOTES) . "\"";
@@ -185,7 +190,10 @@ class Image
             'avif' => 'avif'
         ];
 
-        $method = OptionService::get('images', 'compression_method');
+        if (self::$_compression_method === 'auto')
+            $method = OptionService::get('images', 'compression_method');
+        else
+            $method = self::$_compression_method;
 
         if (!isset($formatMap[$method])) return $path;
 
@@ -232,6 +240,8 @@ class Image
                 'medium' => ['width' => 300, 'height' => 300, 'crop' => false],
                 'large' => ['width' => 1024, 'height' => 1024, 'crop' => false],
                 'twitter' => ['width' => 1200, 'height' => 675, 'crop' => true],
+                'og:image' => ['width' => 1200, 'height' => 630, 'crop' => true],
+                'std:image' => ['width' => 1200, 'height' => 900, 'crop' => true],
             ]);
         }
     }

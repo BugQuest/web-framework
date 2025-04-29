@@ -23,8 +23,8 @@ export default class OpenGraphEditor {
         };
 
         this.structuredFields = {
-            'og:image:secure_url': '',
-            'og:image:type': '',
+            'og:image:secure_url': '', //An alternate url to use if the webpage requires HTTPS
+            'og:image:type': '', //A MIME type for this image.
             'og:image:width': '',
             'og:image:height': '',
             'og:image:alt': '',
@@ -72,21 +72,21 @@ export default class OpenGraphEditor {
             const fieldWrapper = Builder.div('input-wrapper');
 
             //if contain image
-            if (key.includes('image')) {
+            if (['og:image', 'og:image:secure_url'].includes(key)) {
                 const image = new MediaBlock(
                     'image',
                     key,
                     fields[key],
                     {
                         description: key,
-                        mimeTypes: ['image/jpeg', 'image/png', 'image/gif']
+                        mimeTypes: ['image/jpeg', 'image/png', 'image/gif'],
+                        size: 'og:image',
+                        compression_method: 'none',
                     },
                     (option) => {
-                        image.getResizedMedia('twitter', (url) => {
-                            fields[key] = url;
-                            this.updatePreview();
-                            this.doChange();
-                        });
+                        fields[key] = option.getValue() || null //this is image id, modified on render
+                        this.updatePreview();
+                        this.doChange();
                     },
                 );
                 image.render(fieldWrapper);
