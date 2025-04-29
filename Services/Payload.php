@@ -6,6 +6,9 @@ class Payload
 {
     protected array $data;
 
+    /**
+     * @throws \Exception
+     */
     public static function fromRawInput(): self
     {
         $raw = file_get_contents('php://input');
@@ -33,6 +36,9 @@ class Payload
         return $this->data;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function expectArrayOf(array $schema): array
     {
         if (!is_array($this->data)) {
@@ -57,6 +63,9 @@ class Payload
         return $this->validateItem($this->data, $schema);
     }
 
+    /**
+     * @throws \Exception
+     */
     protected function validateItem(array $item, array $schema, int $index = -1): array
     {
         $validated = [];
@@ -100,21 +109,16 @@ class Payload
 
     protected function validateMultipleTypes(mixed $value, array $types): bool
     {
-        foreach ($types as $type) {
-            if ($this->validateType($value, $type)) {
-                return true;
-            }
-        }
-        return false;
+        return array_any($types, fn($type) => $this->validateType($value, $type));
     }
 
     protected function validateType(mixed $value, string $type): bool
     {
         return match ($type) {
             'int' => is_int($value),
-            'string' => is_string($value),
-            'slug' => is_string($value),
+            'string', 'slug' => is_string($value),
             'array' => is_array($value),
+            'bool' => is_bool($value),
             'null' => is_null($value),
             default => false,
         };

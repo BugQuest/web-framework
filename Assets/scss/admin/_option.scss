@@ -676,6 +676,12 @@
     resize: vertical;
     box-sizing: border-box; // <<< aussi ici pour ton textarea
   }
+
+  &-actions{
+    display: flex;
+    gap: 1rem;
+    margin-top: .4rem;
+  }
 }
 
 .ogp-editor {

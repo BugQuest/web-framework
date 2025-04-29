@@ -103,7 +103,6 @@ export default class StructuredDataEditor {
             "brand": "Marque ou fabricant du produit."
         };
 
-
         this.currentData = {};
         this.inputs = {};
 
@@ -115,13 +114,22 @@ export default class StructuredDataEditor {
         const wrapper = Builder.div('structured-data');
         this.container.appendChild(wrapper);
 
-        const types = Object.keys(this.schemaTypes).map(type => ({label: type, value: type}));
+        const types = Object.keys(this.schemaTypes).map(type => ({ label: type, value: type }));
 
         const group = Builder.div('structured-data-group');
         wrapper.appendChild(group);
 
         this.selectType = Builder.select('Charger un Modèle', types, null, (type) => this.onTypeChange(type));
         group.appendChild(this.selectType.getElement());
+
+        const importExportWrapper = Builder.div('structured-actions');
+        const importButton = Builder.button('📥 Importer', 'button info', () => this.importData());
+        importButton.dataset.tooltip = 'Importer un json de données structurées';
+        const exportButton = Builder.button('📤 Exporter', 'button info', () => this.exportData());
+        exportButton.dataset.tooltip = 'Exporter les données structurées au format json';
+        importExportWrapper.appendChild(importButton);
+        importExportWrapper.appendChild(exportButton);
+        group.appendChild(importExportWrapper);
 
         const typeInputWrapper = Builder.div('input-wrapper');
         const typeLabel = Builder.label('@type');
@@ -237,8 +245,7 @@ export default class StructuredDataEditor {
                 this.updatePreview();
                 this.doChange();
             },
-            () => {
-            },
+            () => {},
             {
                 title: 'Ajouter un champ',
                 message: 'Nom du nouveau champ :',
@@ -261,8 +268,7 @@ export default class StructuredDataEditor {
                 this.updatePreview();
                 this.doChange();
             },
-            () => {
-            },
+            () => {},
             {
                 title: 'Ajouter un sous-objet',
                 message: 'Nom du nouveau sous-objet :',
@@ -335,5 +341,41 @@ export default class StructuredDataEditor {
         }
         this.renderForm();
         this.updatePreview();
+    }
+
+    importData() {
+        PromptDialog.show(
+            (json) => {
+                try {
+                    const data = JSON.parse(json);
+                    this.loadData(data);
+                    Toast.success('Importation réussie.');
+                } catch (e) {
+                    Toast.error('JSON invalide.');
+                }
+            },
+            () => {},
+            {
+                title: 'Importer des données',
+                message: 'Collez votre JSON ici :',
+                placeholder: '{...}',
+                defaultValue: ''
+            }
+        );
+    }
+
+    exportData() {
+        const data = this.getData();
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'structured-data.json';
+        a.click();
+
+        URL.revokeObjectURL(url);
+        Toast.success('Exportation effectuée.');
     }
 }

@@ -250,6 +250,12 @@ new RouteGroup(
             _callback: PageBuilderController::class . '::renderBlock',
             _methods: ['POST']
         ),
+        new Route(
+            name: 'page.seo.save',
+            _slug: '/page/seo/save/{id:int}',
+            _callback: PageSeoController::class . '::save',
+            _methods: ['POST']
+        ),
         /**
          * Robots.txt
          */

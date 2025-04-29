@@ -105,9 +105,7 @@ export default class PageSeo {
 
         //action
         this.actions_el = Builder.div('seo-actions');
-        const save = Builder.button('Save', 'submit', () => {
-
-        });
+        const save = Builder.button('Save', 'submit', () => this.save());
         const reset = Builder.button('Reset', 'reset', () => {
             this.page.seo = JSON.parse(JSON.stringify(this.backup));
             structured_data_editor.loadData(this.page.seo.structured_data)
@@ -306,7 +304,34 @@ export default class PageSeo {
             twitter_title.value = this.page?.seo?.twitter?.title || '';
             twitter_description.value = this.page?.seo?.twitter?.description || '';
             twitter_card.setValue(this.page?.seo?.twitter?.card);
-            twitter_image.setValue(this.page?.seo?.twitter?.image);
+            const media = this.page?.seo?.twitter?.image
+            if (media)
+                twitter_image.setMedia(media);
+            else
+                twitter_image.reset();
         };
+    }
+
+    save() {
+        const payload = JSON.stringify(this.page.seo)
+        const url = '/admin/api/page/seo/save/' + this.page.id;
+
+        const headers = {
+            'Content-Type': 'application/json',
+        };
+
+        fetch(url, {
+            method: 'POST',
+            headers: headers,
+            body: payload,
+        }).then((response) => {
+            return response.json();
+        }).then((data) => {
+            if (data.success) {
+                this.backup = JSON.parse(JSON.stringify(this.page.seo));
+                this.actions_el.classList.remove('active');
+                Toast.success(data.message);
+            }
+        })
     }
 }

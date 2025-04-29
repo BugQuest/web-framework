@@ -33,11 +33,15 @@ readonly class Response
     public static function jsonSuccess(
         string $message = '',
         array  $headers = [],
+        array  $data = [],
     ): static
     {
         $content = ['success' => true,];
         if ($message)
             $content['message'] = $message;
+
+        if (!empty($data))
+            $content = array_merge($content, $data);
 
         return new static(
             content: $content,
@@ -49,11 +53,15 @@ readonly class Response
     public static function jsonError(
         string $message = '',
         array  $headers = [],
+        array  $data = [],
     ): static
     {
         $content = ['success' => false,];
         if ($message)
             $content['message'] = $message;
+
+        if (!empty($data))
+            $content = array_merge($content, $data);
 
         return new static(
             content: $content,
