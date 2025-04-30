@@ -21,4 +21,16 @@ $page->registerBlock(
     )
 );
 
+$page->registerBlock(
+    new OptionBlock(
+        type: 'string',
+        key: 'main_domain',
+        label: __("Domaine principal", 'bugquest', 'fr'),
+        options: [
+            'description' => __("Definir le domaine principal de votre site", 'admin', 'fr'),
+        ],
+        group: 'Global',
+    )
+);
+
 Admin::addOptionPage($page);

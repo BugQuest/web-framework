@@ -5,6 +5,7 @@ namespace BugQuest\Framework\Controllers\Admin;
 use BugQuest\Framework\Models\Database\Page;
 use BugQuest\Framework\Models\Response;
 use BugQuest\Framework\Services\Assets;
+use BugQuest\Framework\Services\OptionService;
 use BugQuest\Framework\Services\Payload;
 
 class PageSeoController
@@ -30,6 +31,7 @@ class PageSeoController
         return Response::view('@framework/admin/page/seo.twig', [
             'page' => $page,
             'page_encoded' => json_encode($page),
+            'main_domain' => OptionService::get('cms', 'main_domain'),
         ]);
     }
 

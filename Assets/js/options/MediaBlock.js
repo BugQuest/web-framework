@@ -100,8 +100,11 @@ export class MediaBlock extends OptionBlock {
         if (this.compression_method)
             cache_key += `-${this.compression_method}`;
 
-        if (this.size === 'original')
-            this.resized[cache_key] = '/' + this.media.url;
+        if (this.size === 'original') {
+            this.resized[cache_key] = '/' + this.media.path;
+            responseCallback(this.resized[cache_key]);
+            return;
+        }
 
         if (this.resized[cache_key]) {
             responseCallback(this.resized[cache_key]);
@@ -125,7 +128,7 @@ export class MediaBlock extends OptionBlock {
                         return res.json();
                     })
                     .then(data => {
-                        this.resized[cache_key] = data.url || '/' + this.media.url;
+                        this.resized[cache_key] = data.url || '/' + this.media.path;
                         responseCallback(this.resized[cache_key]);
 
                     })
@@ -169,20 +172,17 @@ export class MediaBlock extends OptionBlock {
         if (['image/jpeg', 'image/jpg', 'image/png'].includes(this.media?.mime_type)) {
             this.getResizedMedia((url) => {
                 this.preview.appendChild(Builder.img(url, this.media.filename, className));
-                if (!this.init)
-                    this.notifyChange();
+                if (!init) this.notifyChange();
             })
         } else if (['image/svg+xml', 'image/svg'].includes(this.media?.mime_type)) {
-            this.preview.appendChild(Builder.img('/' + this.media.url, this.media.filename, className));
-            if (!this.init)
-                this.notifyChange();
+            this.preview.appendChild(Builder.img('/' + this.media.path, this.media.filename, className));
+            if (!init) this.notifyChange();
         } else {
             const icon = this.getIconForMime(this.media.mime_type);
             let span = Builder.span(className);
             span.textContent = icon;
             this.preview.appendChild(span);
-            if (!this.init)
-                this.notifyChange();
+            if (!init) this.notifyChange();
         }
     }
 
