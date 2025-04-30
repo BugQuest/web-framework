@@ -33,6 +33,14 @@ export default class Builder {
         return this.createEl('label', className, text);
     }
 
+    static input_hidden(name = '', value = '') {
+        let input = this.createEl('input', 'hidden');
+        input.type = 'hidden';
+        if (name) input.name = name;
+        if (value) input.value = value;
+        return input;
+    }
+
     static input_text(placeholder = '', value = '', className = '') {
         let input = this.createEl('input', className);
         input.type = 'text';

@@ -20,7 +20,7 @@ export default class PageSeo {
                 redirect_to: '',
                 no_index: false,
                 no_follow: false,
-                canonical: '',
+                canonical_url: '',
                 meta: {},
                 open_graph: {},
                 structured_data: {},
@@ -46,11 +46,9 @@ export default class PageSeo {
 
     editSubValue(key, subKey, value) {
         if (key in this.page.seo) {
-            if (subKey in this.page.seo[key]) {
-                this.page.seo[key][subKey] = value;
-            } else {
-                this.page.seo[key][subKey] = value;
-            }
+            if (Array.isArray(this.page.seo[key]))
+                this.page.seo[key] = {}
+            this.page.seo[key][subKey] = value;
         } else {
             this.page.seo[key] = {};
             this.page.seo[key][subKey] = value;
@@ -149,9 +147,9 @@ export default class PageSeo {
         const no_index_group = Builder.div('form-group');
         const no_follow_group = Builder.div('form-group');
 
-        const canonical = Builder.input_text('Canonical URL...', this.page?.seo?.canonical, 'flex-1');
+        const canonical = Builder.input_text('Canonical URL...', this.page?.seo?.canonical_url, 'flex-1');
         canonical.addEventListener('input', (e) => {
-            this.editValue('canonical', e.target.value);
+            this.editValue('canonical_url', e.target.value);
         });
         const canonical_label = Builder.label('Canonical URL');
         const canonical_group = Builder.div('form-group');
@@ -177,7 +175,7 @@ export default class PageSeo {
             redirect_to.value = this.page?.seo?.redirect_to || '';
             no_index.toggle(this.page?.seo?.no_index || false);
             no_follow.toggle(this.page?.seo?.no_follow || false);
-            canonical.value = this.page?.seo?.canonical || '';
+            canonical.value = this.page?.seo?.canonical_url || '';
         }
     }
 
@@ -195,7 +193,7 @@ export default class PageSeo {
         const meta_form_group_title = Builder.div('form-group');
         meta_body.appendChild(meta_form_group_title);
         const meta_title_label = Builder.label('Title');
-        const meta_title = Builder.input_text(this.page?.title || 'Meta title...', this.page?.seo?.meta_title, 'flex-1');
+        const meta_title = Builder.input_text(this.page?.title || 'Meta title...', this.page?.seo?.meta?.title, 'flex-1');
         meta_title.addEventListener('input', (e) => {
             this.editSubValue('meta', 'title', e.target.value);
         });
@@ -205,7 +203,7 @@ export default class PageSeo {
         const meta_form_group_description = Builder.div('form-group');
         meta_body.appendChild(meta_form_group_description);
         const meta_description_label = Builder.label('Description');
-        const meta_description = Builder.textarea('Meta description...', this.page?.seo?.meta_description, 'fullw');
+        const meta_description = Builder.textarea('Meta description...', this.page?.seo?.meta?.description, 'fullw');
         meta_description.addEventListener('input', (e) => {
             this.editSubValue('meta', 'description', e.target.value);
         });
@@ -215,7 +213,7 @@ export default class PageSeo {
 
         const meta_form_group_keywords = Builder.div('form-group');
         meta_body.appendChild(meta_form_group_keywords);
-        const meta_keywords = Builder.keywords('Meta Keywords', 'Ajouter un mot clé...', this.page?.seo?.meta_keywords?.split(','), (values) => {
+        const meta_keywords = Builder.keywords('Meta Keywords', 'Ajouter un mot clé...', this.page?.seo?.meta?.keywords?.split(','), (values) => {
             this.editSubValue('meta', 'keywords', values.join(','));
         }, 'fullw');
         meta_form_group_keywords.appendChild(meta_keywords.getElement());
@@ -331,6 +329,8 @@ export default class PageSeo {
                 this.backup = JSON.parse(JSON.stringify(this.page.seo));
                 this.actions_el.classList.remove('active');
                 Toast.success(data.message);
+            } else {
+                Toast.error(data.message || 'Error saving page SEO');
             }
         })
     }

@@ -644,6 +644,7 @@
       display: flex;
       gap: 0.5rem;
       margin-top: 1rem;
+
       button {
         background: #0f0a;
         border: 1px solid #0ff4;
@@ -677,7 +678,7 @@
     box-sizing: border-box; // <<< aussi ici pour ton textarea
   }
 
-  &-actions{
+  &-actions {
     display: flex;
     gap: 1rem;
     margin-top: .4rem;
@@ -686,42 +687,33 @@
 
 .ogp-editor {
   display: flex;
-  flex-direction: row;
-  align-items: flex-start; // important pour éviter un align-items: stretch foireux
-  gap: 2rem;
-  width: 100%;
+  gap: 1rem;
+  margin: 2rem 0;
+
+  .ogp-form {
+    flex: 1 1 60%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .ogp-preview-wrapper {
+    flex: 1 1 40%;
+    align-self: flex-start;
+
+    .ogp-preview {
+      position: sticky;
+      top: 1rem;
+      max-height: 80vh;
+      overflow: auto;
+      padding: 1rem;
+      border: 1px solid #0ff3;
+      border-radius: 4px;
+      background: #111;
+    }
+  }
 }
 
-.ogp-form {
-  flex: 1 1 60%;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  overflow-y: auto;
-  max-height: 100%;
-}
-
-.ogp-preview-wrapper {
-  flex: 1 1 40%;
-  position: sticky;
-  top: 1rem;
-  background: #0f172a;
-  border: 1px solid #0ff3;
-  border-radius: 6px;
-  padding: 1rem;
-  height: fit-content;
-  max-height: calc(100vh - 2rem);
-  overflow: auto;
-  box-sizing: border-box;
-}
-
-.ogp-preview {
-  color: white;
-  font-family: monospace;
-  font-size: 0.9rem;
-  white-space: pre-wrap;
-  min-height: 300px;
-}
 
 .form-section {
   display: flex;
@@ -744,6 +736,27 @@
   flex-direction: column;
   gap: 0.3rem;
   padding-top: 1rem;
+
+  textarea {
+    background: #0f172a;
+    border: 1px solid #0ff3;
+    border-radius: 4px;
+    padding: 0.5rem;
+    color: white;
+    font-size: 1rem;
+    width: 100%;
+    resize: vertical;
+    min-height: 200px;
+    max-height: 400px;
+    overflow: auto;
+    transition: background 0.2s, border-color 0.2s;
+    box-sizing: border-box;
+
+    &:focus {
+      background: #0ff1;
+      border-color: #0ff3;
+    }
+  }
 
   label {
     font-size: 0.85rem;

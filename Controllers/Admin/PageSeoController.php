@@ -16,7 +16,7 @@ class PageSeoController
         if (!$page)
             return Response::error404();
 
-        $page->seo();
+        $page->seo;
 
         Assets::add(
             group: 'admin',
@@ -36,14 +36,14 @@ class PageSeoController
     public static function save(int $page_id): Response
     {
         $payload = Payload::fromRawInput()->expectObject([
-            'redirect_to' => ['string', ''],
-            'no_index' => ['bool', false],
-            'no_follow' => ['bool', false],
-            'canonical' => ['string', ''],
-            'meta' => ['array', []],
-            'open_graph' => ['array', []],
-            'structured_data' => ['array', []],
-            'twitter' => ['array', []]
+            'redirect_to' => ['string|null', ''],
+            'no_index' => ['bool|null', false],
+            'no_follow' => ['bool|null', false],
+            'canonical_url' => ['string|null', ''],
+            'meta' => ['array|null', []],
+            'open_graph' => ['array|null', []],
+            'structured_data' => ['array|null', []],
+            'twitter' => ['array|null', []]
         ]);
 
         $page = Page::find($page_id);
@@ -56,7 +56,7 @@ class PageSeoController
                 'redirect_to' => '',
                 'no_index' => false,
                 'no_follow' => false,
-                'canonical' => '',
+                'canonical_url' => '',
                 'meta' => [],
                 'open_graph' => [],
                 'structured_data' => [],
@@ -68,7 +68,7 @@ class PageSeoController
             'redirect_to' => $payload['redirect_to'],
             'no_index' => $payload['no_index'],
             'no_follow' => $payload['no_follow'],
-            'canonical' => $payload['canonical'],
+            'canonical_url' => $payload['canonical_url'],
             'meta' => $payload['meta'],
             'open_graph' => $payload['open_graph'],
             'structured_data' => $payload['structured_data'],

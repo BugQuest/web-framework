@@ -127,9 +127,9 @@ export default class Select {
                 this.bodyTeleport.addEventListener('click', this.clickHandler);
 
                 // Nouveaux listeners pour fermer au scroll / resize
-                this.scrollHandler = () => this.toggle(false);
+                // this.scrollHandler = () => this.toggle(false);
                 this.resizeHandler = () => this.toggle(false);
-                window.addEventListener('scroll', this.scrollHandler, { passive: true });
+                // window.addEventListener('scroll', this.scrollHandler, { passive: true });
                 window.addEventListener('resize', this.resizeHandler);
             }
             this.bodyTeleport.classList.add('active');
