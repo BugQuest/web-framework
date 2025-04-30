@@ -481,6 +481,7 @@ export default class MediaGallery {
                 try {
                     const response = JSON.parse(xhr.responseText);
                     this.replaceCardWithMedia(tempCard_el, response);
+                    LazySmooth.process();
                 } catch (err) {
 
                     tempCard_el.innerHTML = `<div class="error">❌ ${__('Réponse invalide', 'admin')}</div>`;

@@ -248,7 +248,7 @@ export default class PageBuilder {
             html: `${html}`,
             css: `${css}`,
             builder_data: builderData,
-            status: this.page.status ?? 'draft',
+            status: this.page.status || 'draft',
         };
 
         try {

@@ -25,6 +25,11 @@ export class PageListManager {
         this.element.appendChild(this.pagination);
 
         this.actionsContainer = Builder.div('page-list-actions');
+        const addPageBtn = Builder.button('➕', 'button info', () => {
+            window.location.href = '/admin/page';
+        });
+        addPageBtn.dataset.tooltip = 'Ajouter une page';
+        this.actionsContainer.appendChild(addPageBtn);
         this.filter_status = Builder.selectMultiple(
             'Status',
             [
