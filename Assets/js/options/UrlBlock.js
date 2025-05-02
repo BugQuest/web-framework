@@ -45,5 +45,11 @@ export class UrlBlock extends OptionBlock {
         wrapper.appendChild(button);
 
         container.appendChild(wrapper);
+
+        this.onReset = function (optionBlock) {
+            txt_url.innerText = this.value?.url ? this.value.url : '';
+            txt_title.innerText = this.value?.title ? this.value.title : 'Aucune URL sélectionnée';
+            txt_blank.innerText = this.value?.blank ? 'Ouvrir dans un nouvel onglet' : 'Ouvrir dans la même fenêtre';
+        }
     }
 }

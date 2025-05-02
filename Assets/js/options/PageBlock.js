@@ -39,5 +39,10 @@ export class PageBlock extends OptionBlock {
         });
         wrapper.appendChild(button);
         container.appendChild(wrapper);
+
+        this.onReset = function (optionBlock) {
+            txt_id.innerText = this.value?.id ? this.value.id : '';
+            txt_title.innerText = this.value?.title ? this.value.title : 'Aucun page sélectionnée';
+        }
     }
 }

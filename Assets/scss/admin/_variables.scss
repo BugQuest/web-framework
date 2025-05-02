@@ -36,6 +36,7 @@ $breakpoints: (
   --border-info: rgba(0, 255, 255, 0.5);
 
   --gradient-primary: linear-gradient(to right, #00f7ff, #00ffc8);
+  --color-fallback: #0a1817; // Couleur dominante du gradient
   --gradient-secondary: radial-gradient(ellipse at center, #112927 0%, #020617 100%);
 
   --header-height: 60px;

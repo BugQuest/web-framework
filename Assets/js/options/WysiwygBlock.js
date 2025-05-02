@@ -54,5 +54,10 @@ export class WysiwygBlock extends OptionBlock {
         });
 
         container.appendChild(wrapper);
+
+        this.onReset = function (optionBlock) {
+            quill.root.innerHTML = this.value;
+            saveBtn.classList.remove('saved');
+        };
     }
 }

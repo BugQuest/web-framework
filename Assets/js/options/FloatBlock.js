@@ -41,6 +41,10 @@ export class FloatBlock extends OptionBlock {
         });
 
         container.appendChild(wrapper);
+
+        this.onReset = function (optionBlock) {
+            input.value = this.value;
+        }
     }
 
     debounce(callback, delay) {

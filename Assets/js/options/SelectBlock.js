@@ -38,5 +38,9 @@ export class SelectBlock extends OptionBlock {
         wrapper.appendChild(select.getElement());
 
         container.appendChild(wrapper);
+
+        this.onReset = function (optionBlock) {
+            select.setValue(this.value);
+        }
     }
 }

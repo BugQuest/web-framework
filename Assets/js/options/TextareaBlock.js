@@ -34,5 +34,10 @@ export class TextareaBlock extends OptionBlock {
         });
 
         container.appendChild(wrapper);
+
+        this.onReset = function (optionBlock) {
+            textarea.value = this.value;
+            saveBtn.classList.remove('saved');
+        };
     }
 }

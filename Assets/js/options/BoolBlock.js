@@ -23,5 +23,9 @@ export class BoolBlock extends OptionBlock {
 
         wrapper.appendChild(switcher.element);
         container.appendChild(wrapper);
+
+        this.onReset = function (optionBlock) {
+            switcher.toggle(this.value);
+        }
     }
 }

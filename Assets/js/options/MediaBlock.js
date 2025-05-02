@@ -54,6 +54,10 @@ export class MediaBlock extends OptionBlock {
         container.appendChild(wrapper);
 
         this.updatePreview(true);
+
+        this.onReset = function (optionBlock) {
+            this.reset();
+        }
     }
 
     reset() {
