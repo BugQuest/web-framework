@@ -6,10 +6,6 @@
   user-select: none;
   color: #00f5ff;
 
-  .teleport-select-body {
-    z-index: 9999;
-  }
-
   .select-head {
     position: relative;
     display: flex;
@@ -47,26 +43,45 @@
   }
 }
 
+// Liste générée dynamiquement dans le body
 .select-body {
-  position: absolute;
-  left: 0;
-  right: 0;
+  opacity: 0;
+  transform: scaleY(0.95);
+  transform-origin: top;
+  transition: all 0.25s ease;
   background: #000;
   border: 2px solid #00f5ff;
   border-radius: 8px;
   box-shadow: 0 0 10px #00f5ff66;
-  margin-top: 6px;
-  z-index: 2001;
-  overflow: auto;
-  display: none;
-  max-height: 0;
-  opacity: 0;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
+  position: absolute;
+  z-index: 9999;
+  overflow-y: auto;
+  max-height: 300px;
+  width: 220px; // sécurité pour les téléportations sans largeur définie
 
-  &.active {
-    display: block;
-    max-height: 300px;
+  &.opening {
     opacity: 1;
+    transform: scaleY(1);
+  }
+
+  &.closing {
+    opacity: 0;
+    transform: scaleY(0.95);
+  }
+
+  .select-search {
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    outline: none;
+    font-size: 13px;
+    background: #111;
+    color: #00f5ff;
+    border-bottom: 1px solid #00f5ff33;
+
+    &::placeholder {
+      color: #00f5ff88;
+    }
   }
 
   .select-item {
@@ -91,4 +106,15 @@
       border-bottom: none;
     }
   }
+}
+
+.select-options {
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.select-empty {
+  padding: 10px 14px;
+  color: #888;
+  font-style: italic;
 }

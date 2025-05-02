@@ -22,7 +22,6 @@ class OptionBlock
             'string',
             'media',
             'select',
-            'select_multiple',
             'bool',
             'textarea',
             'wysiwyg',

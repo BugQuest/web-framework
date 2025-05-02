@@ -1,5 +1,6 @@
 import {Toast} from "@framework/js/services/Toast";
 import Builder from '@framework/js/services/Builder.js';
+import Select from '@framework/js/services/Select.js';
 import {LazySmooth} from '@framework/js/services/LazySmooth.js';
 
 export class PageListManager {
@@ -421,16 +422,16 @@ export class PageListManager {
             const wrapper = Builder.div('container-form');
             this.statusModal.content.appendChild(wrapper);
 
-            this.selectStatus = Builder.select(
-                'Status',
-                [
+            this.selectStatus = new Select({
+                label: 'Status',
+                options: [
                     {value: 'draft', label: 'Draft'},
                     {value: 'published', label: 'Published'},
                     {value: 'private', label: 'Private'},
                     {value: 'archived', label: 'Archived'},
                 ],
-                page.status,
-                (value) => {
+                selected: page.status,
+                onChange: (value) => {
                     fetch('/admin/api/page/status/' + page.id + '/' + value, {
                         method: 'POST',
                     })
@@ -447,11 +448,11 @@ export class PageListManager {
                             Toast.error('An error occurred while updating status');
                             this.statusModal.close();
                         });
-                });
+                }
+            });
 
             wrapper.appendChild(this.selectStatus.getElement());
         }
-
         this.selectStatus.setValue(page.status);
         this.statusModal.open();
     }

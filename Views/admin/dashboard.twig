@@ -4,15 +4,13 @@
 
 {% block content %}
     <div class="container">
-        <div class="card-grid two-cols">
-            {% if migrationUpdateAvailable %}
-                <div class="alert alert-warning">
-                    De nouvelles mises à jour de base de données sont disponibles.
-                    <form method="post" action="{{ bq_route_url('admin.migrate') }}">
-                        <button type="submit" class="btn btn-primary">Mettre à jour la base</button>
-                    </form>
-                </div>
-            {% endif %}
-        </div>
+        {% if migrationUpdateAvailable %}
+            <div class="alert alert-warning">
+                <p>De nouvelles mises à jour de base de données sont disponibles.</p>
+                <form method="post" action="{{ bq_route_url('admin.migrate') }}">
+                    <button type="submit" class="button warning">Mettre à jour la base</button>
+                </form>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

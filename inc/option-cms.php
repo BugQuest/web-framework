@@ -33,4 +33,61 @@ $page->registerBlock(
     )
 );
 
+$page->registerBlock(
+    new OptionBlock(
+        type: 'select',
+        key: 'default_language',
+        label: __("Langue par défaut", 'bugquest', 'fr'),
+        options: function () {
+            $options = require BQ_FRAMEWORK_PATH . DS . 'Statics' . DS . 'languages.php';
+            $options = array_map(
+                function ($code, $data) {
+                    return [
+                        'value' => $code,
+                        'label' => $data['name'],
+                    ];
+                },
+                array_keys($options),
+                $options
+            );
+
+            return [
+                'useSearch' => true,
+                'description' => __("Sélectionnez la langue par défaut de votre site", 'admin', 'fr'),
+                'options' => $options,
+            ];
+        },
+        group: 'Global',
+    )
+);
+
+$page->registerBlock(
+    new OptionBlock(
+        type: 'select',
+        key: 'languages',
+        label: __("Langues", 'bugquest', 'fr'),
+        options: function () {
+            $options = require BQ_FRAMEWORK_PATH . DS . 'Statics' . DS . 'languages.php';
+            $options = array_map(
+                function ($code, $data) {
+                    return [
+                        'value' => $code,
+                        'label' => $data['name'],
+                    ];
+                },
+                array_keys($options),
+                $options
+            );
+
+            return [
+                'isMultiple' => true,
+                'useSearch' => true,
+                'description' => __("Sélectionnez les langues de votre site", 'admin', 'fr'),
+                'options' => $options,
+            ];
+        },
+        group: 'Global',
+    )
+);
+
 Admin::addOptionPage($page);

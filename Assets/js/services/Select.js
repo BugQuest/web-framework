@@ -6,27 +6,23 @@ export default class Select {
                     options,
                     selected = null,
                     onChange = null,
-                    bottom = false,
                     placeholder = 'Sélectionner…',
                     multiple = false,
                     className = '',
+                    useSearch = false
                 }) {
         this.label = label;
         this.options = options;
         this.onChange = onChange;
-        this.bottom = bottom;
         this.placeholder = placeholder;
         this.multiple = multiple;
         this.className = className;
+        this.useSearch = useSearch;
         this.isObjectOption = typeof options[0] === 'object';
         this.validValues = options.map(opt => this.isObjectOption ? opt.value : opt);
-
         this.currentValue = multiple
             ? Array.isArray(selected) ? selected.filter(v => this.validValues.includes(v)) : []
             : this.validValues.includes(selected) ? selected : null;
-
-        this.clickHandler = this.handleClick.bind(this);
-
         this.build();
     }
 
@@ -40,54 +36,131 @@ export default class Select {
         this.labelEl = Builder.div('select-label');
         this.labelEl.textContent = this.label;
         this.valueEl = Builder.div('select-value');
-        this.body = Builder.div('select-body');
 
         this.head.append(this.labelEl, this.valueEl);
-        this.wrapper.append(this.head, this.body);
-
-        this.renderOptions();
-        this.updateDisplay();
+        this.wrapper.append(this.head);
 
         this.head.addEventListener('click', () => this.toggle(true));
-        this.wrapper.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') this.toggle(true);
-            if (e.key === 'Escape') this.toggle(false);
+
+        document.addEventListener('click', (e) => {
+            if (!this.wrapper.contains(e.target) && this.bodyEl && !this.bodyEl.contains(e.target)) {
+                this.toggle(false);
+            }
         });
 
-        this.body.addEventListener('click', this.clickHandler);
-
-        this.closeHandler = (e) => {
-            if (!this.wrapper.contains(e.target)) this.toggle(false);
-        };
-        document.addEventListener('click', this.closeHandler);
+        this.updateDisplay();
     }
 
-    renderOptions() {
-        this.body.innerHTML = '';
-        const fragment = document.createDocumentFragment();
+    renderBody() {
+        if (this.bodyEl) return;
 
-        this.options.forEach(option => {
+        this.bodyEl = Builder.div('select-body');
+        document.body.appendChild(this.bodyEl);
+
+        const rect = this.wrapper.getBoundingClientRect();
+        this.bodyEl.style.position = 'absolute';
+        this.bodyEl.style.top = `${rect.bottom + window.scrollY + 6}px`;
+        this.bodyEl.style.left = `${rect.left + window.scrollX}px`;
+        this.bodyEl.style.width = `${rect.width}px`;
+
+        if (this.useSearch) {
+            this.searchInput = Builder.input_text('Rechercher…', '', 'select-search');
+            this.searchInput.addEventListener('input', () => {
+                const value = this.searchInput.value;
+                this.renderOptions(value);
+            });
+            this.bodyEl.appendChild(this.searchInput);
+        }
+
+        this.optionsContainer = Builder.div('select-options');
+        this.bodyEl.appendChild(this.optionsContainer);
+
+        this.bodyEl.classList.add('opening');
+        requestAnimationFrame(() => this.bodyEl.classList.add('active'));
+
+        this.renderOptions();
+    }
+
+    setOptions(options) {
+        this.options = options;
+        this.isObjectOption = typeof options[0] === 'object';
+        this.validValues = options.map(opt => this.isObjectOption ? opt.value : opt);
+        this.currentValue = this.multiple
+            ? Array.isArray(this.currentValue) ? this.currentValue.filter(v => this.validValues.includes(v)) : []
+            : this.validValues.includes(this.currentValue) ? this.currentValue : null;
+
+        if (this.bodyEl)
+            this.renderOptions();
+    }
+
+    renderOptions(filter = '') {
+        if (!this.optionsContainer) return;
+        this.optionsContainer.innerHTML = '';
+
+        const fragment = document.createDocumentFragment();
+        let matchCount = 0;
+
+        // Séparer les options en deux groupes
+        const filteredOptions = this.options.filter(option => {
+            const label = this.isObjectOption ? option.label : option;
+            return !filter || label.toLowerCase().includes(filter.toLowerCase());
+        });
+
+        const selected = filteredOptions.filter(option => {
+            const value = this.isObjectOption ? option.value : option;
+            return this.isSelected(value);
+        });
+
+        const unselected = filteredOptions.filter(option => {
+            const value = this.isObjectOption ? option.value : option;
+            return !this.isSelected(value);
+        });
+
+        const finalList = [...selected, ...unselected];
+
+        finalList.forEach(option => {
             const value = this.isObjectOption ? option.value : option;
             const label = this.isObjectOption ? option.label : option;
 
             const item = Builder.div('select-item');
             item.setAttribute('role', 'option');
-            item.textContent = label;
             item.dataset.value = value;
+            item.textContent = label;
 
-            if (this.isSelected(value)) {
-                item.classList.add('active');
-            }
+            if (this.isSelected(value)) item.classList.add('active');
 
+            item.addEventListener('click', (e) => this.select(e, value));
             fragment.appendChild(item);
+            matchCount++;
         });
 
-        this.body.appendChild(fragment);
+        if (matchCount === 0) {
+            const empty = Builder.div('select-empty');
+            empty.textContent = 'Aucun résultat';
+            this.optionsContainer.appendChild(empty);
+        } else {
+            this.optionsContainer.appendChild(fragment);
+        }
     }
 
-    handleClick(e) {
-        if (!e.target.classList.contains('select-item')) return;
-        const value = e.target.dataset.value;
+    toggle(show) {
+        if (show && !this.bodyEl) {
+            this.renderBody();
+        } else if (!show && this.bodyEl) {
+            this.bodyEl.classList.remove('opening');
+            this.bodyEl.classList.add('closing');
+            setTimeout(() => {
+                if (this.bodyEl && this.bodyEl.parentNode) {
+                    this.bodyEl.remove();
+                    this.bodyEl = null;
+                    this.searchInput = null;
+                    this.optionsContainer = null;
+                }
+            }, 250);
+        }
+    }
+
+    select(e, value) {
         if (!this.validValues.includes(value)) return;
 
         if (this.multiple) {
@@ -101,54 +174,11 @@ export default class Select {
             }
         } else {
             this.currentValue = value;
-            [...this.body.children].forEach(item => {
-                item.classList.toggle('active', item.dataset.value === value);
-            });
             this.toggle(false);
         }
 
         this.updateDisplay();
         if (this.onChange) this.onChange(this.getValue());
-    }
-
-    toggle(enabled) {
-        if (enabled) {
-            if (!this.bodyTeleport) {
-                this.bodyTeleport = this.body.cloneNode(true);
-                this.bodyTeleport.classList.add('teleport-select-body');
-                document.body.appendChild(this.bodyTeleport);
-
-                const rect = this.wrapper.getBoundingClientRect();
-                this.bodyTeleport.style.position = 'absolute';
-                this.bodyTeleport.style.top = `${rect.bottom + window.scrollY + 6}px`;
-                this.bodyTeleport.style.left = `${rect.left + window.scrollX}px`;
-                this.bodyTeleport.style.width = `${rect.width}px`;
-
-                this.bodyTeleport.addEventListener('click', this.clickHandler);
-
-                // Nouveaux listeners pour fermer au scroll / resize
-                // this.scrollHandler = () => this.toggle(false);
-                this.resizeHandler = () => this.toggle(false);
-                // window.addEventListener('scroll', this.scrollHandler, { passive: true });
-                window.addEventListener('resize', this.resizeHandler);
-            }
-            this.bodyTeleport.classList.add('active');
-        } else {
-            if (this.bodyTeleport) {
-                this.bodyTeleport.classList.remove('active');
-                setTimeout(() => {
-                    if (this.bodyTeleport && !this.bodyTeleport.classList.contains('active')) {
-                        this.bodyTeleport.removeEventListener('click', this.clickHandler);
-                        document.body.removeChild(this.bodyTeleport);
-                        this.bodyTeleport = null;
-
-                        // Nettoyer les listeners
-                        window.removeEventListener('scroll', this.scrollHandler);
-                        window.removeEventListener('resize', this.resizeHandler);
-                    }
-                }, 300);
-            }
-        }
     }
 
     isSelected(value) {
@@ -158,59 +188,27 @@ export default class Select {
     }
 
     updateDisplay() {
-        let labels = [];
+        const labels = this.multiple
+            ? this.currentValue.map(v =>
+                (this.options.find(opt => (this.isObjectOption ? opt.value === v : opt === v)) || {}).label || v
+            )
+            : [this.options.find(opt => (this.isObjectOption ? opt.value === this.currentValue : opt === this.currentValue))?.label || this.currentValue];
 
-        if (this.multiple) {
-            labels = this.currentValue.map(val => {
-                const opt = this.options.find(opt => (this.isObjectOption ? opt.value === val : opt === val));
-                return opt ? (this.isObjectOption ? opt.label : opt) : val;
-            });
-        } else if (this.currentValue !== null) {
-            const opt = this.options.find(opt => (this.isObjectOption ? opt.value === this.currentValue : opt === this.currentValue));
-            if (opt) labels = [this.isObjectOption ? opt.label : opt];
-        }
-
-        this.valueEl.innerText = labels.length ? labels.join(', ') : this.placeholder;
+        this.valueEl.textContent = labels.filter(Boolean).join(', ') || this.placeholder;
     }
 
     setValue(value) {
         if (this.multiple) {
-            const values = Array.isArray(value) ? value : [];
-            this.currentValue = values.filter(v => this.validValues.includes(v));
+            this.currentValue = Array.isArray(value) ? value.filter(v => this.validValues.includes(v)) : [];
         } else {
             this.currentValue = this.validValues.includes(value) ? value : null;
         }
 
-        [...this.body.children].forEach(item => {
-            item.classList.toggle('active', this.isSelected(item.dataset.value));
-        });
-
         this.updateDisplay();
     }
 
-    setOptions(newOptions, selected = null) {
-        this.options = newOptions;
-        this.isObjectOption = typeof this.options[0] === 'object';
-        this.validValues = this.options.map(opt => this.isObjectOption ? opt.value : opt);
-
-        this.renderOptions();
-
-        if (selected !== null) {
-            this.setValue(selected);
-        } else {
-            if (this.multiple) {
-                this.currentValue = [];
-            } else {
-                this.currentValue = null;
-            }
-            this.updateDisplay();
-        }
-    }
-
     getValue() {
-        return this.multiple
-            ? [...this.currentValue]
-            : this.currentValue;
+        return this.multiple ? [...this.currentValue] : this.currentValue;
     }
 
     getElement() {
@@ -218,14 +216,7 @@ export default class Select {
     }
 
     destroy() {
-        document.removeEventListener('click', this.closeHandler);
-        this.body.removeEventListener('click', this.clickHandler);
-        if (this.bodyTeleport) {
-            this.bodyTeleport.removeEventListener('click', this.clickHandler);
-            document.body.removeChild(this.bodyTeleport);
-        }
-        if (this.scrollHandler) window.removeEventListener('scroll', this.scrollHandler);
-        if (this.resizeHandler) window.removeEventListener('resize', this.resizeHandler);
+        if (this.bodyEl && this.bodyEl.parentNode) this.bodyEl.remove();
+        this.wrapper.remove();
     }
-
 }
