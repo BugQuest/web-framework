@@ -5,6 +5,7 @@ namespace BugQuest\Framework\Controllers\Admin;
 use BugQuest\Framework\Models\Database\Page;
 use BugQuest\Framework\Models\Response;
 use BugQuest\Framework\Services\Assets;
+use BugQuest\Framework\Services\Hooks;
 use BugQuest\Framework\Services\OptionService;
 use BugQuest\Framework\Services\Payload;
 
@@ -27,6 +28,10 @@ class PageSeoController
             dependencies: ['js:admin'],
             isLocalUrl: true,
         );
+
+        Hooks::addAction('admin:header:subtitle', function () use ($page) {
+            echo  "SEO - [" . $page->id . "] " . $page->title;
+        });
 
         return Response::view('@framework/admin/page/seo.twig', [
             'page' => $page,

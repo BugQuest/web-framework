@@ -4,6 +4,7 @@ namespace BugQuest\Framework\Models\Database;
 
 use BugQuest\Framework\Helpers\StringHelper;
 use BugQuest\Framework\PageBuilder\BlockRegistry;
+use BugQuest\Framework\Services\OptionService;
 use DOMDocument;
 use DOMXPath;
 use Illuminate\Database\Eloquent\Model;
@@ -67,16 +68,22 @@ class Page extends Model
     {
         $segments = [];
 
+        /** @var Page|null $homepage */
+        $homepage = OptionService::get('cms', 'homepage');
+
         $page = $this;
         while ($page) {
-            $slug = StringHelper::sanitize_title($page->title);
-            array_unshift($segments, $slug);
+            // Ne pas inclure la homepage dans l'URL
+            if ($page->id != $homepage?->id) {
+                $slug = StringHelper::sanitize_title($page->title);
+                array_unshift($segments, $slug);
+            }
             $page = $page->parent;
         }
 
-        $resolved = implode('/', $segments);
+        // Si c'est la homepage elle-même, le slug est vide
+        $resolved = ($this->id === $homepage?->id) ? '' : implode('/', $segments);
 
-        // Ne met à jour le slug que si différent (évite la boucle infinie)
         if ($this->slug !== $resolved) {
             $this->slug = $resolved;
             $this->save();
@@ -85,6 +92,7 @@ class Page extends Model
 
         return false;
     }
+
 
     public function setStatus(string $status): void
     {
@@ -181,5 +189,25 @@ class Page extends Model
         // Nettoyage des balises inutiles <html><body>...
         $output = $doc->saveHTML();
         return preg_replace('~<(?:!DOCTYPE|/?(?:html|head|body))[^>]*>~i', '', $output);
+    }
+
+    public function isPublished(): bool
+    {
+        return $this->status === 'published';
+    }
+
+    public function isDraft(): bool
+    {
+        return $this->status === 'draft';
+    }
+
+    public function isPrivate(): bool
+    {
+        return $this->status === 'private';
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->status === 'archived';
     }
 }

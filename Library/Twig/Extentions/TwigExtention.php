@@ -71,7 +71,12 @@ class TwigExtention extends \Twig\Extension\AbstractExtension implements \Twig\E
                 return Image::getImageHtml($media, $size, $alt, $attributes);
             }, [
                 'is_safe' => ['html'],
-            ])
+            ]),
+            new TwigFunction('bq_hook_action', function (string $hook, ...$args) {
+                Hooks::runAction($hook, ...$args);
+            }, [
+                'is_safe' => ['html'],
+            ]),
         ];
     }
 }

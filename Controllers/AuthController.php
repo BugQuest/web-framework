@@ -13,6 +13,7 @@ class AuthController
     {
         $error = "";
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            sleep(2); // Anti brute-force
             $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_SPECIAL_CHARS);
             $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_SPECIAL_CHARS);
 

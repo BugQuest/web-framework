@@ -36,9 +36,19 @@ class PageSeo extends Model
         return $this->belongsTo(Page::class);
     }
 
+    public function checkRedirect()
+    {
+        if ($this->redirect_to) {
+            header('Location: ' . $this->redirect_to, true, 301);
+            exit();
+        }
+    }
+
     public function generateMetaTags(): string
     {
         $tags = [];
+
+        $tags[] = '<!-- Page SEO -->';
 
         if ($this->no_index || $this->no_follow) {
             $robots = [];
@@ -86,7 +96,9 @@ class PageSeo extends Model
                 ) . '</script>';
         }
 
-        return implode("\n", $tags);
+        $tags[] = '<!-- Page SEO -->';
+
+        return implode("\n  ", $tags);
     }
 
     public function autoFillSeoData(array $pageData): void

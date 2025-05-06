@@ -61,8 +61,12 @@ abstract class Router
             //check if url is home
             if ($pageRouteHome->matchUri($uri) !== null) {
                 try {
+                    /**
+                     * @var Page|null $homepage
+                     */
                     if ($homepage = OptionService::get('cms', 'homepage'))
-                        PageService::setCurrent($homepage);
+                        if ($homepage->isPublished())
+                            PageService::setCurrent($homepage);
                 } catch (\Exception $e) {
                     // Si l'option n'existe pas, on ignore l'erreur
                     // surement la bdd n'est pas encore initialisée
