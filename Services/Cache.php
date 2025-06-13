@@ -46,6 +46,9 @@ class Cache
 
     public static function remember(string $key, ?int $ttl, $callback, string $group = 'default')
     {
+        if (self::isDisabled())
+            return call_user_func_array(CallbackHelper::parse($callback), []);
+
         $cached = self::get($key, null, $group);
         if ($cached !== null) return $cached;
 
@@ -192,5 +195,11 @@ class Cache
                 continue;
             }
         }
+    }
+
+
+    public static function isDisabled(): bool
+    {
+        return env('DISABLE_CACHE', false) || !is_writable(storage('cache'));
     }
 }
