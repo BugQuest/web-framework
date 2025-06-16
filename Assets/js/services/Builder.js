@@ -388,4 +388,66 @@ export default class Builder {
     static pre(className = '') {
         return this.createEl('pre', className);
     }
+
+    static input_vector2(label = '', value = {x: 0, y: 0}, onChange = null, className = '') {
+        const wrapper = this.div('input-vector2-wrapper ' + className);
+
+        if (label)
+            wrapper.appendChild(this.label(label));
+
+        const inputX = this.input_number('X', 0.01, value.x ?? 0, 'input-x');
+        const inputY = this.input_number('Y', 0.01, value.y ?? 0, 'input-y');
+
+        const inputGroup = this.div('input-vector2-group');
+        inputGroup.appendChild(inputX);
+        inputGroup.appendChild(inputY);
+        wrapper.appendChild(inputGroup);
+
+        const triggerChange = () => {
+            if (onChange) {
+                onChange({
+                    x: parseFloat(inputX.value),
+                    y: parseFloat(inputY.value),
+                });
+            }
+        };
+
+        inputX.addEventListener('input', triggerChange);
+        inputY.addEventListener('input', triggerChange);
+
+        return wrapper;
+    }
+
+    static input_vector3(label = '', value = {x: 0, y: 0, z: 0}, onChange = null, className = '') {
+        const wrapper = this.div('input-vector3-wrapper ' + className);
+
+        if (label)
+            wrapper.appendChild(this.label(label));
+
+        const inputX = this.input_number('X', 0.01, value.x ?? 0, 'input-x');
+        const inputY = this.input_number('Y', 0.01, value.y ?? 0, 'input-y');
+        const inputZ = this.input_number('Z', 0.01, value.z ?? 0, 'input-z');
+
+        const inputGroup = this.div('input-vector3-group');
+        inputGroup.appendChild(inputX);
+        inputGroup.appendChild(inputY);
+        inputGroup.appendChild(inputZ);
+        wrapper.appendChild(inputGroup);
+
+        const triggerChange = () => {
+            if (onChange) {
+                onChange({
+                    x: parseFloat(inputX.value),
+                    y: parseFloat(inputY.value),
+                    z: parseFloat(inputZ.value),
+                });
+            }
+        };
+
+        inputX.addEventListener('input', triggerChange);
+        inputY.addEventListener('input', triggerChange);
+        inputZ.addEventListener('input', triggerChange);
+
+        return wrapper;
+    }
 }

@@ -158,3 +158,37 @@ input:focus {
 
   }
 }
+.input-vector2-group,
+.input-vector3-group {
+  display: flex;
+  gap: 0.5rem;
+
+  input {
+    width: 5rem;
+  }
+}
+
+.input-vector2-wrapper,
+.input-vector3-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.input-vector2-group,
+.input-vector3-group {
+  display: flex;
+  gap: 0.5rem;
+
+  input {
+    width: 5rem;
+  }
+}
+
+.input-vector2-wrapper,
+.input-vector3-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+

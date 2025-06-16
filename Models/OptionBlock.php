@@ -26,7 +26,9 @@ class OptionBlock
             'textarea',
             'wysiwyg',
             'url',
-            'page']))
+            'page',
+            'vector2',
+            'vector3']))
             throw new \Exception("Invalid option block type '{$this->type}'.");
     }
 

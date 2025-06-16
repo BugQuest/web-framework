@@ -26,8 +26,7 @@ export class OptionBlock {
 
         return wrapper;
     }
-
-
+    
     renderDescriptionIcon() {
         if (!this.description) return null;
 
@@ -75,7 +74,7 @@ export class OptionBlock {
     }
 
     resetToDefault() {
-        this.value = null;
+        this.value = this.options.defaultValue || null;
         if (this.onReset)
             this.onReset(this);
         this.notifyChange();

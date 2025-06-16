@@ -31,6 +31,8 @@ export class OptionsPage {
     createBlock(type, key, label, defaultValue = null, options = {}, group = this.group) {
         const value = key in this.options ? this.options[key] : defaultValue;
 
+        options.defaultValue = defaultValue;
+
         const block = BlockFactory.create(
             type,
             key,

@@ -8,6 +8,8 @@ import {TextareaBlock} from '@framework/js/options/TextareaBlock.js';
 import {WysiwygBlock} from "@framework/js/options/WysiwygBlock";
 import {UrlBlock} from '@framework/js/options/UrlBlock';
 import {PageBlock} from "@framework/js/options/PageBlock";
+import {Vector2Block} from '@framework/js/options/Vector2Block.js';
+import {Vector3Block} from '@framework/js/options/Vector3Block.js';
 // import {RepeaterBlock} from '@framework/js/options/RepeaterBlock.js';
 
 export class BlockFactory {
@@ -22,6 +24,8 @@ export class BlockFactory {
         wysiwyg: WysiwygBlock,
         url: UrlBlock,
         page: PageBlock,
+        vector2: Vector2Block,
+        vector3: Vector3Block,
         // repeater: RepeaterBlock, // WIP : RepeaterBlock - Pas encore fonctionnel
     };
 

@@ -17,6 +17,8 @@ class Option extends Model
             case 'json':
                 $this->value = json_decode($this->value, true);
                 break;
+            case 'vector2':
+            case 'vector3':
             case 'array':
                 $this->value = unserialize($this->value);
                 break;
@@ -91,6 +93,8 @@ class Option extends Model
             case 'json':
                 $this->value = json_encode($this->value);
                 break;
+            case 'vector2':
+            case 'vector3':
             case 'array':
                 $this->value = serialize($this->value);
                 break;

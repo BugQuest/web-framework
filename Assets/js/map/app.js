@@ -1,20 +1,40 @@
 import leaflet from 'leaflet';
 
+class MapIcon {
+    constructor(url = 'div',
+                content = '<div class="marker-icon"></div>',
+                size = [40, 40],
+                anchor = [20, 20],
+                popup_anchor = [0, -20]) {
+        this.url = url;
+        this.content = content;
+        this.size = size;
+        this.anchor = anchor;
+        this.popup_anchor = popup_anchor;
+    }
+}
+
+class MapCenter {
+    constructor(lat = 0, lng = 0, zoom = 20) {
+        this.lat = lat;
+        this.lng = lng;
+        this.zoom = zoom;
+    }
+
+    toLatLng() {
+        return new L.LatLng(this.lat, this.lng);
+    }
+}
+
 class Map {
     constructor(element) {
         this.settings = {
-            center: [0, 0],
-            zoom: 20,
+            center: new MapCenter(),
             layer: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
             markers: [],
-            icon: {
-                url: 'div',
-                content: '<div class="marker-icon"></div>',
-                size: [40, 40],
-                anchor: [20, 20],
-            },
-            leafletOptions: {
+            icon: new MapIcon(),
+            options: {
                 mapTypeControl: false,
                 scaleControl: false,
                 streetViewControl: false,
