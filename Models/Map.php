@@ -72,7 +72,7 @@ class Map
     public function render(): string
     {
         Assets::add(
-            group: 'map',
+            group: 'global',
             id: 'js:map',
             url: '/framework/assets/js/map',
             type: 'js',
