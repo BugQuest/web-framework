@@ -9,7 +9,7 @@ use BugQuest\Framework\Services\View;
 class Map
 {
     public function __construct(
-        public string     $view = 'default',
+        public string     $view = '@framework/map/default.twig',
         public ?MapCenter $center = null,
         public ?string    $layer = null,
         public ?string    $attribution = null,
@@ -21,8 +21,8 @@ class Map
         private array     $_data = []
     )
     {
-        if (!$this->view)
-            $this->view = 'default';
+        if (!$this->view || $this->view === 'default')
+            $this->view = '@framework/map/default.twig';
 
         if (!$this->center) {
             $defaultCenter = OptionService::get('Map', 'default_center', [
@@ -30,8 +30,8 @@ class Map
                 'y' => 0.0,
             ]);
             $this->center = new MapCenter(
-                lng: $defaultCenter['x'],
                 lat: $defaultCenter['y'],
+                lng: $defaultCenter['x'],
                 zoom: OptionService::get('Map', 'default_zoom', 20)
             );
         }
@@ -71,21 +71,11 @@ class Map
 
     public function render(): string
     {
-        Assets::add(
-            group: 'global',
-            id: 'js:map',
-            url: '/framework/assets/js/map',
-            type: 'js',
-            isLocalUrl: true,
-        );
-        
-        $view_path = 'map/' . $this->view . '.twig';
+        if (!View::hasTemplate($this->view))
+            throw new \Exception("View not found: $this->view");
 
-        if (!View::hasTemplate($view_path))
-            throw new \Exception("View not found: $view_path");
-
-        return View::render($view_path, [
-            'data' => $this->data,
+        return View::render($this->view, [
+            'data' => $this->_data,
             'options' => json_encode([
                 'markers' => array_map(fn($marker) => $marker->toArray(), $this->_markers),
                 'center' => $this->center->toArray(),

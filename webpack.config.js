@@ -13,7 +13,7 @@ module.exports = {
         'css/admin': '@framework/scss/admin.scss',
         'css/admin-light': '@framework/scss/admin-light.scss',
         'css/admin-page-builder': '@framework/scss/admin-page-builder.scss',
-        'css/theme-default': '@framework/scss/theme.scss',
+        // 'css/theme-default': '@framework/scss/theme.scss',
         'js/admin': '@framework/js/admin.js',
         'js/admin-option': '@framework/js/admin-option.js',
         'js/admin-page-media': '@framework/js/admin-page-media.js',
@@ -22,11 +22,15 @@ module.exports = {
         'js/admin-page-robots-txt': '@framework/js/admin-page-robots-txt.js',
         'js/admin-page-seo': '@framework/js/admin-page-seo.js',
         'js/global': '@framework/js/global.js',
-        'js/map': '@framework/js/map/app.js',
+        'js/map-block': '@framework/js/map/MapBlock.js',
     },
     resolve: {
         alias: {
             '@framework': path.resolve(__dirname, './Assets/'),
+            leaflet_css: __dirname + "/node_modules/leaflet/dist/leaflet.css",
+            leaflet_marker: __dirname + "/node_modules/leaflet/dist/images/marker-icon.png",
+            leaflet_marker_2x: __dirname + "/node_modules/leaflet/dist/images/marker-icon-2x.png",
+            leaflet_marker_shadow: __dirname + "/node_modules/leaflet/dist/images/marker-shadow.png"
         },
         extensions: ['.js', '.scss'],
     },
@@ -39,6 +43,13 @@ module.exports = {
     },
     module: {
         rules: [
+            {
+                test: /\.css$/,
+                use: [
+                    'style-loader',
+                    'css-loader'
+                ]
+            },
             {
                 test: /\.scss$/,
                 use: [
@@ -54,6 +65,12 @@ module.exports = {
                     loader: 'babel-loader',
                 },
             },
+            {
+                test: /\.png$/,
+                use: [
+                    'file-loader'
+                ]
+            }
         ],
     },
     plugins: [

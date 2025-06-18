@@ -5,8 +5,8 @@ namespace BugQuest\Framework\Models;
 class MapCenter
 {
     public function __construct(
-        public float $lng,
         public float $lat,
+        public float $lng,
         public int   $zoom = 10,
     )
     {
@@ -15,8 +15,8 @@ class MapCenter
     public function toArray(): array
     {
         return [
-            'lng' => $this->lng,
             'lat' => $this->lat,
+            'lng' => $this->lng,
             'zoom' => $this->zoom,
         ];
     }

@@ -1,39 +1,24 @@
-import leaflet from 'leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+/* This code is needed to properly load the images in the Leaflet CSS */
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+    iconUrl: require('leaflet/dist/images/marker-icon.png'),
+    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+});
 
-class MapIcon {
-    constructor(url = 'div',
-                content = '<div class="marker-icon"></div>',
-                size = [40, 40],
-                anchor = [20, 20],
-                popup_anchor = [0, -20]) {
-        this.url = url;
-        this.content = content;
-        this.size = size;
-        this.anchor = anchor;
-        this.popup_anchor = popup_anchor;
-    }
-}
+import BQMapCenter from '@framework/js/map/BQMapCenter';
+import BQMapIcon from '@framework/js/map/BQMapIcon';
 
-class MapCenter {
-    constructor(lat = 0, lng = 0, zoom = 20) {
-        this.lat = lat;
-        this.lng = lng;
-        this.zoom = zoom;
-    }
-
-    toLatLng() {
-        return new L.LatLng(this.lat, this.lng);
-    }
-}
-
-class Map {
+export default class BQMap {
     constructor(element) {
         this.settings = {
-            center: new MapCenter(),
+            center: new BQMapCenter(),
             layer: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
             markers: [],
-            icon: new MapIcon(),
+            icon: new BQMapIcon(),
             options: {
                 mapTypeControl: false,
                 scaleControl: false,
@@ -76,16 +61,14 @@ class Map {
     }
 
     init() {
-        this.center = new L.LatLng(this.settings.center[0], this.settings.center[1]);
-
         this.markers = {};
 
-        this.map = new L.map(this.element, this.settings.leafletOptions)
+        this.map = new L.map(this.element, this.settings.options)
         this.map.addLayer(new L.tileLayer(this.settings.layer, {
             zoom: this.settings.zoom,
             attribution: this.settings.attribution
         }))
-        this.map.setView(this.center, this.settings.zoom);
+        this.map.setView(new L.LatLng(this.settings.center.lat, this.settings.center.lng), this.settings.center.zoom);
 
         this.markers.default = new L.FeatureGroup();
         this.map.addLayer(this.markers.default);
@@ -144,6 +127,10 @@ class Map {
         let popupAnchor = [0, -iconSize[1]]
         if (typeof marker.popup_anchor !== "undefined" && marker.popup_anchor && marker.popup_anchor.length)
             popupAnchor = marker.popup_anchor
+
+        let iconUrl = this.settings.default_icon.url;
+        if (typeof marker.icon !== "undefined" && marker.icon)
+            iconUrl = marker.icon;
 
         if (iconUrl === 'div') {
             let icon_data = {

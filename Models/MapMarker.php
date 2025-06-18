@@ -64,8 +64,8 @@ class MapMarker
     public function toArray(): array
     {
         return [
-            'lng' => $this->lng,
             'lat' => $this->lat,
+            'lng' => $this->lng,
             'index' => $this->index,
             'content' => $this->content,
             'icon' => $this->icon,

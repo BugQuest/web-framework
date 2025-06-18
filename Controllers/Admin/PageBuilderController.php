@@ -48,7 +48,7 @@ class PageBuilderController
         try {
             return Response::html($block->renderCallback(Payload::fromRawInput()->getRaw()));
         } catch (\Exception $e) {
-            return Response::jsonServerError($e->getMessage());
+            return Response::jsonServerException($e);
         }
     }
 

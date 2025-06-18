@@ -82,6 +82,18 @@ readonly class Response
         );
     }
 
+    public static function jsonServerException(
+        \Exception $e,
+        array  $headers = [],
+    ): static
+    {
+        return new static(
+            content: ['success' => false, 'message' => $e->getMessage(), 'trace' => $e->getTrace()],
+            status: 500,
+            headers: array_merge($headers, ['Content-Type' => 'application/json']),
+        );
+    }
+
     public static function json404(
         string $message = 'Page not found',
         array  $headers = [],
