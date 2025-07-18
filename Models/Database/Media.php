@@ -31,6 +31,11 @@ class Media extends Model
         return pathinfo($this->filename, PATHINFO_FILENAME);
     }
 
+    public function absolutePath(): string
+    {
+        return BQ_ROOT . DS . 'htdocs' . DS . $this->path;
+    }
+
     public function imageUrl(string $size = 'original', bool $absolute = false, string $compression_method = 'auto'): ?string
     {
         if (!in_array($this->mime_type, ['image/jpeg', 'image/png', 'image/gif']))
