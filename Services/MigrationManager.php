@@ -59,7 +59,9 @@ class MigrationManager
     {
         $classes = [];
 
-        foreach (glob(self::$migrationsPath . '/*.php') as $file) {
+        $files = Hooks::runFilter('migrations_files', glob(self::$migrationsPath . '/*.php'));
+
+        foreach ($files as $file) {
             require_once $file;
             $basename = basename($file, '.php');
             $split = explode('_', $basename);
