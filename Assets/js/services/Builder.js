@@ -389,6 +389,10 @@ export default class Builder {
         return this.createEl('pre', className);
     }
 
+    static p(text = '', className = '') {
+        return this.createEl('p', className, text);
+    }
+
     static input_vector2(label = '', value = {x: 0, y: 0}, onChange = null, className = '') {
         const wrapper = this.div('input-vector2-wrapper ' + className);
 
