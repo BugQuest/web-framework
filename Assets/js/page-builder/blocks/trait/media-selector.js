@@ -49,7 +49,7 @@ export default function (editor) {
             el.appendChild(this.preview);
 
             this.preview.addEventListener('click', () => {
-                MediaPicker.open(mimeType, (media) => {
+                MediaPicker.open({mimeTypes:mimeType}, (media) => {
                     const resizedUrl = '/' + media.path;
                     const mediaId = media.id;
                     const size = trait.target?.getAttributes()['data-size'] || 'original';

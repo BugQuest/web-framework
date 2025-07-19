@@ -5,7 +5,7 @@ export default class MediaPicker {
     static modal = null;
     static gallery = null;
 
-    static open(mimeTypes = [], onSelect = null) {
+    static open(options = {}, onSelect = null) {
         if (!this.modal) {
             this.modal = Builder.modal(
                 null,
@@ -21,7 +21,8 @@ export default class MediaPicker {
             this.gallery = new MediaGallery(this.modal.content);
         }
 
-        this.gallery.forced_mimeTypes = mimeTypes;
+        this.gallery.forced_mimeTypes = options.mimeTypes || [];
+        this.gallery.forced_tags = options.tags || [];
         this.gallery.onClickItem = (media) => {
             if (typeof onSelect === 'function')
                 onSelect(media);

@@ -19,6 +19,7 @@ export default class MediaGallery {
         this.tags = [];
         this.mimeTypes = [];
         this.forced_mimeTypes = [];
+        this.forced_tags = [];
         this.search = '';
         //check if element has data-per-page attribute
         const perPage = this.element.dataset.perPage;
@@ -38,9 +39,12 @@ export default class MediaGallery {
             this.canEditTags = true;
 
         const forcedMimeTypes = this.element.dataset.forcedMimeTypes;
-        if (forcedMimeTypes && forcedMimeTypes.length > 0) {
+        if (forcedMimeTypes && forcedMimeTypes.length > 0)
             this.forced_mimeTypes = forcedMimeTypes.split(',').map(mime => mime.trim());
-        }
+
+        const forcedTags = this.element.dataset.forcedTags;
+        if (forcedTags && forcedTags.length > 0)
+            this.forced_tags = forcedTags.split(',').map(tag => tag.trim());
 
         this.apiUrl = '/admin/api/medias';
 
@@ -289,6 +293,11 @@ export default class MediaGallery {
                     params.append('mime_types[]', mime);
                 });
 
+            if (this.forced_tags)
+                this.forced_tags.forEach(tag => {
+                    params.append('forced_tags[]', tag);
+                });
+
             const response = await fetch(
                 `${this.apiUrl}/all/${page}?${params}`
             );
@@ -457,6 +466,11 @@ export default class MediaGallery {
     uploadFile(file) {
         const formData = new FormData();
         formData.append('file', file);
+
+        if (this.forced_tags)
+            this.forced_tags.forEach(tag => {
+                formData.append('tags[]', tag);
+            });
 
         const tempCard_el = Builder.div('media-card uploading');
         const preview_el = Builder.div('media-card--preview');

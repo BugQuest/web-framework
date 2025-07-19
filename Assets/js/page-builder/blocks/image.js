@@ -41,7 +41,7 @@ export default function (editor) {
                 }
 
                 // Appel de MediaPicker
-                MediaPicker.open(mimeArray, async (media) => {
+                MediaPicker.open({mimeTypes: mimeArray}, async (media) => {
                     let resizedUrl = '/' + media.path;
 
                     if (size && size !== 'original') {

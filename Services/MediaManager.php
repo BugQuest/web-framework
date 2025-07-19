@@ -22,7 +22,7 @@ class MediaManager
         'audio/mp4',
     ];
 
-    public static function upload(array $file, array $meta = []): ?Media
+    public static function upload(array $file, array $meta = [], array $tags = []): ?Media
     {
         if (!in_array($file['type'], self::$allowedMimeTypes)) {
             throw new \Exception("MIME type {$file['type']} non autorisé.");
@@ -44,7 +44,7 @@ class MediaManager
             $exif = @exif_read_data($targetPath);
         }
 
-        return Media::create([
+        $media = Media::create([
             'filename' => $name,
             'original_name' => $file['name'],
             'mime_type' => $file['type'],
@@ -54,6 +54,23 @@ class MediaManager
             'exif' => json_encode($exif ?? []),
             'meta' => json_encode($meta ?? []), // ou autre contenu structuré
         ]);
+
+        if (!$media) {
+            unlink($targetPath); // Nettoyage en cas d'échec de création
+            throw new \Exception("Échec de la création de l'enregistrement média.");
+        }
+
+        // Set tags if provided, it's array of strings, well create it if not exists
+        if (!empty($tags)) {
+            $tagIds = [];
+            foreach ($tags as $tagName) {
+                $tag = self::addTag($tagName);
+                $tagIds[] = $tag->id;
+            }
+            $media->tags()->sync($tagIds);
+        }
+
+        return $media;
     }
 
     public static function delete(Media $media): bool

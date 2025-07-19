@@ -33,8 +33,12 @@ abstract class MediasController
         if (!isset($_FILES['file']))
             return Response::jsonError('Aucun fichier reçu');
 
+        $meta = filter_input(INPUT_POST, 'meta', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $tags = filter_input(INPUT_POST, 'tags', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $tags = array_filter($tags, fn($t) => is_string($t)); // nettoyage simple
+
         try {
-            return Response::json(MediaManager::upload($_FILES['file'], filter_input(INPUT_POST, 'meta', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? []));
+            return Response::json(MediaManager::upload($_FILES['file'], $meta, $tags));
         } catch (\Exception $e) {
             return Response::jsonServerError($e->getMessage());
         }
@@ -47,6 +51,14 @@ abstract class MediasController
         // Récupère les tags en tant que tableau d'entiers
         $tags = filter_input(INPUT_GET, 'tags', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
         $tags = array_filter($tags, fn($t) => is_numeric($t)); // nettoyage simple
+
+        $forced_tags = filter_input(INPUT_GET,'forced_tags', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+        $forced_tags = array_filter($forced_tags, fn($t) => is_string($t));
+        if (!empty($forced_tags)) {
+            //forced tags is list of strings, find their IDs
+            $tags = array_merge($tags, Tag::whereIn('name', $forced_tags)->pluck('id')->toArray());
+        }
+
 
         $mime_types = filter_input(INPUT_GET, 'mime_types', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
         $mime_types = array_filter($mime_types, fn($t) => is_string($t)); // nettoyage simple

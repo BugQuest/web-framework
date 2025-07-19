@@ -15,6 +15,7 @@ export class MediaBlock extends OptionBlock {
         }
         this.sizes = options.sizes || [];
         this.size = options.size || 'original';
+        this.tags = options.tags || [];
         this.compression_method = options.compression_method || 'auto';
         this.resized = {};
     }
@@ -38,7 +39,7 @@ export class MediaBlock extends OptionBlock {
         this.preview = Builder.div('media-preview');
         this.preview.dataset.tooltip = __('Cliquez pour changer le média', 'options');
         this.preview.addEventListener('click', () => {
-            MediaPicker.open(this.mimeTypes, (media) => {
+            MediaPicker.open({mimeTypes: this.mimeTypes, tags: this.tags}, (media) => {
                 this.media = media;
                 this.value = media.id;
                 this.updatePreview();
