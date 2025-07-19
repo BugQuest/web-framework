@@ -58,6 +58,13 @@ export default class BQMap {
 
         //add instance to element for easy access
         this.element.mapInstance = this;
+
+        this.fix();
+        this.element.addEventListener('resize', () => {
+            this.fix();
+        });
+
+        this.autoFit('all');
     }
 
     init() {
@@ -114,51 +121,33 @@ export default class BQMap {
 
         let latLng = new L.LatLng(marker.lat, marker.lng);
 
-        let icon = null
+        let icon = new BQMapIcon(
+            this.settings.icon.url,
+            this.settings.icon.content,
+            this.settings.icon.size,
+            this.settings.icon.anchor,
+            this.settings.icon.popup_anchor
+        );
 
-        let iconSize = this.settings.default_icon.size
-        if (typeof marker.size !== "undefined" && marker.size && marker.size.length)
-            iconSize = marker.size
+        if (typeof marker.icon.url !== "undefined" && marker.icon.url)
+            icon.url = marker.icon.url;
 
-        let iconAnchor = this.settings.default_icon.anchor
-        if (typeof marker.anchor !== "undefined" && marker.anchor && marker.anchor.length)
-            iconAnchor = marker.anchor
+        if (typeof marker.icon.content !== "undefined" && marker.icon.content)
+            icon.content = marker.icon.content;
 
-        let popupAnchor = [0, -iconSize[1]]
-        if (typeof marker.popup_anchor !== "undefined" && marker.popup_anchor && marker.popup_anchor.length)
-            popupAnchor = marker.popup_anchor
+        if (typeof marker.icon.size !== "undefined" && marker.icon.size && marker.icon.size.length)
+            icon.size = marker.icon.size
 
-        let iconUrl = this.settings.default_icon.url;
-        if (typeof marker.icon !== "undefined" && marker.icon)
-            iconUrl = marker.icon;
+        if (typeof marker.icon.anchor !== "undefined" && marker.icon.anchor && marker.icon.anchor.length)
+            icon.anchor = marker.icon.anchor
 
-        if (iconUrl === 'div') {
-            let icon_data = {
-                html: this.settings.default_icon.content,
-                iconSize: iconSize,
-                iconAnchor: iconAnchor,
-                popupAnchor: popupAnchor,
-            }
+        if (typeof marker.icon.popup_anchor !== "undefined" && marker.icon.popup_anchor && marker.icon.popup_anchor.length)
+            icon.popup_anchor = marker.icon.popup_anchor
 
-            if (typeof marker.icon_content != "undefined")
-                icon_data.html = marker.icon_content
+        if (typeof marker.icon.className !== "undefined" && marker.icon.className)
+            icon.className = marker.icon.className;
 
-            if (typeof marker.class != "undefined")
-                icon_data.className = marker.class
-
-            icon = new L.divIcon(icon_data)
-        } else {
-            let iconUrl = this.settings.default_icon.url
-            if (typeof marker.icon !== "undefined" && marker.icon)
-                iconUrl = marker.icon
-
-            icon = L.icon({
-                iconUrl: iconUrl,
-                iconSize: iconSize,
-                iconAnchor: iconAnchor,
-                popupAnchor: popupAnchor
-            })
-        }
+        icon = icon.getIcon();
 
         let new_marker = new L.marker(latLng, {
             index: marker.index,
@@ -193,7 +182,7 @@ export default class BQMap {
         const marker = this.markers[group].getLayers().find(m => m.options.index === index);
 
         if (!marker) {
-            console.warn(`Marker with index "${index}" does not exist in group "${group}".`);
+            // console.warn(`Marker with index "${index}" does not exist in group "${group}".`);
             return null;
         }
 

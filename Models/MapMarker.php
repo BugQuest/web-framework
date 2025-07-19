@@ -13,6 +13,7 @@ class MapMarker
         public ?string $content = null,
         public ?array  $icon = null,
         public ?string $class = null,
+        public ?string $group = 'default',
     )
     {
         $default_size = OptionService::get(
@@ -70,6 +71,7 @@ class MapMarker
             'content' => $this->content,
             'icon' => $this->icon,
             'class' => $this->class,
+            'group' => $this->group,
         ];
     }
 }
