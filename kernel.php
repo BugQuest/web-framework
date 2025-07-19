@@ -10,17 +10,18 @@ use BugQuest\Framework\Services\Database;
 if (!defined('BQ_CACHE_SECRET'))
     define('BQ_CACHE_SECRET', env('BQ_CACHE_SECRET', 'changeme-this-should-be-very-secret'));
 
-set_exception_handler(function ($e) {
-    http_response_code(500);
+if (defined('BQ_DEBUG') && BQ_DEBUG)
+    set_exception_handler(function ($e) {
+        http_response_code(500);
 
-    // Nettoie tout ce qui a pu être envoyé avant l’erreur
-    if (ob_get_level())
-        ob_clean();
+        // Nettoie tout ce qui a pu être envoyé avant l’erreur
+        if (ob_get_level())
+            ob_clean();
 
-    echo View::renderError('@framework/error/500.twig', $e);
+        echo View::renderError('@framework/error/500.twig', $e);
 
-    exit;
-});
+        exit;
+    });
 
 //if (php_sapi_name() !== 'cli')
 //    Debug::start();
