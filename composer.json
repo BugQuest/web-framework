@@ -23,7 +23,7 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "php": "^8.3",
+    "php": "^8.4",
     "larapack/dd": "^1.1",
     "twig/twig": "^3.20",
     "vlucas/phpdotenv": "^5.6",
