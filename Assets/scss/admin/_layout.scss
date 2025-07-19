@@ -5,7 +5,7 @@
   max-width: 1200px;
   margin: 0 auto;
 
-  &-header{
+  &-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -109,7 +109,7 @@
           padding: 0.5rem;
           color: #fff;
 
-          &:focus{
+          &:focus {
             outline: none;
             border-color: #0ff;
             box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
@@ -170,6 +170,24 @@
         &:hover {
           text-decoration: underline;
         }
+      }
+    }
+
+    .form-two-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+
+      .form-column-left {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .form-column-right {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
       }
     }
   }

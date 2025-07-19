@@ -37,7 +37,7 @@ export class Vector3Block extends OptionBlock {
             }, this.delay);
         });
 
-        wrapper.appendChild(vectorInput);
+        wrapper.appendChild(vectorInput.element);
         container.appendChild(wrapper);
 
         this.onReset = function () {

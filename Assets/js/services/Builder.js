@@ -452,6 +452,44 @@ export default class Builder {
         inputY.addEventListener('input', triggerChange);
         inputZ.addEventListener('input', triggerChange);
 
-        return wrapper;
+        return {
+            element: wrapper,
+            getValue: () => {
+                return {
+                    x: parseFloat(inputX.value),
+                    y: parseFloat(inputY.value),
+                    z: parseFloat(inputZ.value),
+                };
+            },
+            setValue: (value) => {
+                inputX.value = value.x ?? 0;
+                inputY.value = value.y ?? 0;
+                inputZ.value = value.z ?? 0;
+            }
+        };
     }
+
+    static input_color(label = '', value = '#000000', onChange = null, className = '') {
+        const wrapper = this.div('input-color-wrapper ' + className);
+
+        if (label)
+            wrapper.appendChild(this.label(label));
+
+        const inputColor = this.createEl('input', 'input-color');
+        inputColor.type = 'color';
+        inputColor.value = value;
+
+        inputColor.addEventListener('input', () => {
+            if (onChange) onChange(inputColor.value);
+        });
+
+        wrapper.appendChild(inputColor);
+
+        return {
+            element: wrapper,
+            getValue: () => inputColor.value,
+            setValue: (value) => inputColor.value = value,
+        };
+    }
+
 }
