@@ -30,7 +30,9 @@
     "illuminate/database": "^12.8",
     "ext-iconv": "*",
     "ext-imagick": "*",
-    "ext-curl": "*"
+    "ext-curl": "*",
+    "ext-exif": "*",
+    "ext-fileinfo": "*"
   },
   "autoload": {
     "psr-4": {

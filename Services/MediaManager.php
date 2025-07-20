@@ -24,8 +24,13 @@ class MediaManager
 
     public static function upload(array $file, array $meta = [], array $tags = []): ?Media
     {
-        if (!in_array($file['type'], self::$allowedMimeTypes)) {
-            throw new \Exception("MIME type {$file['type']} non autorisé.");
+        // Vérification MIME réelle côté serveur
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $realMimeType = $finfo->file($file['tmp_name']);
+
+        if (!in_array($realMimeType, self::$allowedMimeTypes)) {
+            // Attention : utiliser la vraie détection !
+            throw new \Exception("MIME type {$realMimeType} non autorisé.");
         }
 
         $name = uniqid('media_') . '.' . pathinfo($file['name'], PATHINFO_EXTENSION);
