@@ -23,6 +23,7 @@
     "grapesjs": "^0.22.6",
     "leaflet": "^1.9.4",
     "quill": "^2.0.3",
-    "style-loader": "^4.0.0"
+    "style-loader": "^4.0.0",
+    "vanilla-picker": "^2.12.3"
   }
 }
