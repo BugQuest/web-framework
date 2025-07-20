@@ -24,6 +24,10 @@ class MediaManager
 
     public static function upload(array $file, array $meta = [], array $tags = []): ?Media
     {
+        if(!isset($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+            throw new \Exception("Aucun fichier téléchargé ou fichier invalide.");
+        }
+
         // Vérification MIME réelle côté serveur
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
         $realMimeType = $finfo->file($file['tmp_name']);
