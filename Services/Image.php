@@ -154,8 +154,6 @@ class Image
         $ext = pathinfo($original, PATHINFO_EXTENSION);
         $dir = self::cacheDir() . $hash;
 
-        if (!is_dir($dir)) mkdir($dir, 0755, true);
-
         $target = $dir . DS . "$size.$ext";
 
         if (file_exists($target)) return $target;
@@ -163,6 +161,8 @@ class Image
         // Si taille originale demandée, on renvoie le fichier original
         if ($size === 'original')
             return $original;
+
+        if (!is_dir($dir)) mkdir($dir, 0755, true);
 
         $sizeDef = self::$_sizes[$size];
         $w = $sizeDef['width'] ?? 0;
