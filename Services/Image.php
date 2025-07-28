@@ -13,7 +13,7 @@ class Image
     /**
      * @throws \Exception
      */
-    public static function getImageUrl(Media|string|int|null $media, string $size = 'original', bool $absolute = false, string $compression_method = 'auto'): ?string
+    public static function getImageUrl(Media|string|int|null $media, string $size = 'original', bool $absolute = false, string $compression_method = 'auto', ?string $custom_path = null): ?string
     {
         if (!extension_loaded('imagick'))
             throw new \Exception('⚠️ L’extension Imagick est requise pour le traitement des images.');
@@ -40,7 +40,7 @@ class Image
                 throw new \Exception("Fichier non trouvé : $originalPath");
 
 
-            $final = self::applyCompression($size, $media, self::generateImage($media, $size, $originalPath));
+            $final = self::applyCompression($size, $media, self::generateImage($media, $size, $originalPath), $custom_path);
 
             return $absolute
                 ? $final
@@ -198,7 +198,7 @@ class Image
         return $target;
     }
 
-    private static function applyCompression(string $size, Media $media, string $path): string
+    private static function applyCompression(string $size, Media $media, string $path, ?string $custom_path = null): string
     {
         $dir = pathinfo($path, PATHINFO_DIRNAME);
         $name = pathinfo($path, PATHINFO_FILENAME);
@@ -215,7 +215,11 @@ class Image
 
         if (!isset($formatMap[$method])) return $path;
 
-        if ($size == 'original')
+        if ($custom_path) {
+            $target = self::cacheDir() . $custom_path . DS . $name . DS . $size . '.' . $formatMap[$method];
+            if (!is_dir(dirname($target)))
+                mkdir(dirname($target), 0755, true);
+        } else if ($size == 'original')
             $target = self::cacheDir() . $media->hash() . DS . "$size." . $formatMap[$method];
         else
             $target = $dir . DS . $name . '.' . $formatMap[$method];
