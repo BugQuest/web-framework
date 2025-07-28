@@ -119,6 +119,24 @@ class Image
                 ]);
             }
 
+            // ✅ Sinon, on suppose que c'est un chemin de fichier local
+            if (file_exists(BQ_ROOT . DS . 'htdocs' . DS . $media)) {
+                $fullPath = BQ_ROOT . DS . 'htdocs' . DS . $media;
+                $extension = pathinfo($fullPath, PATHINFO_EXTENSION) ?: 'jpg';
+                $mime = mime_content_type($fullPath);
+                $size = filesize($fullPath);
+
+                return new Media([
+                    'filename' => basename($fullPath),
+                    'original_name' => basename($fullPath),
+                    'mime_type' => $mime,
+                    'extension' => $extension,
+                    'size' => $size,
+                    'path' => $media,
+                    'slug' => md5($media),
+                ]);
+            }
+
             // ✅ Sinon, on tente de retrouver un média par son chemin
             $media = Media::where('path', $media)->first();
             if ($media) return $media;

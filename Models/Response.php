@@ -84,7 +84,7 @@ readonly class Response
 
     public static function jsonServerException(
         \Exception $e,
-        array  $headers = [],
+        array      $headers = [],
     ): static
     {
         return new static(
@@ -172,6 +172,37 @@ readonly class Response
             ]),
         );
     }
+
+    public static function image(
+        string $url,
+        int    $status = 200,
+        array  $headers = [],
+    ): static
+    {
+        // Détection du chemin absolu (Windows ou Unix)
+        $isAbsolute = (
+            str_starts_with($url, '/') ||
+            preg_match('/^[A-Za-z]:\\\\/', $url)
+        );
+
+        $path = $isAbsolute ? $url : BQ_ROOT . DS . 'htdocs' . DS . $url;
+
+        if (file_exists($path)) {
+            $mime = mime_content_type($path) ?: 'image/jpeg';
+            return new static(
+                content: file_get_contents($path),
+                status: $status,
+                headers: array_merge($headers, ['Content-Type' => $mime]),
+            );
+        } else {
+            return new static(
+                content: '',
+                status: 404,
+                headers: array_merge($headers, ['Content-Type' => 'text/plain']),
+            );
+        }
+    }
+
 
     public static function frameworkJS(
         string $name,

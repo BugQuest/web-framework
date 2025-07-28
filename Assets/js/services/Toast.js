@@ -6,7 +6,7 @@ export class Toast {
     static show(message, {
         type = 'info',
         position = 'top-right',
-        duration = 4000,
+        duration = 8000,
         icon = null,
         closable = true
     } = {}) {

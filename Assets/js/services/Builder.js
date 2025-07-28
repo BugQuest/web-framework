@@ -492,4 +492,91 @@ export default class Builder {
         };
     }
 
+    static input_file(label = '', accept = '', className = '') {
+        const wrapper = this.div('input-file-wrapper ' + className);
+        let onChangeFn = null;
+
+        if (label)
+            wrapper.appendChild(this.label(label));
+
+        const input = this.createEl('input', 'input-file');
+        input.type = 'file';
+        if (accept) input.accept = accept;
+        input.style.display = 'none';
+
+        const fileInfo = this.span('file-info');
+        fileInfo.textContent = 'Aucun fichier choisi';
+
+        const setFile = (file) => {
+            if (file) {
+                const fileName = file.name || 'Fichier';
+                const fileSize = (file.size / 1024).toFixed(1);
+                fileInfo.textContent = `${fileName} (${fileSize} Ko)`;
+            } else {
+                fileInfo.textContent = 'Aucun fichier choisi';
+            }
+        };
+
+        input.addEventListener('change', () => {
+            const file = input.files && input.files[0] ? input.files[0] : null;
+            setFile(file);
+            if (onChangeFn) onChangeFn(file);
+        });
+
+        // Drag & drop
+        wrapper.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            wrapper.classList.add('dragover');
+        });
+        wrapper.addEventListener('dragleave', () => {
+            wrapper.classList.remove('dragover');
+        });
+        wrapper.addEventListener('drop', (e) => {
+            e.preventDefault();
+            wrapper.classList.remove('dragover');
+            const file = e.dataTransfer.files && e.dataTransfer.files[0] ? e.dataTransfer.files[0] : null;
+            if (file) {
+                setFile(file);
+                // Met à jour l'input pour garder la cohérence
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                input.files = dataTransfer.files;
+                if (onChangeFn) onChangeFn(file);
+            }
+        });
+
+        wrapper.appendChild(fileInfo);
+        wrapper.appendChild(input);
+
+        wrapper.addEventListener('click', () => input.click());
+
+        return {
+            element: wrapper,
+            onChange: (fn) => {
+                onChangeFn = fn;
+            },
+            getFile: () => input.files && input.files[0] ? input.files[0] : null,
+            setFile: setFile,
+            reset: () => {
+                input.value = '';
+                fileInfo.textContent = 'Aucun fichier choisi';
+            }
+        };
+    }
+
+    static loading_bar() {
+        const wrapper = this.div('loading-bar-wrapper');
+        const bar = this.div('loading-bar');
+        wrapper.appendChild(bar);
+
+        return {
+            element: wrapper,
+            setProgress: (progress) => {
+                bar.style.width = `${Math.min(Math.max(progress, 0), 100)}%`;
+            },
+            reset: () => {
+                bar.style.width = '0%';
+            }
+        };
+    }
 }

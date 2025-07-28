@@ -1,5 +1,10 @@
 @use 'variables' as *;
 
+$input-radius: 6px;
+$input-shadow: 0 0 8px #00ffe733;
+$input-border: 1px solid #00ffe7;
+$input-hover-shadow: 0 0 12px #00ffe755;
+
 label {
   color: var(--color-text);
   margin-top: 1rem;
@@ -85,7 +90,7 @@ input:focus {
   color: #00ffe7;
   padding: 1rem;
   border-top: 1px solid #00ffe7;
-  background: hsla(0,0%,100%,.02);
+  background: hsla(0, 0%, 100%, .02);
 }
 
 .keywords-label {
@@ -158,22 +163,6 @@ input:focus {
 
   }
 }
-.input-vector2-group,
-.input-vector3-group {
-  display: flex;
-  gap: 0.5rem;
-
-  input {
-    width: 5rem;
-  }
-}
-
-.input-vector2-wrapper,
-.input-vector3-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
 
 .input-vector2-group,
 .input-vector3-group {
@@ -192,3 +181,99 @@ input:focus {
   gap: 0.3rem;
 }
 
+.input-vector2-group,
+.input-vector3-group {
+  display: flex;
+  gap: 0.5rem;
+
+  input {
+    width: 5rem;
+  }
+}
+
+.input-vector2-wrapper,
+.input-vector3-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.input-file-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid #00ffe7;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 8px #00ffe733;
+
+  &:hover {
+    border-color: #0ff;
+    box-shadow: 0 0 12px #00ffe755;
+  }
+
+  .file-info {
+    color: #00ffe7;
+    font-size: 0.95rem;
+    font-family: inherit;
+    user-select: none;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+}
+
+.input-file-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-secondary);
+  border: $input-border;
+  border-radius: $input-radius;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  box-shadow: $input-shadow;
+  position: relative;
+
+  &:hover,
+  &.dragover {
+    border-color: #0ff;
+    box-shadow: $input-hover-shadow;
+    background: #0ff1;
+  }
+
+  .file-info {
+    color: #00ffe7;
+    font-size: 0.95rem;
+    font-family: inherit;
+    user-select: none;
+    transition: color 0.2s;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+}
+
+.loading-bar-wrapper {
+  width: 100%;
+  height: 8px;
+  background: #222;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 1rem 0;
+  box-shadow: $input-shadow;
+}
+
+.loading-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00ffe7 0%, #0ff 100%);
+  transition: width 0.3s ease;
+  border-radius: 4px;
+}
