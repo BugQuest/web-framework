@@ -34,6 +34,8 @@ class Image
             self::$_compression_method = 'auto';
 
         try {
+            if ($media === null)
+                throw new \Exception('Media is null');
             $media = self::resolveMedia($media);
             $originalPath = BQ_ROOT . DS . 'htdocs' . DS . $media->path;
             if (!file_exists($originalPath))
@@ -46,8 +48,8 @@ class Image
                 ? $final
                 : str_replace(BQ_ROOT . DS . 'htdocs', '', $final);
 
-        } catch (\Exception $e) {
-            if ($placeholder instanceof Media && $placeholder->path !== $media->path)
+        } catch (\Throwable $e) {
+            if ($placeholder instanceof Media && (!($media instanceof Media) || $placeholder->path !== $media->path))
                 return self::getImageUrl($placeholder, $size, $absolute);
 
             return null;
