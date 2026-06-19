@@ -127,15 +127,16 @@ class Image
                 $extension = pathinfo($fullPath, PATHINFO_EXTENSION) ?: 'jpg';
                 $mime = mime_content_type($fullPath);
                 $size = filesize($fullPath);
+                $uid = md5($media);
 
                 return new Media([
-                    'filename' => basename($fullPath),
+                    'filename' => $uid . '.' . $extension,
                     'original_name' => basename($fullPath),
                     'mime_type' => $mime,
                     'extension' => $extension,
                     'size' => $size,
                     'path' => $media,
-                    'slug' => md5($media),
+                    'slug' => $uid,
                 ]);
             }
 
@@ -172,6 +173,13 @@ class Image
         $crop = $sizeDef['crop'] ?? false;
 
         $image = new \Imagick($original);
+
+        // Animated GIFs — serve original as-is (resizing would drop all frames but the first)
+        if ($image->getNumberImages() > 1) {
+            $image->clear();
+            return $original;
+        }
+
         self::autoRotate($image);
 
         $iw = $image->getImageWidth();
