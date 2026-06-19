@@ -2,6 +2,7 @@
 
 namespace BugQuest\Framework\Services;
 
+use BugQuest\Framework\Controllers\Admin\CacheController;
 use BugQuest\Framework\Controllers\Admin\DebugController;
 use BugQuest\Framework\Controllers\Admin\MediasController;
 use BugQuest\Framework\Controllers\Admin\PageListController;
@@ -166,6 +167,13 @@ abstract class Admin
             name: 'Routes',
             icon: '🗺️',
             route: self::addPage('Debug - Routes', DebugController::class . '::routes')
+        );
+
+        self::addSubmenu(
+            parent: 'debug',
+            name: 'Cache',
+            icon: '🗑️',
+            route: self::addPage('Debug - Cache', CacheController::class . '::index')
         );
 
         //add page

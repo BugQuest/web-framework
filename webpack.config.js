@@ -19,6 +19,7 @@ module.exports = {
         'js/admin-page-media': '@framework/js/admin-page-media.js',
         'js/admin-page-builder': '@framework/js/admin-page-builder.js',
         'js/admin-page-list': '@framework/js/admin-page-list.js',
+        'js/admin-page-cache': '@framework/js/admin-page-cache.js',
         'js/admin-page-robots-txt': '@framework/js/admin-page-robots-txt.js',
         'js/admin-page-seo': '@framework/js/admin-page-seo.js',
         'js/global': '@framework/js/global.js',

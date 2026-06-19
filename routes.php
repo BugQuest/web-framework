@@ -1,6 +1,7 @@
 <?php
 
 
+use BugQuest\Framework\Controllers\Admin\CacheController;
 use BugQuest\Framework\Controllers\Admin\DashboardController;
 use BugQuest\Framework\Controllers\Admin\LocaleController;
 use BugQuest\Framework\Controllers\Admin\MediasController;
@@ -255,6 +256,33 @@ new RouteGroup(
             _slug: '/page/seo/save/{id:int}',
             _callback: PageSeoController::class . '::save',
             _methods: ['POST']
+        ),
+        /**
+         * Cache
+         */
+        new Route(
+            name: 'cache.groups',
+            _slug: '/cache/groups',
+            _callback: CacheController::class . '::groups',
+            _methods: ['GET']
+        ),
+        new Route(
+            name: 'cache.list',
+            _slug: '/cache/list/{group:alpha}',
+            _callback: CacheController::class . '::list',
+            _methods: ['GET']
+        ),
+        new Route(
+            name: 'cache.clear',
+            _slug: '/cache/{group:alpha}',
+            _callback: CacheController::class . '::clearGroup',
+            _methods: ['POST']
+        ),
+        new Route(
+            name: 'cache.forget',
+            _slug: '/cache/{group:alpha}/{key:slug}',
+            _callback: CacheController::class . '::forget',
+            _methods: ['DELETE']
         ),
         /**
          * Robots.txt
