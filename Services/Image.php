@@ -210,6 +210,12 @@ class Image
 
     private static function applyCompression(string $size, Media $media, string $path, ?string $custom_path = null): string
     {
+        // generateImage() returns the original file path when it can't resize (e.g. animated GIFs).
+        // In that case, skip compression entirely to avoid corrupting the original.
+        $originalPath = BQ_ROOT . DS . 'htdocs' . DS . $media->path;
+        if ($path === $originalPath && $size !== 'original')
+            return $path;
+
         $dir = pathinfo($path, PATHINFO_DIRNAME);
         $name = pathinfo($path, PATHINFO_FILENAME);
 
