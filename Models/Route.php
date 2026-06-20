@@ -128,10 +128,15 @@ class Route
         self::$_current = $this;
         Hooks::runAction('route.before', $this, $args);
         if (!is_null($this->_cache_key)) {
+            $key = $this->_cache_key . ':' . Locale::getLocale();
+            $scalarArgs = array_filter($args, fn($a) => is_scalar($a));
+            if (!empty($scalarArgs))
+                $key .= ':' . implode(':', $scalarArgs);
+            $callback = $this->_callback;
             return Cache::remember(
-                key: $this->_cache_key . ':' . Locale::getLocale(),
+                key: $key,
                 ttl: $this->_cache_ttl,
-                callback: $this->_callback,
+                callback: fn() => call_user_func_array(CallbackHelper::parse($callback), $args),
                 group: $this->_cache_group,
             );
         } else
