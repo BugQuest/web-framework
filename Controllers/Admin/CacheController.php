@@ -53,7 +53,7 @@ class CacheController
         $items = Cache::list($group);
 
         foreach ($items as $item)
-            Cache::forget($item['key'], $group);
+            Cache::deleteHash($item['hash'], $group);
 
         return Response::jsonSuccess("Groupe cache vidé : {$group}");
     }
