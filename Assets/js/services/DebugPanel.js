@@ -21,13 +21,12 @@ export class DebugPanel {
         this.restoreFromStorage();
 
         // Toggle via touche ² (Backquote)
-        document.addEventListener('keypress', (e) => {
-            if (e.which === 178 || e.which === 64) {
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '²' || e.key === '@') {
                 this.panel.classList.toggle('active');
                 localStorage.setItem('debugPanelActive', this.panel.classList.contains('active'));
             }
-            // Reset position via touche *
-            if (e.which === 42)
+            if (e.key === '*')
                 this.resetPosition();
         });
 
