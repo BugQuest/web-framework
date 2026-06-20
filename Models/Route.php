@@ -6,6 +6,7 @@ use BugQuest\Framework\Helpers\CallbackHelper;
 use BugQuest\Framework\Router;
 use BugQuest\Framework\Services\Cache;
 use BugQuest\Framework\Services\Hooks;
+use BugQuest\Framework\Services\Locale;
 
 class Route
 {
@@ -128,7 +129,7 @@ class Route
         Hooks::runAction('route.before', $this, $args);
         if (!is_null($this->_cache_key)) {
             return Cache::remember(
-                key: $this->_cache_key,
+                key: $this->_cache_key . ':' . Locale::getLocale(),
                 ttl: $this->_cache_ttl,
                 callback: $this->_callback,
                 group: $this->_cache_group,

@@ -201,24 +201,29 @@ export class DebugPanel {
     }
 
     static async loadMetrics() {
-        await fetch('/admin/api/debug/metrics')
-            .then(r => r.json())
-            .then(data => {
+        try {
+            const r = await fetch('/admin/api/debug/metrics');
+            if (!r.ok) {
+                this.panel.remove();
+                return;
+            }
+            const data = await r.json();
+            if (!data) return;
 
-                if (!data) return;
+            if ("success" in data && !data.success) {
+                Toast.show(__('Erreur lors du chargement des metrics:', 'admin') + ' ' + data?.message, {
+                    type: 'danger',
+                    icon: '❌'
+                });
+                console.error(__('Erreur lors du chargement des metrics:', 'admin') + ' ' + data?.message);
+                return;
+            }
 
-                if ("success" in data && !data.success) {
-                    Toast.show(__('Erreur lors du chargement des metrics:', 'admin') + ' ' + data?.message, {
-                        type: 'danger',
-                        icon: '❌'
-                    });
-                    console.error(__('Erreur lors du chargement des metrics:', 'admin') + ' ' + data?.message);
-                    return;
-                }
-
-                for (const group_key in data)
-                    this.addGroup(group_key, data[group_key]);
-            });
+            for (const group_key in data)
+                this.addGroup(group_key, data[group_key]);
+        } catch {
+            this.panel.remove();
+        }
     }
 
     //set Pannel center of the screen
