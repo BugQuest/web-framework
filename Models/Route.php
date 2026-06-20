@@ -2,6 +2,7 @@
 
 namespace BugQuest\Framework\Models;
 
+use BugQuest\Framework\Debug;
 use BugQuest\Framework\Helpers\CallbackHelper;
 use BugQuest\Framework\Router;
 use BugQuest\Framework\Services\Cache;
@@ -132,6 +133,13 @@ class Route
             $scalarArgs = array_filter($args, fn($a) => is_scalar($a));
             if (!empty($scalarArgs))
                 $key .= ':' . implode(':', $scalarArgs);
+
+            $peek = Cache::peek($key, $this->_cache_group);
+            Debug::log('Cache', $key, $peek
+                ? '✅ hit · cached ' . $peek['created_at'] . ' · expires in ' . $peek['ttl_left']
+                : '❄️ miss'
+            );
+
             $callback = $this->_callback;
             return Cache::remember(
                 key: $key,

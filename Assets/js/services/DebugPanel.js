@@ -185,13 +185,22 @@ export class DebugPanel {
             });
 
         } else {
-            // Cas classique objet clé: valeur
+            // Cas classique objet clé: valeur → tableau 2 colonnes
+            const table = document.createElement('table');
+            table.className = 'debug-table debug-table--kv';
             for (const item_key in group) {
-                const item = group[item_key];
-                const item_div = Builder.div('debug-line');
-                item_div.innerHTML = `${item_key}: ${item}`;
-                wrap.appendChild(item_div);
+                const val = group[item_key];
+                const tr = document.createElement('tr');
+                const tdKey = document.createElement('td');
+                tdKey.className = 'debug-table__key';
+                tdKey.textContent = item_key;
+                const tdVal = document.createElement('td');
+                tdVal.className = 'debug-table__val';
+                tdVal.textContent = typeof val === 'object' ? JSON.stringify(val) : val;
+                tr.append(tdKey, tdVal);
+                table.appendChild(tr);
             }
+            wrap.appendChild(table);
         }
     }
 

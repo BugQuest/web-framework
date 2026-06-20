@@ -198,6 +198,25 @@ class Cache
     }
 
 
+    public static function peek(string $key, string $group = 'default'): ?array
+    {
+        $path = self::path($key, $group);
+        if (!file_exists($path)) return null;
+
+        $payload = self::import($path);
+        if (!$payload) return null;
+
+        if ($payload['expires_at'] && time() > $payload['expires_at']) return null;
+
+        $ttlLeft = $payload['expires_at'] ? max(0, $payload['expires_at'] - time()) : null;
+
+        return [
+            'created_at' => date('H:i:s', $payload['created_at']),
+            'expires_at' => $payload['expires_at'] ? date('H:i:s', $payload['expires_at']) : '∞',
+            'ttl_left'   => $ttlLeft !== null ? $ttlLeft . 's' : '∞',
+        ];
+    }
+
     public static function isDisabled(): bool
     {
         return env('DISABLE_CACHE', false) || !is_writable(storage('cache'));
