@@ -8,6 +8,13 @@ export class DebugPanel {
     static offset = {x: 0, y: 0};
 
     static async init() {
+        if (!document.querySelector('link[href*="/framework/assets/css/admin"]')) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = '/framework/assets/css/admin';
+            document.head.appendChild(link);
+        }
+
         this.panel = Builder.div('debug-panel');
         const title = Builder.h3('Debug Panel');
         const close_el = Builder.div('close-btn');
