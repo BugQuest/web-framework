@@ -12,8 +12,9 @@ class Cache
         self::ensureDirectory($group);
         $time = time();
         $payload = [
+            'key'        => $key,
             'expires_at' => $ttl ? $time + $ttl : null,
-            'value' => $value,
+            'value'      => $value,
             'created_at' => $time,
         ];
 
@@ -95,13 +96,12 @@ class Cache
                 if (!is_array($payload) || !array_key_exists('value', $payload)) continue;
 
                 $items[] = [
-                    'key' => basename($file, '.php'),
-                    'group' => $group,
+                    'hash'       => basename($file, '.php'),
+                    'key'        => $payload['key'] ?? null,
+                    'group'      => $group,
                     'created_at' => $payload['created_at'] ?? null,
                     'expires_at' => $payload['expires_at'] ?? null,
-                    'size' => filesize($fullPath),
-                    'path' => $fullPath,
-                    'value' => $payload['value'],
+                    'size'       => filesize($fullPath),
                 ];
             }
         }
@@ -197,6 +197,12 @@ class Cache
         }
     }
 
+
+    public static function deleteHash(string $hash, string $group = 'default'): void
+    {
+        $path = self::getCacheDir($group) . '/' . $hash . '.php';
+        if (file_exists($path)) unlink($path);
+    }
 
     public static function peek(string $key, string $group = 'default'): ?array
     {

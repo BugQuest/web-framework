@@ -34,9 +34,9 @@ class CacheController
 
     public static function forget(string $group, string $key): Response
     {
-        Cache::forget($key, $group);
+        Cache::deleteHash($key, $group);
 
-        return Response::jsonSuccess("Entrée cache supprimée : {$key}");
+        return Response::jsonSuccess("Entrée cache supprimée");
     }
 
     public static function clearGroup(string $group): Response
