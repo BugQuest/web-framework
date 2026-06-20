@@ -212,21 +212,15 @@ export class DebugPanel {
     static async loadMetrics() {
         try {
             const r = await fetch('/admin/api/debug/metrics');
-            if (!r.ok) {
+            if (r.status === 401) {
                 this.panel.remove();
                 return;
             }
+            if (!r.ok) return; // 404 ou autre : admin sans métriques, panel reste visible
             const data = await r.json();
             if (!data) return;
 
-            if ("success" in data && !data.success) {
-                Toast.show(__('Erreur lors du chargement des metrics:', 'admin') + ' ' + data?.message, {
-                    type: 'danger',
-                    icon: '❌'
-                });
-                console.error(__('Erreur lors du chargement des metrics:', 'admin') + ' ' + data?.message);
-                return;
-            }
+            if ("success" in data && !data.success) return;
 
             for (const group_key in data)
                 this.addGroup(group_key, data[group_key]);
