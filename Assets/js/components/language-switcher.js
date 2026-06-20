@@ -3,8 +3,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (langSelect) {
         langSelect.addEventListener('change', () => {
             const locale = langSelect.value;
-            document.cookie = `bq_locale=${locale};path=/;max-age=31536000;SameSite=Lax`;
-            location.reload();
+            const currentPath = window.location.pathname;
+
+            const basePath = currentPath.startsWith('/en')
+                ? (currentPath.slice(3) || '/')
+                : currentPath;
+
+            window.location.href = (locale === 'en' ? '/en' : '') + basePath + window.location.search;
         });
     }
 });

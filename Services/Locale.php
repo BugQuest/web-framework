@@ -15,6 +15,13 @@ class Locale
 
     public static function init(): void
     {
+        $path = strtok($_SERVER['REQUEST_URI'] ?? '/', '?') ?: '/';
+
+        if (str_starts_with($path, '/en/') || $path === '/en') {
+            self::$locale = 'en';
+            return;
+        }
+
         self::$locale = $_COOKIE[self::$cookieName] ?? self::$default;
     }
 
