@@ -44,6 +44,20 @@ class TwigExtention extends \Twig\Extension\AbstractExtension implements \Twig\E
 
                 return null;
             }),
+            // Locale-aware URL helper: prepends /en when current locale is EN.
+            // Use instead of bq_route_url() for links that must follow the user's language.
+            new TwigFunction('bq_url', function (?string $name) {
+                if (!$name) return null;
+                $slug = null;
+                if ($route = Router::getRoute($name))
+                    $slug = $route->getSlug();
+                if ($slug === null) $slug = $name; // fallback: treat as raw path
+                if (Locale::getLocale() === 'en') {
+                    // Strip leading /en if already present, then re-prepend
+                    $slug = '/en' . (str_starts_with($slug, '/en') ? substr($slug, 3) : $slug);
+                }
+                return $slug;
+            }),
             new TwigFunction('bq_admin_menu', function () {
                 return Admin::renderMenu();
             }, [
