@@ -187,6 +187,7 @@ abstract class Router
             throw new \Exception("La route [$name] n'existe pas");
         }
 
+        if (session_id()) session_write_close();
         header('Location: ' . $route->getSlug());
         exit;
     }

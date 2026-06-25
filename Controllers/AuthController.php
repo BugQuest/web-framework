@@ -11,6 +11,8 @@ class AuthController
 {
     public static function login(): Response
     {
+        if (!session_id()) session_start();
+
         $error = "";
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             sleep(2); // Anti brute-force
@@ -23,7 +25,6 @@ class AuthController
                 $user = User::where('username', $email)->first();
 
             if ($user && password_verify($password, $user->password)) {
-                session_start();
                 $_SESSION['user_id'] = $user->id;
                 Router::redirect('admin.dashboard');
             }
