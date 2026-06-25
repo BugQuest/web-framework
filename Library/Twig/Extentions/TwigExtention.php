@@ -91,6 +91,9 @@ class TwigExtention extends \Twig\Extension\AbstractExtension implements \Twig\E
             }, [
                 'is_safe' => ['html'],
             ]),
+            new TwigFunction('bq_locale_domain', function (string $domain) {
+                return Locale::getDomain($domain);
+            }),
         ];
     }
 }
