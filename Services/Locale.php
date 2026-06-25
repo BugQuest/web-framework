@@ -53,9 +53,10 @@ class Locale
         self::$translations = [];
     }
 
-    public static function translate(string $original, string $domain = 'BugQuest', string $str_locale = 'fr', array $replacements = []): string
+    public static function translate(string $original, string $domain = 'BugQuest', ?string $str_locale = null, array $replacements = []): string
     {
         $locale = self::getLocale();
+        $str_locale ??= self::$default;
 
         if ($locale == $str_locale)
             return $original;
