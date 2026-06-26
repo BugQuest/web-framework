@@ -115,12 +115,14 @@ class Payload
     protected function validateType(mixed $value, string $type): bool
     {
         return match ($type) {
-            'int' => is_int($value),
+            'int'     => is_int($value),
+            'float'   => is_float($value),
+            'numeric' => is_int($value) || is_float($value),
             'string', 'slug' => is_string($value),
-            'array' => is_array($value),
-            'bool' => is_bool($value),
-            'null' => is_null($value),
-            default => false,
+            'array'   => is_array($value),
+            'bool'    => is_bool($value),
+            'null'    => is_null($value),
+            default   => false,
         };
     }
 
