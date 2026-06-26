@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * BugQuest CLI — point d'entrée.
+ * Usage : php bq-cli <commande> [options]
+ */
+
+require_once __DIR__ . '/bootstrap.php';
+
+use BugQuest\Framework\Cli\CliKernel;
+use BugQuest\Framework\Cli\Runner;
+
+// Charge les fichiers inc de l'app sans passer par le kernel HTTP du framework.
+if (is_dir(BQ_APP . '/inc'))
+    foreach (glob(BQ_APP . '/inc/*.php') as $file)
+        require_once $file;
+
+// Initialise Eloquent (sans les vérifications HTTP de Database::init)
+CliKernel::boot();
+
+// Découvre et dispatch la commande demandée
+Runner::run($argv, BQ_APP . '/Commands');
