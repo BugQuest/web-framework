@@ -1,0 +1,226 @@
+@use '../admin/variables' as *;
+
+.routes-debug {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+// ── En-tête ────────────────────────────────────────────────────────────────────
+.routes-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-primary);
+
+  h1 {
+    font-family: var(--font-main);
+    color: var(--color-primary);
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    text-shadow: var(--glow);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0;
+  }
+
+  .badge-total {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    background: rgba(0, 255, 195, 0.08);
+    color: var(--color-primary);
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-secondary);
+  }
+}
+
+#route-search {
+  background: var(--bg-secondary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  width: 280px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &::placeholder { color: var(--color-muted); }
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: var(--glow);
+  }
+}
+
+.routes-empty {
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  display: none;
+
+  &.visible { display: block; }
+}
+
+// ── Groupe de routes ───────────────────────────────────────────────────────────
+.route-group {
+  margin-bottom: 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.15s;
+
+  &:hover { border-color: #2d4060; }
+
+  &.collapsed {
+    .route-group-body { display: none; }
+    .route-group-chevron { transform: rotate(-90deg); }
+  }
+}
+
+.route-group-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.9rem;
+  background: var(--bg-secondary);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+
+  &:hover { background: #1c2d47; }
+}
+
+.route-group-prefix {
+  flex: 1;
+  font-size: 0.88rem;
+  color: var(--color-primary);
+  font-weight: bold;
+  letter-spacing: 0.02em;
+
+  &::before {
+    content: '▸ ';
+    opacity: 0.5;
+    font-size: 0.75rem;
+  }
+}
+
+.route-group-count {
+  font-size: 0.68rem;
+  background: rgba(0, 255, 195, 0.07);
+  color: var(--color-primary);
+  border: 1px solid var(--color-secondary);
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+}
+
+.route-group-chevron {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  transition: transform 0.2s;
+}
+
+// ── Ligne de route ─────────────────────────────────────────────────────────────
+.route-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.55rem 1rem 0.55rem 1.4rem;
+  border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+  transition: background 0.1s;
+  min-width: 0;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: rgba(31, 42, 64, 0.7); }
+  &.hidden { display: none; }
+}
+
+// ── Badges méthodes HTTP ───────────────────────────────────────────────────────
+.route-methods {
+  display: flex;
+  gap: 0.2rem;
+  flex-shrink: 0;
+}
+
+.method-badge {
+  font-size: 0.6rem;
+  font-weight: bold;
+  padding: 0.12rem 0.35rem;
+  border-radius: 3px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+
+  &.method-get    { background: rgba(37, 99, 235, 0.18); color: #93c5fd; border: 1px solid #1d4ed8; }
+  &.method-post   { background: rgba(22, 163, 74, 0.18); color: #86efac; border: 1px solid #166534; }
+  &.method-put    { background: rgba(202, 138, 4, 0.18);  color: #fde047; border: 1px solid #854d0e; }
+  &.method-patch  { background: rgba(234, 88, 12, 0.18);  color: #fdba74; border: 1px solid #9a3412; }
+  &.method-delete { background: rgba(220, 38, 38, 0.18);  color: #fca5a5; border: 1px solid #991b1b; }
+}
+
+// ── URL + nom ──────────────────────────────────────────────────────────────────
+.route-url {
+  min-width: 0;
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.83rem;
+    color: var(--color-text);
+    word-break: break-all;
+
+    em.route-param {
+      color: #fbbf24;
+      font-style: normal;
+      font-weight: bold;
+    }
+  }
+
+  .route-name {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--color-muted);
+    margin-top: 0.15rem;
+
+    &::before { content: '# '; opacity: 0.5; }
+  }
+}
+
+// ── Callback ───────────────────────────────────────────────────────────────────
+.route-callback {
+  font-size: 0.78rem;
+  white-space: nowrap;
+  color: var(--color-muted);
+
+  .cb-class   { color: #a78bfa; }
+  .cb-sep     { color: #475569; }
+  .cb-method  { color: #34d399; }
+  .cb-closure { color: #f59e0b; font-style: italic; }
+}
+
+// ── Middlewares ────────────────────────────────────────────────────────────────
+.route-middlewares {
+  display: flex;
+  gap: 0.2rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.mw-badge {
+  font-size: 0.58rem;
+  padding: 0.1rem 0.38rem;
+  background: rgba(240, 0, 255, 0.09);
+  color: #e879f9;
+  border: 1px solid rgba(240, 0, 255, 0.25);
+  border-radius: 3px;
+  white-space: nowrap;
+}
