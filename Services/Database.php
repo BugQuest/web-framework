@@ -18,16 +18,29 @@ class Database
     {
         $manager = new Manager;
 
-        $manager->addConnection([
-            'driver' => env('DB_DRIVER', 'mysql'),
-            'host' => env('DB_HOST', '127.0.0.1'),
+        $driver = env('DB_DRIVER', 'mysql');
+
+        $connection = [
+            'driver'   => $driver,
+            'host'     => env('DB_HOST', '127.0.0.1'),
+            'port'     => env('DB_PORT', $driver === 'pgsql' ? '5432' : '3306'),
             'database' => env('DB_DATABASE', 'bugquest'),
             'username' => env('DB_USERNAME', 'root'),
             'password' => env('DB_PASSWORD', ''),
-            'charset' => env('DB_CHARSET', 'utf8mb4'),
-            'collation' => env('DB_COLLATION', 'utf8mb4_general_ci'),
-            'prefix' => env('DB_PREFIX', 'bqwf_'),
-        ]);
+            'prefix'   => env('DB_PREFIX', 'bqwf_'),
+        ];
+
+        // MySQL/MariaDB specific options (not valid for PostgreSQL)
+        if ($driver !== 'pgsql') {
+            $connection['charset']   = env('DB_CHARSET', 'utf8mb4');
+            $connection['collation'] = env('DB_COLLATION', 'utf8mb4_unicode_ci');
+        } else {
+            // PostgreSQL: schema search path
+            $connection['schema']  = env('DB_SCHEMA', 'public');
+            $connection['charset'] = 'utf8';
+        }
+
+        $manager->addConnection($connection);
 
         $manager->setAsGlobal();
         $manager->bootEloquent();
