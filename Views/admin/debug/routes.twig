@@ -1,53 +1,106 @@
 {% extends '@framework/admin/layout.twig' %}
 
-{% block title %}Dashboard - Routes{% endblock %}
+{% block title %}Debug — Routes{% endblock %}
 
 {% block content %}
-    <div class="table-wrapper">
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Methodes</th>
-                <th>Nom</th>
-                <th>Slug</th>
-                <th class="large">Pattern</th>
-                <th>Params</th>
-                <th class="small">
-                    callback
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for route in routes %}
-                <tr>
-                    <td>{{ route.methods }}</td>
-                    <td>{{ route.name }}</td>
-                    <td>{{ route.slug }}</td>
-                    <td>
-                        <code>
-                            {{ route.regex }}
-                        </code>
-                    </td>
-                    <td>
-                        {{ route.params | raw }}
-                    </td>
-                    <td class="small">
-                        <ul>
-                            <li><b>Type: </b>{{ route.callback.type }}</li>
-                            {% if route.callback.class %}
-                                <li><b>Class: </b>{{ route.callback.class }}</li>
-                            {% endif %}
-                            {% if route.callback.method %}
-                                <li><b>Method: </b>{{ route.callback.method }}</li>
-                            {% endif %}
-                            {% if route.callback.default %}
-                                <li><b>Default: </b>{{ route.callback.default }}</li>
-                            {% endif %}
-                        </ul>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+<div class="routes-debug">
+
+    {# ── En-tête ──────────────────────────────────────────────────────────── #}
+    <div class="routes-header">
+        <h1>
+            Routes
+            <span class="badge-total">{{ total }}</span>
+        </h1>
+        <input id="route-search" type="text" placeholder="Filtrer par URL, nom, classe…" autocomplete="off">
     </div>
+
+    {# ── Arborescence par préfixe ─────────────────────────────────────────── #}
+    {% for prefix, group_routes in groups %}
+        <div class="route-group" data-group="{{ prefix }}">
+
+            <div class="route-group-header" onclick="toggleGroup(this)">
+                <span class="route-group-prefix">{{ prefix }}</span>
+                <span class="route-group-count">{{ group_routes|length }}</span>
+                <span class="route-group-chevron">▾</span>
+            </div>
+
+            <div class="route-group-body">
+                {% for route in group_routes %}
+                    <div class="route-row"
+                         data-search="{{ route.name|lower }} {{ route.slug|lower }} {{ route.callback.short_class|default('')|lower }} {{ route.callback.method|default('')|lower }}">
+
+                        {# Méthodes HTTP #}
+                        <div class="route-methods">
+                            {% for method in route.methods %}
+                                <span class="method-badge method-{{ method|lower }}">{{ method }}</span>
+                            {% endfor %}
+                        </div>
+
+                        {# URL + nom de route #}
+                        <div class="route-url">
+                            <code>{{ route.slug_html|raw }}</code>
+                            <span class="route-name">{{ route.name }}</span>
+                        </div>
+
+                        {# Callback #}
+                        <div class="route-callback">
+                            {% if route.callback.short_class is defined and route.callback.short_class %}
+                                <span class="cb-class">{{ route.callback.short_class }}</span>
+                                <span class="cb-sep">::</span>
+                                <span class="cb-method">{{ route.callback.method }}</span>
+                            {% elseif route.callback.type == 'closure' %}
+                                <span class="cb-closure">Closure</span>
+                            {% else %}
+                                <span class="cb-closure">{{ route.callback.default|default('?') }}</span>
+                            {% endif %}
+                        </div>
+
+                        {# Middlewares #}
+                        <div class="route-middlewares">
+                            {% for mw in route.middlewares %}
+                                <span class="mw-badge">{{ mw }}</span>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="routes-empty" id="routes-empty">Aucune route ne correspond à cette recherche.</div>
+
+</div>
+
+<script>
+// ── Collapse / expand des groupes ──────────────────────────────────────────────
+function toggleGroup(header) {
+    header.closest('.route-group').classList.toggle('collapsed');
+}
+
+// ── Recherche en temps réel ────────────────────────────────────────────────────
+document.getElementById('route-search').addEventListener('input', function () {
+    const q = this.value.trim().toLowerCase();
+    let totalVisible = 0;
+
+    document.querySelectorAll('.route-group').forEach(group => {
+        let groupVisible = 0;
+
+        group.querySelectorAll('.route-row').forEach(row => {
+            const haystack = row.dataset.search || '';
+            const match = !q || haystack.includes(q);
+            row.classList.toggle('hidden', !match);
+            if (match) groupVisible++;
+        });
+
+        group.classList.toggle('hidden', groupVisible === 0);
+        if (groupVisible > 0) {
+            group.classList.remove('collapsed');
+            totalVisible += groupVisible;
+        }
+    });
+
+    document.getElementById('routes-empty').classList.toggle('visible', totalVisible === 0 && q !== '');
+});
+</script>
 {% endblock %}
