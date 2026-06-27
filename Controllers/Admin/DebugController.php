@@ -9,26 +9,49 @@ class DebugController
 {
     public static function routes(): Response
     {
-        $routes = [];
+        $groups = [];
+        $total  = 0;
+
         foreach (Router::getRoutes() as $route) {
             $doc = $route->getDocumentation();
-            $paramsInfos = [];
-            foreach ($doc['parameters'] as $index => $p) {
-                $label = "{$p['name']}:{$p['type']}";
-                if ($p['optional']) {
-                    $label .= '?';
-                }
-                $value = $matchParams[$index] ?? null;
-                $paramsInfos[] = "$label=" . var_export($value, true);
+
+            // ── Middlewares (noms courts) ─────────────────────────────────
+            $doc['middlewares'] = array_map(
+                fn($m) => substr(strrchr($m, '\\') ?: $m, 1),
+                $route->getMiddlewares()
+            );
+
+            // ── Nom court de la classe callback ───────────────────────────
+            if (!empty($doc['callback']['class'])) {
+                $full = $doc['callback']['class'];
+                $doc['callback']['short_class'] = substr(strrchr($full, '\\') ?: $full, 1);
             }
 
-            $doc['methods'] = implode(', ', $doc['methods']);
-            $doc['params'] = $paramsInfos ? implode('<br>', $paramsInfos) : '-';
-            $routes[] = $doc;
+            // ── Slug avec paramètres mis en évidence (HTML safe) ──────────
+            $doc['slug_html'] = preg_replace(
+                '/\{(\w+)(?::[^}]+)?(\?)?\}/',
+                '<em class="route-param">{$1$2}</em>',
+                htmlspecialchars($doc['slug'])
+            );
+
+            // ── Regroupement par premier segment de l'URL ─────────────────
+            $slug  = ltrim($doc['slug'], '/');
+            if ($slug === '*') {
+                $prefix = '[fallback]';
+            } else {
+                $first  = explode('/', $slug)[0];
+                $prefix = $first !== '' ? '/' . $first : '/';
+            }
+
+            $groups[$prefix][] = $doc;
+            $total++;
         }
 
+        ksort($groups);
+
         return Response::view('@framework/admin/debug/routes.twig', [
-            'routes' => $routes
+            'groups' => $groups,
+            'total'  => $total,
         ]);
     }
 }
