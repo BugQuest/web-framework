@@ -8,8 +8,8 @@ use BugQuest\Framework\Services\Hooks;
 use BugQuest\Framework\Services\View;
 use BugQuest\Framework\Services\Database;
 
-if (!defined(‘BQ_CACHE_SECRET’))
-    define(‘BQ_CACHE_SECRET’, env(‘BQ_CACHE_SECRET’, ‘changeme-this-should-be-very-secret’));
+if (!defined('BQ_CACHE_SECRET'))
+    define('BQ_CACHE_SECRET', env('BQ_CACHE_SECRET', 'changeme-this-should-be-very-secret'));
 
 set_exception_handler(function (\Throwable $e) {
     http_response_code(500);
@@ -18,19 +18,19 @@ set_exception_handler(function (\Throwable $e) {
 
     DiscordNotifier::notify($e);
 
-    if (env(‘APP_DEBUG’)) {
-        echo View::renderError(‘@framework/error/500.twig’, $e);
+    if (env('APP_DEBUG')) {
+        echo View::renderError('@framework/error/500.twig', $e);
         exit;
     }
 
-    Hooks::runAction(‘kernel.error’, $e);
+    Hooks::runAction('kernel.error', $e);
 
     if (!headers_sent()) {
-        header(‘Content-Type: text/html; charset=utf-8’);
-        echo ‘<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Erreur</title></head>’
-            . ‘<body style="font-family:sans-serif;text-align:center;padding:4rem;color:#374151">’
-            . ‘<h2>Une erreur est survenue</h2><p><a href="/">Retour à l\’accueil</a></p>’
-            . ‘</body></html>’;
+        header('Content-Type: text/html; charset=utf-8');
+        echo '<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Erreur</title></head>'
+            . '<body style="font-family:sans-serif;text-align:center;padding:4rem;color:#374151">'
+            . '<h2>Une erreur est survenue</h2><p><a href="/">Retour à l\'accueil</a></p>'
+            . '</body></html>';
     }
 
     exit;
@@ -38,8 +38,8 @@ set_exception_handler(function (\Throwable $e) {
 
 register_shutdown_function(function () {
     $err = error_get_last();
-    if ($err && in_array($err[‘type’], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
-        DiscordNotifier::notify(new \ErrorException($err[‘message’], 0, $err[‘type’], $err[‘file’], $err[‘line’]));
+    if ($err && in_array($err['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+        DiscordNotifier::notify(new \ErrorException($err['message'], 0, $err['type'], $err['file'], $err['line']));
     }
 });
 
