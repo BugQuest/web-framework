@@ -164,7 +164,7 @@ readonly class Response
     ): static
     {
         return new static(
-            content: null,
+            content: "",
             status: 302,
             headers: array_merge($headers, [
                 'Location' => $url,
