@@ -82,8 +82,12 @@ abstract class Assets
 
     public static function renderHeader(string $group): string
     {
-        return
-            self::_render($group, 'fonts')
+        // Expose le statut admin au JS pour éviter tout rendu de composants réservés
+        // (ex: DebugPanel) chez les non-admin — pas de flash au chargement.
+        $adminFlag = '<script>window.BQ_IS_ADMIN = ' . (Auth::isAdmin() ? 'true' : 'false') . ';</script>';
+
+        return $adminFlag
+            . self::_render($group, 'fonts')
             . self::_render($group, 'css')
             . self::_render($group, 'js', 'header');
     }

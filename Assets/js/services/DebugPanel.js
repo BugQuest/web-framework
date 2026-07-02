@@ -8,6 +8,10 @@ export class DebugPanel {
     static offset = {x: 0, y: 0};
 
     static async init() {
+        // Réservé aux admins : le flag est injecté côté serveur par Assets::renderHeader().
+        // Évite la création puis suppression du panel (flash) chez les non-admin.
+        if (!window.BQ_IS_ADMIN) return;
+
         this.panel = Builder.div('debug-panel');
         const title = Builder.h3('Debug Panel');
         const close_el = Builder.div('close-btn');
